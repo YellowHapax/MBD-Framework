@@ -1,0 +1,81 @@
+{
+  "title": "MBD-Framework: Memory as Baseline Deviation — Reference Implementations",
+  "description": "<p><strong>MBD-Framework</strong> provides the computational reference implementations for a six-paper series on <em>Memory as Baseline Deviation</em> (MBD) — a formal framework that models personality, cognition, and social dynamics as state-space systems.</p>\n\n<h3>Core Idea</h3>\n<p>An agent's personality is not a label — it is a <strong>vector</strong> in state space. Every significant experience shifts that vector according to:</p>\n<p style=\"text-align:center;\"><em>B(t+1) = B(t)(1 − λ) + I(t) · λ</em></p>\n<p>where <em>B</em> is the baseline (resting personality state), <em>I</em> is the input signal (trauma, joy, novelty), and <em>λ</em> is the plasticity parameter — how deeply the event rewrites who you are.</p>\n\n<h3>What's in the Repository</h3>\n<ul>\n  <li><strong>Agent Architecture</strong> (<code>mbd/</code>) — Markov Blanket agents with internal, sensory, and active states; N-dimensional κ-coupling hypercube for relational dynamics</li>\n  <li><strong>Markov Tensor Geometry</strong> (<code>markov/</code>) — Tensor library (MarkovTensor → Cube → Hypercube → Tensorium) and Levels of Lucidity engine for dynamic simulation scaling</li>\n  <li><strong>Influence Cube</strong> (<code>dynamics/influence_cube.py</code>) — Stella octangula formalization: 3 binary axes (Locus, Coupling, Temporality) producing 8 vertices as dual tetrahedra, with ε river term</li>\n  <li><strong>Social Fabric Simulator</strong> (<code>dynamics/social_fabric.py</code>) — Paper-derived agent interaction model integrating MBD baseline deviation, coupling asymmetry, Markov tensor probability, resonant field translation, and emergent gating</li>\n  <li><strong>Quadrafoil Environmental Fields</strong> (<code>dynamics/world_evolution.py</code>) — Four poles of environmental influence (sanctuary, arena, market, sink) with 1/r² pressure signatures that shape agent baselines</li>\n  <li><strong>Affective Field Translation</strong> (<code>fields/translation.py</code>) — Maps internal affect (Trust, Curiosity, Playfulness, Boldness) onto environmental physics: buoyancy, luminosity, tactile response, resonant harmonics</li>\n  <li><strong>Analysis Tools</strong> (<code>analysis/</code>) — Core MBD equations, trauma tensor energy visualization, ecology heatmap</li>\n  <li><strong>Interactive Notebooks</strong> (<code>notebooks/</code>) — Jupyter walkthroughs of Paper 1 (Baseline Deviation) and Paper 4 (Executive Load as Eigenstate) with full interactive visualizations</li>\n  <li><strong>MBD Lab</strong> (<code>lab/</code>) — Interactive research frontend: FastAPI backend + React/Three.js/Recharts UI with 8 lab pages</li>\n</ul>\n\n<h3>Key Equations</h3>\n<table>\n  <tr><th>System</th><th>Equation</th><th>Description</th></tr>\n  <tr><td>Baseline drift</td><td><em>B(t+1) = B(t)(1 − λ) + I(t) · λ</em></td><td>Memory permanently alters resting personality state</td></tr>\n  <tr><td>Coupling dynamics</td><td><em>dκ/dt = α(1 − N) − βκ</em></td><td>Relationships strengthen in familiarity, fracture in novelty</td></tr>\n  <tr><td>Executive load</td><td><em>L(t) = Σ κᵢ · wᵢ</em></td><td>Total cognitive bandwidth consumed by active couplings</td></tr>\n  <tr><td>Phase transition</td><td><em>eff = exp(−γ(L − Lc))</em> when <em>L &gt; Lc</em></td><td>Executive dysfunction as phase transition, not character flaw</td></tr>\n</table>\n\n<h3>Accompanying Papers</h3>\n<ol>\n  <li><a href=\"https://doi.org/10.5281/zenodo.14538419\">Memory as Baseline Deviation</a> — Personality as state-space dynamics; baseline drift under trauma</li>\n  <li><a href=\"https://doi.org/10.5281/zenodo.14611281\">In Pursuit of the Markov Tensor</a> — Geometric framework for social cognition via tensor lattices</li>\n  <li><a href=\"https://doi.org/10.5281/zenodo.14611303\">Episodic Recall as Resonant Re-instantiation</a> — Fokker–Planck account of memory retrieval dynamics</li>\n  <li><a href=\"https://doi.org/10.5281/zenodo.14611399\">The Coupling Asymmetry</a> — Executive dysfunction as an eigenstate of the memory–baseline system</li>\n  <li><a href=\"https://doi.org/10.5281/zenodo.14611353\">The Emergent Gate</a> — Memory encoding as threshold-dependent consolidation</li>\n  <li><a href=\"https://doi.org/10.5281/zenodo.14611383\">The Resonant Gate</a> — Conversational insight as phase-locked coupling</li>\n</ol>\n\n<h3>Quick Start</h3>\n<pre><code>pip install -r requirements.txt\npython -m analysis.trauma_model       # Core baseline deviation demo\npython -m markov.tensor_library        # Markov Tensor demonstration\njupyter notebook notebooks/            # Interactive paper walkthroughs\n</code></pre>\n\n<p>Requires Python ≥ 3.10, numpy, pydantic, matplotlib. Licensed under Apache 2.0.</p>",
+  "creators": [
+    {
+      "name": "Everett, Brandon",
+      "orcid": null
+    }
+  ],
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "Apache-2.0",
+  "keywords": [
+    "computational psychology",
+    "agent-based modeling",
+    "personality dynamics",
+    "state-space model",
+    "memory",
+    "trauma",
+    "baseline deviation",
+    "Markov blanket",
+    "coupling dynamics",
+    "executive function",
+    "phase transition",
+    "social simulation",
+    "cognitive architecture",
+    "affective computing"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.14538419",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.14611281",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.14611303",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.14611399",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.14611353",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.14611383",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/YellowHapax/MBD-Framework",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ],
+  "subjects": [
+    {
+      "term": "Computational psychology",
+      "identifier": "https://id.loc.gov/authorities/subjects/sh85029513",
+      "scheme": "url"
+    }
+  ],
+  "notes": "Reference implementations for the MBD paper series. Includes interactive Jupyter notebooks, a full-stack research lab (FastAPI + React), and simulation engines for baseline deviation, coupling dynamics, social fabric, and environmental field translation."
+}

@@ -47,6 +47,10 @@ MBD-Framework/
 │   ├── graphing_suite.py Trauma tensor energy, collision 4D scatter, ecology heatmap
 │   └── trauma_model.py   Core MBD equations: B(t+1) = B(t)(1-λ) + I(t)λ
 │
+├── notebooks/            Interactive paper walkthroughs (Jupyter)
+│   ├── 01_baseline_deviation.ipynb  Paper 1: baseline drift, plasticity, coupling
+│   └── 04_executive_load.ipynb      Paper 4: executive load phase transitions
+│
 ├── demos/                Runnable demonstrations
 │   └── resonance_hierarchy.py  5-tier ontological stratification demo
 │
@@ -121,6 +125,9 @@ python -m markov.engine
 
 # Run the resonance hierarchy demonstration
 python demos/resonance_hierarchy.py
+
+# Interactive paper walkthroughs (Jupyter)
+jupyter notebook notebooks/
 ```
 
 ## Citation
