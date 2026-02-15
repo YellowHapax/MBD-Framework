@@ -4,7 +4,7 @@ The Influence Cube: A Geometric Formalization of Developmental Pressure
     "Nature, nurture, heaven and home
      Sum of all, and by them, driven
      To conquer every mountain shown
-     But have you seen the river?"
+     But I've never crossed the river"
         — Puscifer, "The Humbling River"
 
 The Quadrafoil of Influence (Sanctuary, Arena, Market, Cesspit) described
@@ -26,11 +26,34 @@ dual tetrahedra sharing the same bounding cube.
 
 The River
 ---------
-The model is a cube. The world is not. The river is whatever remains after
-all eight vertices have been accounted for — the irreducible residual, the
-thing the geometry cannot capture. In MBD terms, it is the unexplained
-variance in B(t+1) after all λ_v terms are summed. Every honest model must
-leave room for the river.
+The model is a cube: individual, complete, accountable. An agent can
+optimize every vertex — perfected genetics, loving upbringing, deep bonds,
+stable home — and still be helpless by the river.
+
+    "Pay no mind to the battles you've won
+     It'll take a lot more than rage and muscle
+     Open your heart and hands, my son
+     Or you'll never make it over the river"
+
+The river is not noise. It is not unexplained variance. It is the
+*collective phase transition threshold* — the boundary between what any
+individual can achieve alone and what requires many minds coupling
+simultaneously. In Kuramoto terms, it is the critical coupling κ_c below
+which the population cannot synchronize. In MBD terms, it is the point
+where the individual baseline equation B(t+1) = B(t)(1-Σλ) + Σ[I·λ] + ε
+hands off to the collective dynamics of the Markov Tensor.
+
+    "The hands of the many must join as one
+     And together we'll cross the river"
+
+The ε term in the baseline equation is the river's footprint in the
+individual model. It is real, irreducible, and intentional: the
+acknowledgment that the Influence Cube — for all its geometric precision —
+describes the *individual's* developmental pressures, and that some
+problems require the order parameter r to approach unity across a
+population. The cube is necessary. The cube is not sufficient.
+
+Every honest model must leave room for the river.
 
 References
 ----------
@@ -38,6 +61,8 @@ Everett, B. (2025). Memory as Baseline Deviation.
     https://doi.org/10.5281/zenodo.14538419
 Everett, B. (2025). The Coupling Asymmetry.
     https://doi.org/10.5281/zenodo.14611399
+Everett, B. (2025). In Pursuit of the Markov Tensor.
+    https://doi.org/10.5281/zenodo.14611281
 """
 
 from __future__ import annotations
@@ -134,13 +159,18 @@ HEAVEN = Vertex(
     coupling=Coupling.HIGH_KAPPA,
     temporality=Temporality.DYNAMIC,
     description=(
-        "Safe intimacy — the ongoing experience of being deeply known "
-        "and not destroyed by it. The place inside the self that only "
-        "exists because someone else made it safe to exist. Internal "
-        "transformation through vulnerability without annihilation: the "
-        "armor comes off and nothing bad happens. This is what drives "
-        "a person to conquer every mountain shown — not ambition, but "
-        "the knowledge that there is somewhere to put it all down."
+        "The thing that drives you which you cannot conquer alone. "
+        "Not a place — a state: the internal transformation that only "
+        "happens through ongoing resonant connection with another mind. "
+        "Love, communion, creative partnership, the therapeutic alliance, "
+        "the moment someone truly sees you and you survive it. "
+        "It requires high-κ coupling (you must let the bond in), it is "
+        "internal (the change happens inside you), and it is dynamic "
+        "(it is not a thing you achieve once — it must be sustained). "
+        "You can brave the forests, brave the stone, brave the icy winds "
+        "and fire, conquer country, crown, and throne — and still be "
+        "helpless by the river. Heaven is what makes the river crossable. "
+        "But not alone. Never alone."
     ),
     constructive=True,
 )
@@ -210,13 +240,16 @@ CAPTURE = Vertex(
     coupling=Coupling.HIGH_KAPPA,
     temporality=Temporality.DYNAMIC,
     description=(
-        "Active external resonant control: the dark mirror of Heaven. "
-        "Also requires the armor to come off — but overwrites what it "
-        "finds underneath. Cult dynamics, coercive bonding, abusive "
-        "relationships, epistemological capture. External, high-κ "
-        "(it needs your participation to function), ongoing. "
-        "The anti-Nature — vertex (1,1,1), diagonally opposite (0,0,0). "
-        "Maximum distance from what you genuinely are."
+        "The dark mirror of Heaven. Also requires the armor off, also "
+        "high-κ, also ongoing — but the bond overwrites what it finds "
+        "underneath instead of nurturing it. Cult dynamics, abusive "
+        "relationships, epistemological capture, coercive institutions. "
+        "The distinction between Heaven and Capture is the entire "
+        "clinical question: both demand vulnerability, both reshape the "
+        "self through sustained resonant coupling. One grows you. "
+        "The other replaces you. The anti-Nature — the vertex "
+        "diagonally opposite to (0,0,0), at maximum distance √3 in "
+        "the cube."
     ),
     constructive=False,
 )
@@ -342,13 +375,17 @@ class CubeLambdas:
     Per-vertex coupling constants (λ_v) controlling how strongly each
     vertex's pressure modifies the agent's baseline per timestep.
 
-    The river term (ε) represents unexplained variance — the influence
-    the model cannot capture.
+    The river term (ε) is the collective phase transition threshold —
+    the footprint of what cannot be crossed alone. It is not noise. It
+    is the individual model's honest acknowledgment that some problems
+    require the hands of the many to join as one: the Kuramoto critical
+    coupling κ_c, the point where individual baselines hand off to the
+    collective dynamics of the Markov Tensor.
     """
     lambdas: np.ndarray = field(
         default_factory=lambda: np.full(8, 0.05, dtype=np.float64)
     )
-    river: float = 0.0  # ε — the irreducible residual
+    river: float = 0.0  # ε — the collective threshold, not noise
 
     def __post_init__(self):
         if self.lambdas.shape != (8,):
@@ -451,7 +488,8 @@ def print_cube_summary():
     print(f"  Nature↔Capture diagonal:          {proof['nature_capture_diagonal']:.4f}"
           f"  (√3 = {math.sqrt(3):.4f})")
     print()
-    print("The River: ε — the irreducible residual the geometry cannot capture.")
+    print("The River: ε — not noise, but the collective phase transition")
+    print("threshold. The hands of the many must join as one.")
     print()
 
 
