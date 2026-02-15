@@ -1,5 +1,7 @@
 # MBD-Framework
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18652919.svg)](https://doi.org/10.5281/zenodo.18652919)
+
 **Memory as Baseline Deviation — Reference Implementations**
 
 This repository contains the computational implementations accompanying a series of papers on the MBD (Memory as Baseline Deviation) framework for modeling personality, cognition, and social dynamics as state-space systems.
