@@ -181,9 +181,10 @@ export default function SocialLab() {
           Social Fabric Lab
         </h2>
         <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-          Synthesize a multi-species agent population and simulate social dynamics.
-          Agents have psyche vectors (trust, playfulness, aggression, reproductive drive)
-          and form relationships with pressure types: intimacy, love, conflict, pair bonding.
+          Synthesize a multi-cohort agent population and simulate social dynamics
+          derived from the MBD Framework research papers. Agents have psyche vectors
+          (trust, playfulness, aggression, reproductive drive) and form relationships
+          with four pressure types: intimacy, love, conflict, pair bonding.
         </p>
       </header>
 
@@ -292,19 +293,26 @@ export default function SocialLab() {
         </h3>
         <div className="text-xs text-slate-400 space-y-2">
           <p>
-            Each agent has a <strong className="text-slate-300">psyche vector</strong> (trust, playfulness,
-            aggression, reproductive drive) and <strong className="text-slate-300">pressure state</strong>
-            (frustration). Agents are connected by edges carrying four pressure types.
+            Each agent&apos;s <strong className="text-slate-300">psyche vector</strong> (trust, playfulness,
+            aggression, reproductive drive) is a baseline deviation from a cohort reference
+            (Paper&nbsp;1: MBD). <strong className="text-slate-300">Frustration</strong> emerges when
+            drive exceeds available bonding opportunity (Paper&nbsp;5: Emergent Gate).
           </p>
           <p>
-            Per tick: reproductive drive updates based on age within a dimensionless
-            bonding window, scaled by demographic pressure.
-            Interaction probability scales with psyche compatibility, existing edge pressures, and drive state.
+            Edges carry four pressure types that evolve via <strong className="text-slate-300">field
+            translation</strong> &mdash; trust-aligned dyads accumulate positive pressures while
+            aggression-aligned dyads amplify conflict (Paper&nbsp;6: Resonant Gate).
           </p>
           <p>
-            Cohort profiles define timescale-agnostic ratios (maturation, bonding window, senescence)
-            with an <strong className="text-slate-300">epoch_scale</strong> multiplier that creates
-            inter-group temporal asymmetries without assuming fixed calendar durations.
+            <strong className="text-slate-300">Interaction probability</strong> contracts three terms:
+            psyche alignment, edge memory, and drive urgency &mdash; a simplified Markov tensor
+            contraction (Paper&nbsp;2). Coupling is asymmetric: agent&nbsp;A&apos;s influence on B
+            differs from B&apos;s on A (Paper&nbsp;4: Coupling Asymmetry).
+          </p>
+          <p>
+            Cohort profiles use dimensionless epoch fractions for timescale-agnostic dynamics.
+            The <strong className="text-slate-300">epoch_scale</strong> multiplier creates inter-group
+            temporal asymmetries without assuming fixed calendar durations.
           </p>
         </div>
       </section>

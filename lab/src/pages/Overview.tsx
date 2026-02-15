@@ -50,7 +50,7 @@ const modules = [
   },
   {
     name: 'dynamics/',
-    desc: 'Simulation engines — Influence Cube, social fabric, world evolution',
+    desc: 'Simulation engines — Influence Cube pressure geometry, paper-derived social interaction model, Quadrafoil environmental fields',
     files: ['influence_cube.py', 'social_fabric.py', 'world_evolution.py'],
   },
   {

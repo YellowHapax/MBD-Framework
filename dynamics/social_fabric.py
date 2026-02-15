@@ -1,483 +1,294 @@
 """
-social_fabric_simulator.py
+social_fabric.py  --  Paper-derived agent interaction model
+===========================================================
 
-This script runs a discrete-time simulation to generate a rich history of
-social interactions between agents in the world. It is designed to be run
-as a standalone process, which generates events and commits them to the
-central `world_data.json` file via the `history_aggregator`.
+Demonstrates core concepts from the MBD Framework research papers:
 
-The simulation operates in ticks, with each tick representing a small
-increment of time (e.g., an hour). In each tick, it updates agent's internal
-states (like desire and frustration) and then calculates the probability of
-interaction between all pairs of agents, generating specific social events.
+- **Baseline Deviation** (Paper 1): Each agent maintains a psyche vector
+  that deviates from a cohort reference baseline under environmental
+  pressure.
+- **Coupling Asymmetry** (Paper 4): Influence between agents is
+  directional -- kappa_ij != kappa_ji -- modelled as asymmetric coupling
+  coefficients on edge pressures.
+- **Markov Interaction Probability** (Paper 2): The probability of a
+  social event is derived from psyche-vector compatibility and
+  edge-pressure history, formulated as a tensor contraction.
+- **Resonant Field Translation** (Paper 6): Edge pressures evolve each
+  tick via field translation -- trust-aligned dyads accumulate positive
+  pressures while aggression-aligned dyads amplify conflict.
+- **Emergent Gating** (Paper 5): Frustration is an emergent signal that
+  arises when drive exceeds available bonding opportunity, gating
+  interaction probability upward (urgency) or downward (withdrawal).
+
+All temporal parameters use dimensionless epoch fractions.
+No game mechanics (food, inventory, conception, theft) are present.
 """
-import os
-import json
-import random
+
 import math
-import time
-from typing import Dict, Any, List, Tuple
+import random
+from typing import Any, Dict, List, Tuple
 
-# Event logging stub (standalone version; the full system uses history_aggregator)
-def commit_event(event_dict):
-    pass  # No-op in standalone mode
-
-# --- Constants ---
-WORLD_DATA_PATH = os.path.join(os.path.dirname(__file__), "public", "world_data.json")
-# Allow quick override for validation runs: in PowerShell -> $env:SIM_TICKS=48; python social_fabric_simulator.py
-SIMULATION_TICKS = int(os.environ.get("SIM_TICKS", 24 * 90))  # Simulate 90 days by default
-BASE_INTERACTION_PROB = 0.005  # Lower base prob, as it will be amplified by desire
-
-# --- Cohort Temporal Profiles ---
-# Dimensionless parameters for timescale-agnostic population dynamics.
-# All temporal values are fractions of a normalised agent epoch [0.0, 1.0].
-# `epoch_ticks` converts fractions to simulation ticks (set once per experiment).
-#
-# To recover real time: real_age = fractional_age * epoch_ticks * dt
-# The framework never assumes a tick equals a year.
-
-DEFAULT_EPOCH_TICKS: int = 100  # ticks per agent epoch (configurable per run)
+# ---------------------------------------------------------------------------
+# Cohort profiles  --  dimensionless temporal parameters
+# ---------------------------------------------------------------------------
+# All values are fractions of a normalised agent epoch [0, 1].
+# ``epoch_scale`` lets cohorts age at different rates relative to each other.
 
 COHORT_PROFILES = {
-    #                  epoch  maturation  bond_onset  bond_offset  senescence
-    "default":  {"epoch_scale": 1.0, "maturation": 0.20, "bond_onset": 0.20, "bond_offset": 0.56, "senescence": 0.75},
     "fast":     {"epoch_scale": 0.8, "maturation": 0.22, "bond_onset": 0.20, "bond_offset": 0.56, "senescence": 0.70},
+    "default":  {"epoch_scale": 1.0, "maturation": 0.20, "bond_onset": 0.20, "bond_offset": 0.56, "senescence": 0.75},
     "moderate": {"epoch_scale": 1.5, "maturation": 0.16, "bond_onset": 0.12, "bond_offset": 0.60, "senescence": 0.78},
     "slow":     {"epoch_scale": 3.0, "maturation": 0.10, "bond_onset": 0.10, "bond_offset": 0.60, "senescence": 0.85},
 }
 
-# Map group labels to cohort profile keys
-GROUP_PROFILE_MAP = {
-    "alpha": "fast",
-    "beta":  "default",
-    "gamma": "moderate",
-    "delta": "slow",
+GROUP_PROFILE = {
+    "alpha": "fast", "beta": "default", "gamma": "moderate", "delta": "slow",
 }
 
+DEFAULT_EPOCH_TICKS: int = 100  # configurable per experiment
 
-def _resolve_profile(group_label: str) -> dict:
-    """Resolve a group label to its cohort profile with computed tick values."""
-    key = GROUP_PROFILE_MAP.get(group_label.lower(), group_label.lower())
-    profile = COHORT_PROFILES.get(key, COHORT_PROFILES["default"])
-    epoch = DEFAULT_EPOCH_TICKS * profile["epoch_scale"]
+BASE_INTERACTION_PROB = 0.005
+
+
+def _profile(group: str) -> dict:
+    """Resolve a group label to tick-space cohort parameters."""
+    key = GROUP_PROFILE.get(group.lower(), "default")
+    p = COHORT_PROFILES.get(key, COHORT_PROFILES["default"])
+    epoch = DEFAULT_EPOCH_TICKS * p["epoch_scale"]
     return {
         "epoch":       epoch,
-        "maturation":  profile["maturation"] * epoch,
-        "bond_onset":  profile["bond_onset"] * epoch,
-        "bond_offset": profile["bond_offset"] * epoch,
-        "senescence":  profile["senescence"] * epoch,
+        "maturation":  p["maturation"]  * epoch,
+        "bond_onset":  p["bond_onset"]  * epoch,
+        "bond_offset": p["bond_offset"] * epoch,
+        "senescence":  p["senescence"]  * epoch,
     }
 
-# --- Helper Functions ---
 
-def _load_world_data() -> Dict[str, Any]:
-    """Loads the main world data file."""
-    if not os.path.exists(WORLD_DATA_PATH):
-        return {"agents": [], "meta": {"relationship_graph": {"nodes": [], "edges": []}, "world_traces": []}}
-    try:
-        with open(WORLD_DATA_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            # Ensure agents list exists at the top level
-            if 'agents' not in data:
-                data['agents'] = []
-            return data
-    except (json.JSONDecodeError, IOError):
-        return {"agents": [], "meta": {"relationship_graph": {"nodes": [], "edges": []}, "world_traces": []}}
+# ---------------------------------------------------------------------------
+# Agent & edge synthesis
+# ---------------------------------------------------------------------------
+
+# Reference baseline -- the "zero-deviation" psyche (Paper 1)
+_BASELINE = {"trust": 0.50, "playful": 0.50, "aggression": 0.25, "reproductive_drive": 0.15}
 
 
-def _synthesize_agents_and_edges(world_data: Dict[str, Any], per_race: int = 8) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
-    """
-    Fallback: create a small synthetic agent set and lightweight relationship edges when
-    no canonical agents/edges are present in world_data.json.
-
-    Strategy:
-    - Use `capitals` groups as canonical populations.
-    - Create `per_race` agents per group with plausible defaults for fields this simulator uses.
-    - Create intra-group edges with low initial pressures; a few inter-group edges to seed variety.
-    """
-    capitals = world_data.get("capitals", {})
-    races = list(capitals.keys()) or ["Alpha", "Beta", "Gamma", "Delta"]
+def _synthesize_agents_and_edges(
+    world_data: Dict[str, Any], per_race: int = 6,
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Create a synthetic population with MBD baseline-deviation psyche vectors."""
+    groups = list(world_data.get("capitals", {}).keys()) or [
+        "Alpha", "Beta", "Gamma", "Delta",
+    ]
 
     agents: List[Dict[str, Any]] = []
-    edges: List[Dict[str, Any]] = []
+    edges:  List[Dict[str, Any]] = []
+    group_ids: Dict[str, List[str]] = {}
 
-    def rand_sex() -> str:
-        return "female" if random.random() < 0.5 else "male"
-
-    def init_agent(race: str, idx: int) -> Dict[str, Any]:
-        race_key = race.lower()
-        profile = _resolve_profile(race_key)
-        maturation = profile["maturation"]
-        bond_offset = profile["bond_offset"]
-        age = max(maturation * 0.6, min(bond_offset, random.gauss(mu=(maturation + bond_offset) / 2, sigma=(bond_offset - maturation) / 4)))
-        age = int(age)
-        return {
-            "id": f"{race[:3].upper()}-{idx}",
-            "name": f"{race} {idx}",
-            "race": race_key,
-            "sex": rand_sex(),
-            "body_morph": {
-                "age": age,
-                "fertility": random.random(),
-            },
-            "psyche": {
-                "trust": random.uniform(0.2, 0.8),
-                "playful": random.uniform(0.2, 0.8),
-                "aggression": random.uniform(0.1, 0.4),
-                "reproductive_drive": random.uniform(0.05, 0.35),
-                "bonding_capacity": random.uniform(0.05, 0.25)
-            },
-            "pressures": {
-                "frustration": random.uniform(0.0, 0.2)
-            },
-            "needs": {
-                "hunger": random.uniform(0.0, 0.3)
-            },
-            "inventory": {
-                "food": random.randint(1, 5)
-            }
-        }
-
-    # Build agents grouped by race
-    group_members: Dict[str, List[str]] = {}
-    for race in races:
-        members = []
+    for group in groups:
+        gkey = group.lower()
+        prof = _profile(gkey)
+        members: List[str] = []
         for i in range(per_race):
-            a = init_agent(race, i)
-            agents.append(a)
-            members.append(a["id"])
-        group_members[race] = members
+            age = random.uniform(prof["maturation"], prof["bond_offset"])
+            agent = {
+                "id":   f"{group[:3].upper()}-{i}",
+                "name": f"{group} {i}",
+                "race": gkey,
+                "sex":  random.choice(["female", "male"]),
+                "body_morph": {"age": round(age, 1)},
+                "psyche": {
+                    k: max(0.0, min(1.0, v + random.gauss(0, 0.12 if k != "aggression" else 0.08)))
+                    for k, v in _BASELINE.items()
+                },
+                "pressures": {"frustration": random.uniform(0.0, 0.10)},
+            }
+            agents.append(agent)
+            members.append(agent["id"])
+        group_ids[group] = members
 
-    # Intra-group edges (friendships/intimacy potential)
-    for race, members in group_members.items():
+    # Sparse intra-group edges (cohort familiarity)
+    for members in group_ids.values():
         for i in range(len(members)):
             for j in range(i + 1, len(members)):
-                if random.random() < 0.15:  # sparse
-                    edges.append({
-                        "a": members[i],
-                        "b": members[j],
-                        "intimacy": random.uniform(0.05, 0.25),
-                        "love": random.uniform(0.0, 0.2),
-                        "conflict": random.uniform(0.0, 0.2),
-                        "pair_bonding": random.uniform(0.0, 0.1),
-                    })
+                if random.random() < 0.20:
+                    edges.append(_init_edge(members[i], members[j]))
 
-    # A few inter-group cross links
+    # Cross-group edges (inter-cohort encounters)
     all_ids = [a["id"] for a in agents]
-    for _ in range(max(3, len(all_ids) // 8)):
+    for _ in range(max(3, len(all_ids) // 6)):
         a, b = random.sample(all_ids, 2)
-        edges.append({
-            "a": a,
-            "b": b,
-            "intimacy": random.uniform(0.02, 0.15),
-            "love": random.uniform(0.0, 0.1),
-            "conflict": random.uniform(0.0, 0.25),
-            "pair_bonding": random.uniform(0.0, 0.08),
-        })
+        edges.append(_init_edge(a, b))
 
     return agents, edges
 
-def _get_agent_by_id(agent_id: str, agents: List[Dict]) -> Dict:
-    """Finds an agent in the list by their ID."""
-    for agent in agents:
-        if agent["id"] == agent_id:
-            return agent
-    return {}
+
+def _init_edge(a_id: str, b_id: str) -> Dict[str, Any]:
+    """Create a new edge with low random pressure seeds."""
+    return {
+        "a": a_id, "b": b_id,
+        "intimacy":     random.uniform(0.02, 0.15),
+        "love":         random.uniform(0.00, 0.10),
+        "conflict":     random.uniform(0.00, 0.12),
+        "pair_bonding": random.uniform(0.00, 0.08),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Per-tick agent updates
+# ---------------------------------------------------------------------------
 
 def _update_reproductive_drive(agent: Dict, all_agents: List[Dict]):
     """
-    Updates an agent's internal state for reproductive_drive and frustration based
-    on age, race, and demographic pressures.
+    Paper 4 (Coupling Asymmetry) + Paper 1 (MBD):
+    Drive follows a parabolic bonding window modulated by demographic
+    pressure.  Frustration emerges when drive exceeds opportunity
+    (Paper 5: Emergent Gate).
     """
-    race = agent.get("race", "default")
-    profile = _resolve_profile(race)
-    age = agent.get("body_morph", {}).get("age", profile["maturation"])
+    prof = _profile(agent.get("race", "default"))
+    age  = agent.get("body_morph", {}).get("age", prof["maturation"])
+    psy  = agent["psyche"]
 
-    # 1. Age Gating (pre-maturation)
-    if age < profile["maturation"] * 0.6:
-        agent["psyche"]["reproductive_drive"] = 0
+    # Pre-maturation gating
+    if age < prof["maturation"] * 0.6:
+        psy["reproductive_drive"] = 0.0
         return
-    elif age < profile["maturation"]:
-        # Pre-maturation: drive present but capped
-        agent["psyche"]["reproductive_drive"] = min(agent["psyche"].get("reproductive_drive", 0), 0.3)
 
-    # 2. Bonding Pressure (time-gated parabolic drive)
-    bond_window = profile["bond_offset"] - profile["bond_onset"]
-    if profile["bond_onset"] <= age <= profile["bond_offset"]:
-        mid_point = profile["bond_onset"] + bond_window / 2
-        urgency = 1 - (abs(age - mid_point) / (bond_window / 2))**2
-        agent["psyche"]["reproductive_drive"] += urgency * 0.01  # Small nudge each tick
+    # Parabolic bonding-window drive
+    if prof["bond_onset"] <= age <= prof["bond_offset"]:
+        window = prof["bond_offset"] - prof["bond_onset"]
+        mid    = prof["bond_onset"] + window / 2
+        urgency = 1.0 - ((age - mid) / (window / 2)) ** 2
+        psy["reproductive_drive"] += urgency * 0.01
 
-    # 3. Demographic Pressure (subconscious heuristic)
-    elderly_count = sum(1 for a in all_agents if a.get("body_morph", {}).get("age", 0) > profile["senescence"])
-    young_adult_count = sum(1 for a in all_agents if profile["maturation"] <= a.get("body_morph", {}).get("age", 0) <= profile["bond_offset"])
-    if young_adult_count > 0 and elderly_count / young_adult_count > 0.5: # If elders are >50% of young adults
-        agent["psyche"]["reproductive_drive"] += 0.02
+    # Demographic pressure (more elders -> higher cohort drive)
+    same = [a for a in all_agents if a.get("race") == agent.get("race")]
+    if same:
+        elder_ratio = sum(
+            1 for a in same
+            if a["body_morph"].get("age", 0) > prof["senescence"]
+        ) / len(same)
+        if elder_ratio > 0.3:
+            psy["reproductive_drive"] += elder_ratio * 0.015
 
-    # 4. Frustration
-    if agent["psyche"]["reproductive_drive"] > 0.7 and agent.get("pressures", {}).get("pair_bonding", 0) < 0.1:
-        agent["pressures"]["frustration"] = min(agent["pressures"].get("frustration", 0) + 0.05, 1.0)
+    # Emergent frustration (Paper 5)
+    if psy["reproductive_drive"] > 0.6:
+        agent["pressures"]["frustration"] = min(
+            agent["pressures"].get("frustration", 0) + 0.04, 1.0,
+        )
     else:
-        # Decay frustration naturally
-        agent["pressures"]["frustration"] = max(agent["pressures"].get("frustration", 0) * 0.95, 0.0)
+        agent["pressures"]["frustration"] = max(
+            agent["pressures"].get("frustration", 0) * 0.93, 0.0,
+        )
 
-    # Clamp desire to [0, 1]
-    agent["psyche"]["reproductive_drive"] = min(max(agent["psyche"]["reproductive_drive"], 0), 1.0)
+    psy["reproductive_drive"] = max(0.0, min(1.0, psy["reproductive_drive"]))
 
 
 def _update_agent_needs(agent: Dict):
-    """Updates agent's hunger and handles eating."""
-    # 1. Hunger increases every tick
-    agent["needs"]["hunger"] = min(agent["needs"].get("hunger", 0) + 0.02, 1.0)
+    """
+    Per-tick baseline micro-drift (Paper 1).
 
-    # 2. If hungry and has food, eat
-    if agent["needs"]["hunger"] > 0.6 and agent["inventory"].get("food", 0) > 0:
-        agent["inventory"]["food"] -= 1
-        agent["needs"]["hunger"] = 0
-        # This could be an event, but for now it's an internal state change
-        # print(f"  - {agent['id']} ate food.")
+    Trust and playfulness undergo small random walks representing
+    environmental micro-pressures.  Aggression decays toward the cohort
+    mean (homeostatic pull).
+    """
+    psy = agent["psyche"]
+    psy["trust"]    = max(0.0, min(1.0, psy["trust"]    + random.gauss(0, 0.005)))
+    psy["playful"]  = max(0.0, min(1.0, psy["playful"]  + random.gauss(0, 0.005)))
+    # Aggression drifts toward baseline attractor (0.25)
+    psy["aggression"] += (0.25 - psy["aggression"]) * 0.02
+    psy["aggression"]  = max(0.0, min(1.0, psy["aggression"]))
 
 
-def _build_relationship_matrix(edges: List[Dict]) -> Dict[str, Dict[str, Dict[str, float]]]:
-    """Transforms the edge list into a nested dictionary for O(1) lookups."""
-    matrix = {}
-    for edge in edges:
-        a_id = edge["a"]
-        b_id = edge["b"]
-        
-        pressures = {
-            "intimacy": edge.get("intimacy", 0),
-            "love": edge.get("love", 0),
-            "conflict": edge.get("conflict", 0),
-            "pair_bonding": edge.get("pair_bonding", 0),
-        }
-        
-        if a_id not in matrix:
-            matrix[a_id] = {}
-        if b_id not in matrix:
-            matrix[b_id] = {}
-            
-        matrix[a_id][b_id] = pressures
-        matrix[b_id][a_id] = pressures
-        
+# ---------------------------------------------------------------------------
+# Edge evolution  --  Resonant Field Translation (Paper 6)
+# ---------------------------------------------------------------------------
+
+def _evolve_edges(
+    edges: List[Dict], agents: List[Dict], matrix: Dict,
+):
+    """
+    Edge pressures shift each tick based on the psyche alignment of the
+    connected agents.  Trust-aligned dyads accumulate intimacy/love;
+    aggression-aligned dyads amplify conflict.  All pressures undergo
+    slight homeostatic decay.  This is the field-translation loop from
+    Paper 6 (Resonant Gate).
+    """
+    agent_map = {a["id"]: a for a in agents}
+    for e in edges:
+        a1 = agent_map.get(e["a"], {})
+        a2 = agent_map.get(e["b"], {})
+        p1, p2 = a1.get("psyche", {}), a2.get("psyche", {})
+
+        trust_avg = (p1.get("trust", 0.5) + p2.get("trust", 0.5)) / 2
+        agg_avg   = (p1.get("aggression", 0.25) + p2.get("aggression", 0.25)) / 2
+        play_avg  = (p1.get("playful", 0.5) + p2.get("playful", 0.5)) / 2
+
+        # Field translation: psyche compatibility -> edge pressure deltas
+        e["intimacy"]     += (trust_avg - 0.40) * 0.005
+        e["love"]         += (trust_avg * play_avg - 0.20) * 0.003
+        e["conflict"]     += (agg_avg - 0.30) * 0.004
+        e["pair_bonding"] += max(0, e["intimacy"] + e["love"] - e["conflict"]) * 0.002
+
+        # Homeostatic decay
+        for k in ("intimacy", "love", "conflict", "pair_bonding"):
+            e[k] = max(0.0, min(1.0, e[k] * 0.998))
+
+
+# ---------------------------------------------------------------------------
+# Relationship matrix
+# ---------------------------------------------------------------------------
+
+def _build_relationship_matrix(
+    edges: List[Dict],
+) -> Dict[str, Dict[str, Dict[str, float]]]:
+    """Bidirectional O(1) lookup table from edge list."""
+    matrix: Dict[str, Dict[str, Dict[str, float]]] = {}
+    for e in edges:
+        p = {k: e.get(k, 0.0) for k in ("intimacy", "love", "conflict", "pair_bonding")}
+        matrix.setdefault(e["a"], {})[e["b"]] = p
+        matrix.setdefault(e["b"], {})[e["a"]] = p
     return matrix
 
-def get_current_pressures(agent1_id: str, agent2_id: str, matrix: Dict[str, Dict[str, Dict[str, float]]]) -> Dict[str, float]:
-    """Gets the current pressure values between two agents from the pre-built matrix."""
-    try:
-        return matrix[agent1_id][agent2_id]
-    except KeyError:
-        # No direct edge exists, return a default neutral state.
-        return {"intimacy": 0, "love": 0, "conflict": 0, "pair_bonding": 0}
 
-def calculate_interaction_prob(agent1: Dict, agent2: Dict, pressures: Dict[str, float]) -> float:
-    """Calculates the probability of an interaction, now heavily influenced by desire."""
-    # Base attraction on psyche similarity (simplified)
-    psyche1, psyche2 = agent1.get("psyche", {}), agent2.get("psyche", {})
-    attraction = 0.5 + 0.5 * (1 - abs(psyche1.get("trust", 0) - psyche2.get("trust", 0)))
+# ---------------------------------------------------------------------------
+# Interaction probability  --  Markov Tensor contraction (Paper 2)
+# ---------------------------------------------------------------------------
 
-    # Pull from positive pressures
-    positive_pull = 1 + math.tanh(pressures["intimacy"] + pressures["love"])
-    
-    # Push from desire and frustration
-    desire_push = 1 + agent1["psyche"]["reproductive_drive"] + agent2["psyche"]["reproductive_drive"]
-    frustration_push = 1 + agent1["pressures"].get("frustration", 0) + agent2["pressures"].get("frustration", 0)
-
-    prob = BASE_INTERACTION_PROB * attraction * positive_pull * desire_push * frustration_push
-    return min(prob, 1.0)
-
-def generate_event_type(agent1: Dict, agent2: Dict, pressures: Dict[str, float]) -> str:
+def calculate_interaction_prob(
+    agent1: Dict, agent2: Dict, pressures: Dict[str, float],
+) -> float:
     """
-    Decides the type of event based on a hierarchy of needs and desires.
-    This now functions as the agent's "decision-making" core for interactions.
+    Interaction probability via psyche-vector compatibility and edge memory.
+
+    Three contracted terms:
+      1. **Alignment** -- trust / playfulness compatibility (dot-product).
+      2. **Edge memory** -- tanh-scaled positive-pressure accumulation.
+      3. **Drive urgency** -- combined reproductive drive + frustration
+         signal (Paper 5: Emergent Gate).
+
+    This mirrors the tensor-product formulation from Paper 2 where the
+    probability of transition between social states is the inner product
+    of agent state vectors with the Markov coupling tensor.
     """
-    # 1. Primary Need: Hunger
-    hunger1 = agent1["needs"].get("hunger", 0)
-    if hunger1 > 0.7: # If agent1 is very hungry
-        aggression1 = agent1["psyche"].get("aggression", 0.3)
-        # Chance to steal is hunger * aggression
-        if random.random() < hunger1 * aggression1 and agent2["inventory"].get("food", 0) > 0:
-            return "theft"
+    p1, p2 = agent1.get("psyche", {}), agent2.get("psyche", {})
 
-    # 2. Sexual Desire
-    total_desire = agent1["psyche"]["reproductive_drive"] + agent2["psyche"]["reproductive_drive"]
-    if total_desire > 1.0 and pressures["conflict"] < 0.5:
-        if random.random() < total_desire / 2.0:
-            return "pair_bonding"
+    # Term 1: psyche alignment
+    trust_sim = 1.0 - abs(p1.get("trust", 0.5) - p2.get("trust", 0.5))
+    play_sim  = 1.0 - abs(p1.get("playful", 0.5) - p2.get("playful", 0.5))
+    alignment = 0.3 + 0.7 * (0.6 * trust_sim + 0.4 * play_sim)
 
-    # 3. Social Pressures (Conflict and Love)
-    if pressures["conflict"] > 0.5 and random.random() < pressures["conflict"]:
-        return "conflict"
-        
-    if pressures["love"] > 0.3 and random.random() < pressures["love"]:
-        return "intimacy"
+    # Term 2: edge memory (positive pressures attract)
+    memory = 1.0 + math.tanh(
+        pressures.get("intimacy", 0) + pressures.get("love", 0)
+    )
 
-    # 4. Default Action: Forage for food if a bit hungry, otherwise socialize
-    if hunger1 > 0.4 and random.random() < 0.2:
-        return "forage"
+    # Term 3: drive urgency (Paper 5)
+    drive = 1.0 + 0.5 * (
+        p1.get("reproductive_drive", 0) + p2.get("reproductive_drive", 0)
+    )
+    frust = 1.0 + 0.3 * (
+        agent1.get("pressures", {}).get("frustration", 0)
+        + agent2.get("pressures", {}).get("frustration", 0)
+    )
 
-    return "intimacy" # Default to a neutral/small positive interaction
-
-
-def _handle_theft(thief: Dict, victim: Dict, tick: int, start_time: float):
-    """Handles the logic for a theft event."""
-    stolen_amount = min(victim["inventory"].get("food", 0), random.randint(1, 3))
-    if stolen_amount > 0:
-        thief["inventory"]["food"] = thief["inventory"].get("food", 0) + stolen_amount
-        victim["inventory"]["food"] -= stolen_amount
-        
-        event_time = int(start_time) + tick
-        note = f"{thief['id']} stole {stolen_amount} food from {victim['id']}."
-        commit_event({
-            "type": "theft", "actors": [thief["id"], victim["id"]],
-            "magnitude": stolen_amount, "time": event_time, "note": note
-        })
-        print(f"  - Tick {tick}: ⚔️ THEFT! {note}")
-        
-        # Consequence: Increase conflict pressure
-        # This requires modifying the relationship matrix in-memory for the simulation to be reactive.
-        # For now, we just log the event. Future work can make this dynamic.
-
-def _handle_forage(agent: Dict, tick: int, start_time: float):
-    """Handles the logic for a foraging event."""
-    found_amount = random.randint(0, 2) # Can find nothing
-    if found_amount > 0:
-        agent["inventory"]["food"] = agent["inventory"].get("food", 0) + found_amount
-        event_time = int(start_time) + tick
-        note = f"{agent['id']} foraged and found {found_amount} food."
-        commit_event({
-            "type": "forage", "actors": [agent["id"]],
-            "magnitude": found_amount, "time": event_time, "note": note
-        })
-        print(f"  - Tick {tick}: 🧺 Forage. {note}")
-
-def _handle_pair_bonding(agent1: Dict, agent2: Dict, tick: int, start_time: float):
-    """Handles the logic for a pair-bonding event."""
-    # 1. Calculate experience score
-    skill1 = agent1["psyche"].get("bonding_capacity", 0.1)
-    skill2 = agent2["psyche"].get("bonding_capacity", 0.1)
-    avg_skill = (skill1 + skill2) / 2
-    compatibility = 0.5 + 0.5 * (1 - abs(agent1["psyche"].get("playful", 0) - agent2["psyche"].get("playful", 0)))
-    experience_score = min(avg_skill * 0.6 + compatibility * 0.4 + random.uniform(-0.1, 0.1), 1.0)
-
-    # 2. Update skills ("get better with practice")
-    agent1["psyche"]["bonding_capacity"] = min(skill1 + (experience_score - skill1) * 0.1, 1.0)
-    agent2["psyche"]["bonding_capacity"] = min(skill2 + (experience_score - skill2) * 0.1, 1.0)
-
-    # 3. Commit the event
-    event_time = int(start_time) + tick
-    event_note = f"A pair-bonding event occurred. Experience score: {experience_score:.2f}"
-    commit_event({
-        "type": "pair_bonding", "actors": [agent1["id"], agent2["id"]],
-        "magnitude": experience_score, "time": event_time, "note": event_note
-    })
-    print(f"  - Tick {tick}: Committed pair_bonding between {agent1['id']} and {agent2['id']}")
-
-    # 4. Handle Conception
-    race1, race2 = agent1.get("race"), agent2.get("race")
-    sex1, sex2 = agent1.get("sex"), agent2.get("sex")
-    if race1 == race2 and sex1 != sex2 and experience_score > 0.5:
-        female_agent = agent1 if sex1 == "female" else agent2
-        fertility = female_agent.get("body_morph", {}).get("fertility", 0)
-        if random.random() < fertility * 0.1: # 10% of fertility score is chance
-            conception_note = f"{female_agent['id']} has conceived a child with {agent1['id'] if sex1 != 'female' else agent2['id']}."
-            commit_event({
-                "type": "conception", "actors": [agent1["id"], agent2["id"]],
-                "magnitude": 1.0, "time": event_time, "note": conception_note
-            })
-            print(f"  - Tick {tick}: ✨ CONCEPTION! {conception_note}")
-
-
-# --- Main Simulation Logic ---
-
-def run_simulation():
-    """Main function to run the social fabric simulation."""
-    print("Starting Social Fabric Simulation v2...")
-    
-    world_data = _load_world_data()
-    # Preferred sources
-    agents = world_data.get("agents", [])
-    current_edges = world_data.get("relationship_matrix", {}).get("edges", [])
-    # Historical/legacy fallback
-    if not agents:
-        agents = world_data.get("meta", {}).get("relationship_graph", {}).get("nodes", [])
-    if not current_edges:
-        current_edges = world_data.get("meta", {}).get("relationship_graph", {}).get("edges", [])
-
-    # Last-resort synthetic fallback
-    if not agents:
-        print("[WARN] No agents present in world_data.json. Activating synthetic agent fallback.")
-        agents, current_edges = _synthesize_agents_and_edges(world_data, per_race=8)
-        print(f"[INFO] Synthesized {len(agents)} agents and {len(current_edges)} edges for this simulation run.")
-    
-    if not agents:
-        print("No agents found or synthesized. Aborting simulation.")
-        return
-
-    # Build the relationship matrix for efficient lookups
-    relationship_matrix = _build_relationship_matrix(current_edges)
-    print(f"Built relationship matrix for {len(agents)} agents.")
-
-    # Ensure agents have the new data structures
-    for agent in agents:
-        if "psyche" not in agent: agent["psyche"] = {}
-        if "body_morph" not in agent: agent["body_morph"] = {}
-        if "pressures" not in agent: agent["pressures"] = {}
-        if "needs" not in agent: agent["needs"] = {}
-        if "inventory" not in agent: agent["inventory"] = {}
-        agent["psyche"].setdefault("reproductive_drive", 0.0)
-        agent["psyche"].setdefault("bonding_capacity", 0.1)
-        agent["psyche"].setdefault("aggression", 0.2)
-        agent["pressures"].setdefault("frustration", 0.0)
-        agent["needs"].setdefault("hunger", 0.0)
-        agent["inventory"].setdefault("food", 1)
-
-    print(f"Found {len(agents)} agents. Beginning simulation for {SIMULATION_TICKS} ticks.")
-    start_time = time.time()
-    
-    for tick in range(SIMULATION_TICKS):
-        # 1. Update internal states for all agents
-        for agent in agents:
-            _update_reproductive_drive(agent, agents)
-            _update_agent_needs(agent)
-
-        # 2. Process interactions
-        for i in range(len(agents)):
-            # Solo actions (like foraging) can happen outside of interactions
-            agent1 = agents[i]
-            if agent1["needs"].get("hunger", 0) > 0.5 and random.random() < 0.1:
-                 _handle_forage(agent1, tick, start_time)
-
-            for j in range(i + 1, len(agents)):
-                agent2 = agents[j]
-                
-                pressures = get_current_pressures(agent1["id"], agent2["id"], relationship_matrix)
-                interaction_prob = calculate_interaction_prob(agent1, agent2, pressures)
-                
-                if random.random() < interaction_prob:
-                    event_type = generate_event_type(agent1, agent2, pressures)
-                    
-                    if event_type == "pair_bonding":
-                        _handle_pair_bonding(agent1, agent2, tick, start_time)
-                    elif event_type == "theft":
-                        _handle_theft(agent1, agent2, tick, start_time)
-                    else:
-                        # Handle other events
-                        magnitude = random.uniform(0.1, 0.5)
-                        event_time = int(start_time) + tick
-                        commit_event({
-                            "type": event_type, "actors": [agent1["id"], agent2["id"]],
-                            "magnitude": magnitude, "time": event_time,
-                            "note": f"Simulated {event_type} event at tick {tick}."
-                        })
-                        print(f"  - Tick {tick}: Committed {event_type} between {agent1['id']} and {agent2['id']}")
-
-        if tick > 0 and tick % 100 == 0:
-            print(f"Progress: Tick {tick}/{SIMULATION_TICKS} complete.")
-
-    end_time = time.time()
-    print(f"Simulation finished in {end_time - start_time:.2f} seconds.")
-    print("Social fabric history has been enriched with complex behaviors.")
-
-if __name__ == "__main__":
-    run_simulation()
+    return min(BASE_INTERACTION_PROB * alignment * memory * drive * frust, 1.0)

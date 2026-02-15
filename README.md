@@ -31,10 +31,12 @@ MBD-Framework/
 │   └── engine.py         Levels of Lucidity, blanket-driven simulation scaling
 │
 ├── dynamics/             Simulation engines
-│   ├── world_evolution.py  Terrain evolution, A* pathfinding, logistic population
-│   │                       growth, Quadrafoil of Influence structure placement
-│   └── social_fabric.py    Discrete-time social simulation: reproductive drive,
-│                           pair-bonding, demographic pressure, event generation
+│   ├── influence_cube.py   Stella octangula pressure geometry (3 binary axes → 8 poles)
+│   ├── social_fabric.py    Paper-derived agent interaction model: MBD baseline
+│   │                       deviation, coupling asymmetry, Markov tensor probability,
+│   │                       resonant field translation, emergent gating
+│   └── world_evolution.py  Quadrafoil environmental field model: sanctuary/arena/
+│                           market/cesspit pressure signatures with 1/r² falloff
 │
 ├── fields/               Affective ↔ physical field translation
 │   └── translation.py    TCPB deltas → buoyancy, luminosity, tactile, harmonics
@@ -47,7 +49,7 @@ MBD-Framework/
 │   └── resonance_hierarchy.py  5-tier ontological stratification demo
 │
 ├── CITATION.cff          Machine-readable citation metadata
-├── LICENSE               MIT
+├── LICENSE               Apache-2.0
 └── requirements.txt      numpy, pydantic, matplotlib
 ```
 

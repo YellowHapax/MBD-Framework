@@ -205,7 +205,7 @@ class SocialAgentOut(BaseModel):
     name: str
     race: str
     sex: str
-    age: int
+    age: float
     trust: float
     playful: float
     aggression: float
@@ -497,6 +497,7 @@ def social_simulate(req: SocialStepIn):
         _synthesize_agents_and_edges,
         _update_reproductive_drive,
         _update_agent_needs,
+        _evolve_edges,
         _build_relationship_matrix,
         calculate_interaction_prob,
     )
@@ -541,8 +542,10 @@ def social_simulate(req: SocialStepIn):
         for a in agents:
             _update_reproductive_drive(a, agents)
             _update_agent_needs(a)
-        # Sample a few interaction events
+        # Evolve edge pressures via field translation (Paper 6)
         matrix = _build_relationship_matrix(edges)
+        _evolve_edges(edges, agents, matrix)
+        matrix = _build_relationship_matrix(edges)  # rebuild after evolution
         for i in range(len(agents)):
             for j in range(i + 1, len(agents)):
                 pressures = matrix.get(agents[i]["id"], {}).get(agents[j]["id"])
