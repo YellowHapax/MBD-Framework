@@ -8,7 +8,7 @@
 
 import { useRef, useState, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Text, Line } from '@react-three/drei'
+import { OrbitControls, Text, Line, Billboard } from '@react-three/drei'
 import * as THREE from 'three'
 import type { Vertex } from '../types'
 
@@ -65,7 +65,6 @@ function VertexSphere({
         color={color}
         anchorX="center"
         anchorY="bottom"
-        font="https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hjQ.woff2"
       >
         {vertex.name}
       </Text>
@@ -169,37 +168,97 @@ function CubeWireframe() {
   )
 }
 
-function AxisLabels() {
-  const labels: { text: string; pos: [number, number, number]; color: string }[] = [
-    { text: 'Locus →', pos: [0, -1.35, -1.35], color: AXIS_COLORS[0] },
-    { text: 'Coupling →', pos: [-1.35, 0, -1.35], color: AXIS_COLORS[1] },
-    { text: 'Temporality →', pos: [-1.35, -1.35, 0], color: AXIS_COLORS[2] },
+function AxisGuides() {
+  /* Each axis: a colored line from -1 to +1 (the cube edge) extending to ±1.6,
+     with billboard labels at each end showing the semantic meaning. */
+  const axes: {
+    color: string
+    from: [number, number, number]
+    to: [number, number, number]
+    lowLabel: string
+    highLabel: string
+    lowPos: [number, number, number]
+    highPos: [number, number, number]
+    name: string
+    namePos: [number, number, number]
+  }[] = [
+    {
+      color: AXIS_COLORS[0],
+      from: [-1.5, -1.15, -1.15],
+      to: [1.5, -1.15, -1.15],
+      lowLabel: 'Internal',
+      highLabel: 'External',
+      lowPos: [-1.7, -1.15, -1.15],
+      highPos: [1.7, -1.15, -1.15],
+      name: 'LOCUS',
+      namePos: [0, -1.5, -1.15],
+    },
+    {
+      color: AXIS_COLORS[1],
+      from: [-1.15, -1.5, -1.15],
+      to: [-1.15, 1.5, -1.15],
+      lowLabel: 'Low-κ',
+      highLabel: 'High-κ',
+      lowPos: [-1.15, -1.7, -1.15],
+      highPos: [-1.15, 1.7, -1.15],
+      name: 'COUPLING',
+      namePos: [-1.15, 0, -1.5],
+    },
+    {
+      color: AXIS_COLORS[2],
+      from: [-1.15, -1.15, -1.5],
+      to: [-1.15, -1.15, 1.5],
+      lowLabel: 'Static',
+      highLabel: 'Dynamic',
+      lowPos: [-1.15, -1.15, -1.7],
+      highPos: [-1.15, -1.15, 1.7],
+      name: 'TEMPORALITY',
+      namePos: [-1.5, -1.15, 0],
+    },
   ]
 
   return (
     <>
-      {labels.map((l, i) => (
-        <Text
-          key={i}
-          position={l.pos}
-          fontSize={0.1}
-          color={l.color}
-          anchorX="center"
-          font="https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hjQ.woff2"
-        >
-          {l.text}
-        </Text>
+      {axes.map((a) => (
+        <group key={a.name}>
+          {/* Axis line */}
+          <Line
+            points={[a.from, a.to]}
+            color={a.color}
+            lineWidth={2}
+            opacity={0.6}
+            transparent
+          />
+          {/* Endpoint labels — billboard so they always face camera */}
+          <Billboard position={a.lowPos}>
+            <Text fontSize={0.09} color={a.color} anchorX="center">
+              {a.lowLabel}
+            </Text>
+          </Billboard>
+          <Billboard position={a.highPos}>
+            <Text fontSize={0.09} color={a.color} anchorX="center">
+              {a.highLabel}
+            </Text>
+          </Billboard>
+          {/* Axis name — slightly offset, larger */}
+          <Billboard position={a.namePos}>
+            <Text
+              fontSize={0.07}
+              color={a.color}
+              anchorX="center"
+              fillOpacity={0.5}
+            >
+              {a.name}
+            </Text>
+          </Billboard>
+        </group>
       ))}
     </>
   )
 }
 
-function SlowRotation({ children }: { children: React.ReactNode }) {
-  const ref = useRef<THREE.Group>(null!)
-  useFrame((_state, delta) => {
-    ref.current.rotation.y += delta * 0.08
-  })
-  return <group ref={ref}>{children}</group>
+function StaticGroup({ children }: { children: React.ReactNode }) {
+  return <group>{children}</group>
 }
 
 /* ---------- main scene ---------- */
@@ -234,12 +293,12 @@ export default function CubeScene({
       <pointLight position={[5, 5, 5]} intensity={0.8} />
       <pointLight position={[-3, -2, 4]} intensity={0.3} color="#a78bfa" />
 
-      <SlowRotation>
+      <StaticGroup>
         <CubeWireframe />
         <TetraEdges vertices={constructive} color={CONSTRUCTIVE_COLOR} />
         <TetraEdges vertices={destructive} color={DESTRUCTIVE_COLOR} />
         <DualLines vertices={vertices} />
-        <AxisLabels />
+        <AxisGuides />
 
         {vertices.map((v) => (
           <VertexSphere
@@ -252,7 +311,7 @@ export default function CubeScene({
             }
           />
         ))}
-      </SlowRotation>
+      </StaticGroup>
 
       <OrbitControls
         enablePan={false}

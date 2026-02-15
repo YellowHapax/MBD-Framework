@@ -44,7 +44,7 @@ Mortality is one reading of the river. Time is another. The current of
 circumstance that reshapes baselines regardless of intention is a third.
 The point is not to name the obstacle — the point is that the cube, for
 all its completeness, exists *within* something it cannot fully describe.
-The river is what is not in Nature, Nurture, Heaven, or Home. It is the
+The river is what is not in Nature, Nurture, Haven, or Home. It is the
 medium, not the map.
 
     "The hands of the many must join as one
@@ -166,8 +166,8 @@ NURTURE = Vertex(
     constructive=True,
 )
 
-HEAVEN = Vertex(
-    name="Heaven",
+HAVEN = Vertex(
+    name="Haven",
     symbol="H",
     locus=Locus.INTERNAL,
     coupling=Coupling.HIGH_KAPPA,
@@ -181,10 +181,7 @@ HEAVEN = Vertex(
         "It requires high-κ coupling (you must let the bond in), it is "
         "internal (the change happens inside you), and it is dynamic "
         "(it is not a thing you achieve once — it must be sustained). "
-        "You can brave the forests, brave the stone, brave the icy winds "
-        "and fire, conquer country, crown, and throne — and still be "
-        "helpless by the river. Heaven is what makes the river crossable. "
-        "But not alone. Never alone."
+        "Safe intimacy: the vulnerability that heals rather than harms."
     ),
     constructive=True,
 )
@@ -233,9 +230,9 @@ FIXATION = Vertex(
     constructive=False,
 )
 
-DEGENERATION = Vertex(
-    name="Degeneration",
-    symbol="G",
+EROSION = Vertex(
+    name="Erosion",
+    symbol="E",
     locus=Locus.INTERNAL,
     coupling=Coupling.LOW_KAPPA,
     temporality=Temporality.DYNAMIC,
@@ -254,11 +251,11 @@ CAPTURE = Vertex(
     coupling=Coupling.HIGH_KAPPA,
     temporality=Temporality.DYNAMIC,
     description=(
-        "The dark mirror of Heaven. Also requires the armor off, also "
+        "The dark mirror of Haven. Also requires the armor off, also "
         "high-κ, also ongoing — but the bond overwrites what it finds "
         "underneath instead of nurturing it. Cult dynamics, abusive "
         "relationships, epistemological capture, coercive institutions. "
-        "The distinction between Heaven and Capture is the entire "
+        "The distinction between Haven and Capture is the entire "
         "clinical question: both demand vulnerability, both reshape the "
         "self through sustained resonant coupling. One grows you. "
         "The other replaces you. The anti-Nature — the vertex "
@@ -270,8 +267,8 @@ CAPTURE = Vertex(
 
 # --- Collected constants ---
 
-CONSTRUCTIVE_TETRAHEDRON: Tuple[Vertex, ...] = (NATURE, NURTURE, HEAVEN, HOME)
-DESTRUCTIVE_TETRAHEDRON: Tuple[Vertex, ...] = (DISPLACEMENT, FIXATION, DEGENERATION, CAPTURE)
+CONSTRUCTIVE_TETRAHEDRON: Tuple[Vertex, ...] = (NATURE, NURTURE, HAVEN, HOME)
+DESTRUCTIVE_TETRAHEDRON: Tuple[Vertex, ...] = (DISPLACEMENT, FIXATION, EROSION, CAPTURE)
 ALL_VERTICES: Tuple[Vertex, ...] = CONSTRUCTIVE_TETRAHEDRON + DESTRUCTIVE_TETRAHEDRON
 
 
@@ -336,25 +333,25 @@ class InfluenceState:
     """
     nature: float = 0.0
     nurture: float = 0.0
-    heaven: float = 0.0
+    haven: float = 0.0
     home: float = 0.0
     displacement: float = 0.0
     fixation: float = 0.0
-    degeneration: float = 0.0
+    erosion: float = 0.0
     capture: float = 0.0
 
     def as_vector(self) -> np.ndarray:
         """Return the 8-element pressure vector, vertex-indexed."""
         return np.array([
-            self.nature, self.nurture, self.heaven, self.home,
-            self.displacement, self.fixation, self.degeneration, self.capture,
+            self.nature, self.nurture, self.haven, self.home,
+            self.displacement, self.fixation, self.erosion, self.capture,
         ], dtype=np.float64)
 
     def constructive_sum(self) -> float:
-        return self.nature + self.nurture + self.heaven + self.home
+        return self.nature + self.nurture + self.haven + self.home
 
     def destructive_sum(self) -> float:
-        return self.displacement + self.fixation + self.degeneration + self.capture
+        return self.displacement + self.fixation + self.erosion + self.capture
 
     def balance(self) -> float:
         """
@@ -512,16 +509,16 @@ def print_cube_summary():
 if __name__ == "__main__":
     print_cube_summary()
 
-    # --- Demo: an agent shaped by strong nurture, active heaven,
+    # --- Demo: an agent shaped by strong nurture, active haven,
     #     moderate home, and some fixation on a past bond ---
     state = InfluenceState(
         nature=0.6,
         nurture=0.8,
-        heaven=0.7,
+        haven=0.7,
         home=0.5,
         displacement=0.1,
         fixation=0.4,
-        degeneration=0.0,
+        erosion=0.0,
         capture=0.0,
     )
 

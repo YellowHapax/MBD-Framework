@@ -87,7 +87,7 @@ export default function Overview() {
         </div>
         <p className="text-xs text-slate-500 mt-3">
           The baseline deviation equation: personality state B is pulled toward input signal I
-          at learning rate λ, with residual gradient ε — the river the cube cannot name.
+          at learning rate λ, with residual gradient ε.
         </p>
       </div>
 
@@ -150,25 +150,15 @@ export default function Overview() {
               Developmental pressure decomposes along three binary axes —
               Locus, Coupling, Temporality — producing a stella octangula:
               two interlocking tetrahedra of constructive and destructive
-              influence. Nature ↔ Capture. Heaven ↔ Displacement.
-              Nurture ↔ Degeneration. Home ↔ Fixation.
+              influence. Nature ↔ Capture. Haven ↔ Displacement.
+              Nurture ↔ Erosion. Home ↔ Fixation.
             </p>
             <p className="text-xs text-slate-600 mt-2 italic">
               Explore it interactively in the Influence Cube tab →
             </p>
           </div>
 
-          {/* The River */}
-          <div className="lab-card mt-4 border-purple-800/30">
-            <h4 className="text-sm font-medium text-purple-400 italic font-serif">
-              The River
-            </h4>
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-              ε — the gradient the cube cannot name. Not noise: the medium
-              through which all eight vertex pressures propagate.
-              Every honest model must leave room for it.
-            </p>
-          </div>
+
         </div>
       </div>
 

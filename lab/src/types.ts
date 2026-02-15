@@ -20,11 +20,11 @@ export interface CubeGeometry {
 export interface Influences {
   nature: number;
   nurture: number;
-  heaven: number;
+  haven: number;
   home: number;
   displacement: number;
   fixation: number;
-  degeneration: number;
+  erosion: number;
   capture: number;
 }
 
@@ -91,6 +91,6 @@ export const BASELINE_LABELS = ['Trust', 'Aggression', 'Curiosity', 'Status'] as
 export const BASELINE_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b'] as const;
 
 export const VERTEX_NAMES = [
-  'nature', 'nurture', 'heaven', 'home',
-  'displacement', 'fixation', 'degeneration', 'capture',
+  'nature', 'nurture', 'haven', 'home',
+  'displacement', 'fixation', 'erosion', 'capture',
 ] as const;

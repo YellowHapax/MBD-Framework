@@ -238,8 +238,8 @@ export default function BaselineLab() {
   // Trajectory state
   const [trajResult, setTrajResult] = useState<TrajectoryResult | null>(null)
   const [influences, setInfluences] = useState<Influences>({
-    nature: 0.6, nurture: 0.8, heaven: 0.7, home: 0.5,
-    displacement: 0.1, fixation: 0.4, degeneration: 0.0, capture: 0.0,
+    nature: 0.6, nurture: 0.8, haven: 0.7, home: 0.5,
+    displacement: 0.1, fixation: 0.4, erosion: 0.0, capture: 0.0,
   })
   const [steps, setSteps] = useState(60)
   const [noise, setNoise] = useState(0.005)

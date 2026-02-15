@@ -79,11 +79,11 @@ class CubeGeometryOut(BaseModel):
 class InfluenceIn(BaseModel):
     nature: float = 0.5
     nurture: float = 0.5
-    heaven: float = 0.5
+    haven: float = 0.5
     home: float = 0.5
     displacement: float = 0.0
     fixation: float = 0.0
-    degeneration: float = 0.0
+    erosion: float = 0.0
     capture: float = 0.0
 
 class LambdasIn(BaseModel):
@@ -177,11 +177,11 @@ def cube_baseline_step(req: BaselineStepIn):
     inf = InfluenceState(
         nature=req.influences.nature,
         nurture=req.influences.nurture,
-        heaven=req.influences.heaven,
+        haven=req.influences.haven,
         home=req.influences.home,
         displacement=req.influences.displacement,
         fixation=req.influences.fixation,
-        degeneration=req.influences.degeneration,
+        erosion=req.influences.erosion,
         capture=req.influences.capture,
     )
     lam = CubeLambdas(
@@ -207,11 +207,11 @@ def cube_trajectory(req: TrajectoryIn):
     inf = InfluenceState(
         nature=req.influences.nature,
         nurture=req.influences.nurture,
-        heaven=req.influences.heaven,
+        haven=req.influences.haven,
         home=req.influences.home,
         displacement=req.influences.displacement,
         fixation=req.influences.fixation,
-        degeneration=req.influences.degeneration,
+        erosion=req.influences.erosion,
         capture=req.influences.capture,
     )
     lam = CubeLambdas(
