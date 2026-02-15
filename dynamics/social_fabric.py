@@ -28,24 +28,45 @@ WORLD_DATA_PATH = os.path.join(os.path.dirname(__file__), "public", "world_data.
 SIMULATION_TICKS = int(os.environ.get("SIM_TICKS", 24 * 90))  # Simulate 90 days by default
 BASE_INTERACTION_PROB = 0.005  # Lower base prob, as it will be amplified by desire
 
-# --- Population Archetype Configuration ---
-# Four lifecycle profiles spanning different longevity scales.
-# These are abstract archetypes; concrete populations reference them by key.
-POPULATION_PROFILES = {
-    "standard":    {"avg_lifespan": 80,   "fertility_start": 16,  "fertility_end": 45,  "adulthood": 18},
-    "extended":    {"avg_lifespan": 250,  "fertility_start": 30,  "fertility_end": 150, "adulthood": 40},
-    "long_lived":  {"avg_lifespan": 500,  "fertility_start": 50,  "fertility_end": 300, "adulthood": 60},
-    "geological":  {"avg_lifespan": 1000, "fertility_start": 100, "fertility_end": 800, "adulthood": 120},
-    "default":     {"avg_lifespan": 100,  "fertility_start": 18,  "fertility_end": 50,  "adulthood": 20},
+# --- Cohort Temporal Profiles ---
+# Dimensionless parameters for timescale-agnostic population dynamics.
+# All temporal values are fractions of a normalised agent epoch [0.0, 1.0].
+# `epoch_ticks` converts fractions to simulation ticks (set once per experiment).
+#
+# To recover real time: real_age = fractional_age * epoch_ticks * dt
+# The framework never assumes a tick equals a year.
+
+DEFAULT_EPOCH_TICKS: int = 100  # ticks per agent epoch (configurable per run)
+
+COHORT_PROFILES = {
+    #                  epoch  maturation  bond_onset  bond_offset  senescence
+    "default":  {"epoch_scale": 1.0, "maturation": 0.20, "bond_onset": 0.20, "bond_offset": 0.56, "senescence": 0.75},
+    "fast":     {"epoch_scale": 0.8, "maturation": 0.22, "bond_onset": 0.20, "bond_offset": 0.56, "senescence": 0.70},
+    "moderate": {"epoch_scale": 1.5, "maturation": 0.16, "bond_onset": 0.12, "bond_offset": 0.60, "senescence": 0.78},
+    "slow":     {"epoch_scale": 3.0, "maturation": 0.10, "bond_onset": 0.10, "bond_offset": 0.60, "senescence": 0.85},
 }
 
-# Map group labels to their lifecycle profile
+# Map group labels to cohort profile keys
 GROUP_PROFILE_MAP = {
-    "alpha": "standard",
-    "beta":  "extended",
-    "gamma": "long_lived",
-    "delta": "geological",
+    "alpha": "fast",
+    "beta":  "default",
+    "gamma": "moderate",
+    "delta": "slow",
 }
+
+
+def _resolve_profile(group_label: str) -> dict:
+    """Resolve a group label to its cohort profile with computed tick values."""
+    key = GROUP_PROFILE_MAP.get(group_label.lower(), group_label.lower())
+    profile = COHORT_PROFILES.get(key, COHORT_PROFILES["default"])
+    epoch = DEFAULT_EPOCH_TICKS * profile["epoch_scale"]
+    return {
+        "epoch":       epoch,
+        "maturation":  profile["maturation"] * epoch,
+        "bond_onset":  profile["bond_onset"] * epoch,
+        "bond_offset": profile["bond_offset"] * epoch,
+        "senescence":  profile["senescence"] * epoch,
+    }
 
 # --- Helper Functions ---
 
@@ -85,12 +106,11 @@ def _synthesize_agents_and_edges(world_data: Dict[str, Any], per_race: int = 8) 
 
     def init_agent(race: str, idx: int) -> Dict[str, Any]:
         race_key = race.lower()
-        # Resolve lifecycle profile via group map, then fall back to direct key match
-        profile_key = GROUP_PROFILE_MAP.get(race_key, race_key)
-        profile = POPULATION_PROFILES.get(profile_key, POPULATION_PROFILES["default"])
-        adulthood = profile.get("adulthood", 20)
-        fert_end = profile.get("fertility_end", 50)
-        age = max(12, min(fert_end, int(random.gauss(mu=(adulthood + fert_end) / 2, sigma=(fert_end - adulthood) / 4))))
+        profile = _resolve_profile(race_key)
+        maturation = profile["maturation"]
+        bond_offset = profile["bond_offset"]
+        age = max(maturation * 0.6, min(bond_offset, random.gauss(mu=(maturation + bond_offset) / 2, sigma=(bond_offset - maturation) / 4)))
+        age = int(age)
         return {
             "id": f"{race[:3].upper()}-{idx}",
             "name": f"{race} {idx}",
@@ -170,29 +190,27 @@ def _update_reproductive_drive(agent: Dict, all_agents: List[Dict]):
     on age, race, and demographic pressures.
     """
     race = agent.get("race", "default")
-    profile_key = GROUP_PROFILE_MAP.get(race, race)
-    lifecycle = POPULATION_PROFILES.get(profile_key, POPULATION_PROFILES["default"])
-    age = agent.get("body_morph", {}).get("age", lifecycle["adulthood"])
+    profile = _resolve_profile(race)
+    age = agent.get("body_morph", {}).get("age", profile["maturation"])
 
-    # 1. Age Gating
-    if age <= 10:
+    # 1. Age Gating (pre-maturation)
+    if age < profile["maturation"] * 0.6:
         agent["psyche"]["reproductive_drive"] = 0
         return
-    elif 11 <= age <= 15:
-        # Curiosity phase: desire can be primed but is capped
+    elif age < profile["maturation"]:
+        # Pre-maturation: drive present but capped
         agent["psyche"]["reproductive_drive"] = min(agent["psyche"].get("reproductive_drive", 0), 0.3)
-    
-    # 2. Reproductive Pressure (Time-gated biological drive)
-    fertility_window = lifecycle["fertility_end"] - lifecycle["fertility_start"]
-    if lifecycle["fertility_start"] <= age <= lifecycle["fertility_end"]:
-        # Parabolic curve, peaks in the middle of the fertility window
-        mid_point = lifecycle["fertility_start"] + fertility_window / 2
-        urgency = 1 - (abs(age - mid_point) / (fertility_window / 2))**2
-        agent["psyche"]["reproductive_drive"] += urgency * 0.01 # Small nudge each tick
-    
-    # 3. Demographic Pressure (Subconscious heuristic)
-    elderly_count = sum(1 for a in all_agents if a.get("body_morph", {}).get("age", 0) > lifecycle["avg_lifespan"] * 0.7)
-    young_adult_count = sum(1 for a in all_agents if lifecycle["adulthood"] <= a.get("body_morph", {}).get("age", 0) <= lifecycle["fertility_end"])
+
+    # 2. Bonding Pressure (time-gated parabolic drive)
+    bond_window = profile["bond_offset"] - profile["bond_onset"]
+    if profile["bond_onset"] <= age <= profile["bond_offset"]:
+        mid_point = profile["bond_onset"] + bond_window / 2
+        urgency = 1 - (abs(age - mid_point) / (bond_window / 2))**2
+        agent["psyche"]["reproductive_drive"] += urgency * 0.01  # Small nudge each tick
+
+    # 3. Demographic Pressure (subconscious heuristic)
+    elderly_count = sum(1 for a in all_agents if a.get("body_morph", {}).get("age", 0) > profile["senescence"])
+    young_adult_count = sum(1 for a in all_agents if profile["maturation"] <= a.get("body_morph", {}).get("age", 0) <= profile["bond_offset"])
     if young_adult_count > 0 and elderly_count / young_adult_count > 0.5: # If elders are >50% of young adults
         agent["psyche"]["reproductive_drive"] += 0.02
 

@@ -248,14 +248,30 @@ def _ensure_settlement_traits(lm: Dict, world_seed: int) -> Dict:
     return traits
 
 
-# --- Population Archetype Configuration (mirrored from social_fabric.py) ---
-POPULATION_PROFILES = {
-    "standard":    {"avg_lifespan": 80,   "fertility_start": 16,  "fertility_end": 45,  "adulthood": 18},
-    "extended":    {"avg_lifespan": 250,  "fertility_start": 30,  "fertility_end": 150, "adulthood": 40},
-    "long_lived":  {"avg_lifespan": 500,  "fertility_start": 50,  "fertility_end": 300, "adulthood": 60},
-    "geological":  {"avg_lifespan": 1000, "fertility_start": 100, "fertility_end": 800, "adulthood": 120},
-    "default":     {"avg_lifespan": 100,  "fertility_start": 18,  "fertility_end": 50,  "adulthood": 20},
+# --- Cohort Temporal Profiles (mirrored from social_fabric.py) ---
+# Dimensionless parameters — see social_fabric.py for full documentation.
+DEFAULT_EPOCH_TICKS: int = 100
+
+COHORT_PROFILES = {
+    "default":  {"epoch_scale": 1.0, "maturation": 0.20, "bond_onset": 0.20, "bond_offset": 0.56, "senescence": 0.75},
+    "fast":     {"epoch_scale": 0.8, "maturation": 0.22, "bond_onset": 0.20, "bond_offset": 0.56, "senescence": 0.70},
+    "moderate": {"epoch_scale": 1.5, "maturation": 0.16, "bond_onset": 0.12, "bond_offset": 0.60, "senescence": 0.78},
+    "slow":     {"epoch_scale": 3.0, "maturation": 0.10, "bond_onset": 0.10, "bond_offset": 0.60, "senescence": 0.85},
 }
+
+
+def _resolve_profile(group_label: str) -> dict:
+    """Resolve a group label to its cohort profile with computed tick values."""
+    key = group_label.lower()
+    profile = COHORT_PROFILES.get(key, COHORT_PROFILES["default"])
+    epoch = DEFAULT_EPOCH_TICKS * profile["epoch_scale"]
+    return {
+        "epoch":       epoch,
+        "maturation":  profile["maturation"] * epoch,
+        "bond_onset":  profile["bond_onset"] * epoch,
+        "bond_offset": profile["bond_offset"] * epoch,
+        "senescence":  profile["senescence"] * epoch,
+    }
 
 
 def _generate_agents_and_relationships(landmarks: List[Dict], world_seed: int) -> Tuple[List[Dict], Dict]:
@@ -291,9 +307,9 @@ def _generate_agents_and_relationships(landmarks: List[Dict], world_seed: int) -
             agent_count += 1
             
             # Use settlement properties to inform agent creation
-            lifecycle = POPULATION_PROFILES.get(settlement_race, POPULATION_PROFILES["default"])
+            profile = _resolve_profile(settlement_race)
             age = int(master_rng.gauss(mu=mean_age, sigma=15))
-            age = max(1, min(lifecycle['avg_lifespan'], age)) # Clamp age
+            age = max(1, min(int(profile['epoch']), age))  # Clamp to epoch
 
             agent = {
                 "id": agent_id,

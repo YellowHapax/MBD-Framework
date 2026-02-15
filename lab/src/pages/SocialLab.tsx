@@ -159,7 +159,7 @@ export default function SocialLab() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          per_race: perRace,
+          per_group: perRace,
           races: ['Alpha', 'Beta', 'Gamma', 'Delta'],
           ticks,
           seed: Math.floor(Math.random() * 10000),
@@ -297,12 +297,14 @@ export default function SocialLab() {
             (frustration). Agents are connected by edges carrying four pressure types.
           </p>
           <p>
-            Per tick: reproductive drive updates based on age, fertility window, and demographic pressure.
+            Per tick: reproductive drive updates based on age within a dimensionless
+            bonding window, scaled by demographic pressure.
             Interaction probability scales with psyche compatibility, existing edge pressures, and drive state.
           </p>
           <p>
-            Population lifecycles (Standard 80yr, Extended 250yr, Long-lived 500yr, Geological 1000yr) gate fertility windows
-            and create inter-group temporal asymmetries in relationship formation.
+            Cohort profiles define timescale-agnostic ratios (maturation, bonding window, senescence)
+            with an <strong className="text-slate-300">epoch_scale</strong> multiplier that creates
+            inter-group temporal asymmetries without assuming fixed calendar durations.
           </p>
         </div>
       </section>

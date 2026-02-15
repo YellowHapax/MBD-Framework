@@ -227,7 +227,7 @@ class SocialFabricOut(BaseModel):
 
 class SocialStepIn(BaseModel):
     """Run N ticks of social fabric simulation."""
-    per_race: int = 6
+    per_group: int = 6
     races: List[str] = Field(default_factory=lambda: ["Alpha", "Beta", "Gamma", "Delta"])
     ticks: int = 24
     seed: int = 42
@@ -503,7 +503,7 @@ def social_simulate(req: SocialStepIn):
 
     # Build world stub for synthesis
     world_data = {"capitals": {r: {} for r in req.races}}
-    agents, edges = _synthesize_agents_and_edges(world_data, per_race=req.per_race)
+    agents, edges = _synthesize_agents_and_edges(world_data, per_race=req.per_group)
 
     def _snapshot(tick_n: int) -> SocialFabricOut:
         return SocialFabricOut(
