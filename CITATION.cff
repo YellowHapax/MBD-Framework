@@ -1,0 +1,62 @@
+cff-version: 1.2.0
+title: "MBD-Framework: Memory as Baseline Deviation — Reference Implementations"
+message: >-
+  If you use this software in your research, please cite the relevant paper(s)
+  from the collection below.
+type: software
+authors:
+  - given-names: Brandon
+    family-names: Everett
+repository-code: https://github.com/YellowHapax/MBD-Framework
+license: MIT
+version: 0.1.0
+date-released: "2026-02-15"
+
+references:
+  - type: article
+    title: "Memory as Baseline Deviation: A Formal Framework for Personality as State-Space Dynamics"
+    authors:
+      - given-names: Brandon
+        family-names: Everett
+    year: 2025
+    doi: 10.5281/zenodo.14538419
+
+  - type: article
+    title: "In Pursuit of the Markov Tensor: A Geometric Framework for Social Cognition"
+    authors:
+      - given-names: Brandon
+        family-names: Everett
+    year: 2025
+    doi: 10.5281/zenodo.14611281
+
+  - type: article
+    title: "Episodic Recall as Resonant Re-instantiation: A Fokker–Planck Account of Memory Retrieval"
+    authors:
+      - given-names: Brandon
+        family-names: Everett
+    year: 2025
+    doi: 10.5281/zenodo.14611303
+
+  - type: article
+    title: "The Coupling Asymmetry: Executive Dysfunction as an Eigenstate of the Memory–Baseline System"
+    authors:
+      - given-names: Brandon
+        family-names: Everett
+    year: 2025
+    doi: 10.5281/zenodo.14611399
+
+  - type: article
+    title: "The Emergent Gate: Memory Encoding as Threshold-Dependent Consolidation"
+    authors:
+      - given-names: Brandon
+        family-names: Everett
+    year: 2025
+    doi: 10.5281/zenodo.14611353
+
+  - type: article
+    title: "The Resonant Gate: Conversational Insight as Phase-Locked Coupling in the MBD Framework"
+    authors:
+      - given-names: Brandon
+        family-names: Everett
+    year: 2025
+    doi: 10.5281/zenodo.14611383

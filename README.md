@@ -1,0 +1,130 @@
+# MBD-Framework
+
+**Memory as Baseline Deviation — Reference Implementations**
+
+This repository contains the computational implementations accompanying a series of papers on the MBD (Memory as Baseline Deviation) framework for modeling personality, cognition, and social dynamics as state-space systems.
+
+## Papers
+
+| Paper | Topic | DOI |
+|-------|-------|-----|
+| **Memory as Baseline Deviation** | Personality as state-space dynamics; baseline drift under trauma | [10.5281/zenodo.14538419](https://doi.org/10.5281/zenodo.14538419) |
+| **In Pursuit of the Markov Tensor** | Geometric framework for social cognition via tensor lattices | [10.5281/zenodo.14611281](https://doi.org/10.5281/zenodo.14611281) |
+| **Episodic Recall as Resonant Re-instantiation** | Fokker–Planck account of memory retrieval dynamics | [10.5281/zenodo.14611303](https://doi.org/10.5281/zenodo.14611303) |
+| **The Coupling Asymmetry** | Executive dysfunction as an eigenstate of the memory–baseline system | [10.5281/zenodo.14611399](https://doi.org/10.5281/zenodo.14611399) |
+| **The Emergent Gate** | Memory encoding as threshold-dependent consolidation | [10.5281/zenodo.14611353](https://doi.org/10.5281/zenodo.14611353) |
+| **The Resonant Gate** | Conversational insight as phase-locked coupling | [10.5281/zenodo.14611383](https://doi.org/10.5281/zenodo.14611383) |
+
+## Repository Structure
+
+```
+MBD-Framework/
+├── mbd/                  Core agent architecture (Markov Blanket agents)
+│   ├── agent.py          Agent with internal/sensory/active states
+│   ├── hypercube.py      N-dimensional social lattice (κ-coupling)
+│   ├── internal_states.py  Beliefs, needs, goals — hidden by the blanket
+│   ├── sensory_states.py   Perception interface to the world
+│   └── active_states.py    Action selection from internal states
+│
+├── markov/               Markov Tensor geometry
+│   ├── tensor_library.py MarkovTensor → MarkovCube → MarkovHypercube → Tensorium
+│   └── engine.py         Levels of Lucidity, blanket-driven simulation scaling
+│
+├── dynamics/             Simulation engines
+│   ├── world_evolution.py  Terrain evolution, A* pathfinding, logistic population
+│   │                       growth, Quadrafoil of Influence structure placement
+│   └── social_fabric.py    Discrete-time social simulation: reproductive drive,
+│                           pair-bonding, demographic pressure, event generation
+│
+├── fields/               Affective ↔ physical field translation
+│   └── translation.py    TCPB deltas → buoyancy, luminosity, tactile, harmonics
+│
+├── analysis/             Visualization and analytics
+│   ├── graphing_suite.py Trauma tensor energy, collision 4D scatter, ecology heatmap
+│   └── trauma_model.py   Core MBD equations: B(t+1) = B(t)(1-λ) + I(t)λ
+│
+├── demos/                Runnable demonstrations
+│   └── resonance_hierarchy.py  5-tier ontological stratification demo
+│
+├── CITATION.cff          Machine-readable citation metadata
+├── LICENSE               MIT
+└── requirements.txt      numpy, pydantic, matplotlib
+```
+
+## Core Concepts
+
+### Baseline Drift (MBD)
+
+Every agent maintains a personality baseline vector **B**. Traumatic or significant events shift this baseline:
+
+$$B(t+1) = B(t) \cdot (1 - \lambda) + I(t) \cdot \lambda$$
+
+where **I(t)** is the input signal and **λ** is the learning rate (plasticity).
+
+### Coupling Dynamics (κ)
+
+Relational coupling between agents evolves according to:
+
+$$\frac{d\kappa}{dt} = \alpha(1 - N) - \beta\kappa$$
+
+where **N** is novelty (surprise) and **α**, **β** are gain/decay parameters.
+
+### The Quadrafoil of Influence
+
+Deontological structures emerge in the simulation world as expressions of collective mind:
+
+| Pole | Type | Effect on Agent Baselines |
+|------|------|--------------------------|
+| **Sanctuaries** | Trust/Order | ↑ trust, ↓ aggression |
+| **Arenas** | Boldness/Challenge | Structured aggression outlet |
+| **Markets** | Playfulness/Curiosity | ↑ novelty, social interaction |
+| **Cesspits** | Collapse/Vice | Amplify negative pressures |
+
+### Markov Tensor Geometry
+
+Social relationships are modeled as probabilistic manifolds. The **Markov Hypercube** provides N-dimensional lattice interpolation of agent beliefs weighted by trust (κ):
+
+$$M_{obj} = f(M_A, M_B, \kappa_{AB})$$
+
+### Levels of Lucidity
+
+The simulation scales computational detail dynamically: areas near observers run at high lucidity (detailed agent simulation), while distant regions collapse to abstract tensor transitions. This is managed by the **Markov Blanket** construct.
+
+### Affective Field Translation
+
+Internal affect (Trust, Curiosity, Playfulness, Boldness) maps onto environmental physics:
+
+| Affect Pole | Physical Field | Positive | Negative |
+|-------------|---------------|----------|----------|
+| Trust | Buoyancy | Lighter gravity | Crushing pressure |
+| Curiosity | Luminosity | Sharp, clear light | Fog and blur |
+| Playfulness | Tactile Response | Warm, yielding surfaces | Cold, rigid surfaces |
+| Boldness | Resonant Harmonics | Open, resonant space | Dampened, constricted |
+
+## Quick Start
+
+```bash
+pip install -r requirements.txt
+
+# Run the trauma mechanics simulation
+python -m analysis.trauma_model
+
+# Run the Markov Tensor demonstration
+python -m markov.tensor_library
+
+# Run the Markov Engine demonstration
+python -m markov.engine
+
+# Run the resonance hierarchy demonstration
+python demos/resonance_hierarchy.py
+```
+
+## Citation
+
+If you use this code in your research, please cite the relevant paper(s). See `CITATION.cff` for machine-readable metadata, or use:
+
+> Everett, B. (2025). *Memory as Baseline Deviation: A Formal Framework for Personality as State-Space Dynamics*. Zenodo. https://doi.org/10.5281/zenodo.14538419
+
+## License
+
+MIT — see [LICENSE](LICENSE).
