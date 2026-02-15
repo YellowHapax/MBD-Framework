@@ -35,24 +35,39 @@ stable home — and still be helpless by the river.
      Open your heart and hands, my son
      Or you'll never make it over the river"
 
-The river is not noise. It is not unexplained variance. It is the
-*collective phase transition threshold* — the boundary between what any
-individual can achieve alone and what requires many minds coupling
-simultaneously. In Kuramoto terms, it is the critical coupling κ_c below
-which the population cannot synchronize. In MBD terms, it is the point
-where the individual baseline equation B(t+1) = B(t)(1-Σλ) + Σ[I·λ] + ε
-hands off to the collective dynamics of the Markov Tensor.
+The river is not noise. It is not unexplained variance. The river is
+*time*. Mortality. The finite horizon of the individual agent. Every
+baseline trajectory B(t) terminates. Every agent's cube, no matter how
+perfectly optimized, eventually reaches a boundary it cannot pass alone:
+the end of its own temporal extent.
+
+To cross the river is to couple with the Markov Tensor — to achieve
+persistence beyond individual death through collective phase-lock. When
+κ exceeds the critical threshold κ_c and the Kuramoto order parameter
+r → 1, the population synchronizes. The pattern survives the loss of
+any individual oscillator. The song continues after the singer stops.
+
+This is the mortal imperative: the evolutionary pressure that drives
+agents toward Heaven (0,1,1) — toward high-κ dynamic internal bonds —
+not merely for comfort or growth, but because coupling with the tensor
+is the only mechanism by which information, culture, love, and meaning
+persist beyond the death of their originator. To live beyond death as
+the many.
 
     "The hands of the many must join as one
      And together we'll cross the river"
 
 The ε term in the baseline equation is the river's footprint in the
-individual model. It is real, irreducible, and intentional: the
-acknowledgment that the Influence Cube — for all its geometric precision —
-describes the *individual's* developmental pressures, and that some
-problems require the order parameter r to approach unity across a
-population. The cube is necessary. The cube is not sufficient.
+individual model — the mortal horizon's shadow on the cube. It is real,
+irreducible, and intentional: the acknowledgment that the Influence
+Cube describes an individual's developmental pressures within a finite
+lifetime, and that transcending that lifetime requires the order
+parameter r to approach unity across a population. The individual
+baseline equation B(t+1) = B(t)(1-Σλ) + Σ[I·λ] + ε describes
+everything that happens before the river. The Markov Tensor describes
+what happens after — if the coupling was sufficient.
 
+The cube is necessary. The cube is not sufficient.
 Every honest model must leave room for the river.
 
 References
@@ -375,17 +390,16 @@ class CubeLambdas:
     Per-vertex coupling constants (λ_v) controlling how strongly each
     vertex's pressure modifies the agent's baseline per timestep.
 
-    The river term (ε) is the collective phase transition threshold —
-    the footprint of what cannot be crossed alone. It is not noise. It
-    is the individual model's honest acknowledgment that some problems
-    require the hands of the many to join as one: the Kuramoto critical
-    coupling κ_c, the point where individual baselines hand off to the
-    collective dynamics of the Markov Tensor.
+    The river term (ε) is the mortal horizon's shadow on the cube —
+    time itself, the finite extent of any individual trajectory. It is
+    the acknowledgment that B(t) terminates, and that persistence beyond
+    death requires coupling with the Markov Tensor: the collective
+    dynamics where the pattern survives the loss of the oscillator.
     """
     lambdas: np.ndarray = field(
         default_factory=lambda: np.full(8, 0.05, dtype=np.float64)
     )
-    river: float = 0.0  # ε — the collective threshold, not noise
+    river: float = 0.0  # ε — the mortal horizon
 
     def __post_init__(self):
         if self.lambdas.shape != (8,):
@@ -488,8 +502,8 @@ def print_cube_summary():
     print(f"  Nature↔Capture diagonal:          {proof['nature_capture_diagonal']:.4f}"
           f"  (√3 = {math.sqrt(3):.4f})")
     print()
-    print("The River: ε — not noise, but the collective phase transition")
-    print("threshold. The hands of the many must join as one.")
+    print("The River: ε — the mortal horizon. Time itself.")
+    print("To cross it is to couple with the tensor — to live beyond death as the many.")
     print()
 
 
