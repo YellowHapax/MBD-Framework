@@ -7,7 +7,7 @@ The Influence Cube: A Geometric Formalization of Developmental Pressure
      But I've never crossed the river"
         — Puscifer, "The Humbling River"
 
-The Quadrafoil of Influence (Sanctuary, Arena, Market, Cesspit) described
+The Quadrafoil of Influence (Sanctuary, Arena, Market, Sink) described
 environmental *locations* that modify agent baselines. But that model is
 incomplete — it captures where pressure comes from, not how it is structured.
 

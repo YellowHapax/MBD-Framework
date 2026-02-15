@@ -38,7 +38,7 @@ MBD-Framework/
 │   │                       deviation, coupling asymmetry, Markov tensor probability,
 │   │                       resonant field translation, emergent gating
 │   └── world_evolution.py  Quadrafoil environmental field model: sanctuary/arena/
-│                           market/cesspit pressure signatures with 1/r² falloff
+│                           market/sink pressure signatures with 1/r² falloff
 │
 ├── fields/               Affective ↔ physical field translation
 │   └── translation.py    TCPB deltas → buoyancy, luminosity, tactile, harmonics
@@ -82,7 +82,7 @@ Deontological structures emerge in the simulation world as expressions of collec
 | **Sanctuaries** | Trust/Order | ↑ trust, ↓ aggression |
 | **Arenas** | Boldness/Challenge | Structured aggression outlet |
 | **Markets** | Playfulness/Curiosity | ↑ novelty, social interaction |
-| **Cesspits** | Collapse/Vice | Amplify negative pressures |
+| **Sinks** | Collapse/Dissipation | Amplify negative pressures |
 
 ### Markov Tensor Geometry
 

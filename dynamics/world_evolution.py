@@ -13,7 +13,7 @@ pressure fields that shift agent baselines over time:
 | Sanctuary   | +trust, -aggression  -- fosters cohesion           |
 | Arena       | +aggression (structured), -frustration  -- outlet  |
 | Market      | +playful, +trust  -- novelty and exchange          |
-| Cesspit     | +frustration, -trust  -- consequence of collapse   |
+| Sink        | +frustration, -trust  -- consequence of collapse   |
 +-------------+---------------------------------------------------+
 
 Each site exerts influence proportional to 1/r^2 (inverse-square falloff)
@@ -36,7 +36,7 @@ QUADRAFOIL = {
     "sanctuary": {"trust": +0.04, "aggression": -0.02, "frustration": -0.03},
     "arena":     {"trust": -0.01, "aggression": +0.03, "frustration": -0.01},
     "market":    {"trust": +0.01, "playful":    +0.03, "frustration": -0.01},
-    "cesspit":   {"trust": -0.03, "aggression": +0.02, "frustration": +0.04},
+    "sink":      {"trust": -0.03, "aggression": +0.02, "frustration": +0.04},
 }
 
 
