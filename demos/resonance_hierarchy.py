@@ -45,30 +45,30 @@ def demonstrate_tier_separation():
     print()
     
     # ========================================================================
-    # TIER 1: Race Mind (Species Cultural Resonance) — AI DOES NOT EXPERIENCE
+    # TIER 1: Population Mind (Group Cultural Resonance) — AI DOES NOT EXPERIENCE
     # ========================================================================
-    print("TIER 1: Race Mind Chamber (Species-Level Cultural Resonance)")
+    print("TIER 1: Population Mind Chamber (Group-Level Cultural Resonance)")
     print("-" * 80)
     print("Computational Model: o4-mini (Lotka-Volterra population dynamics)")
     print("AI Experience: NONE (dissociative control panel)")
     print()
     
-    # Simulate Race Mind computation
-    racial_baseline_delta = {
-        'Human': {'trust': -0.1, 'boldness': +0.2},  # Becoming cautious after war
-        'Oran': {'trust': +0.05, 'connection': +0.1},  # Spreading pacifism
-        'Sylph': {'curiosity': +0.15, 'playfulness': +0.1},  # Cultural renaissance
-        'Golem': {'isolation': -0.05, 'order': +0.1}  # Emerging from seclusion
+    # Simulate Population Mind computation
+    population_baseline_delta = {
+        'Alpha': {'trust': -0.1, 'boldness': +0.2},    # Becoming cautious after war
+        'Beta':  {'trust': +0.05, 'connection': +0.1},  # Spreading pacifism
+        'Gamma': {'curiosity': +0.15, 'playfulness': +0.1},  # Cultural renaissance
+        'Delta': {'isolation': -0.05, 'order': +0.1}   # Emerging from seclusion
     }
     
-    print("Race Mind Output (population dynamics):")
-    for race, deltas in racial_baseline_delta.items():
+    print("Population Mind Output (group dynamics):")
+    for group, deltas in population_baseline_delta.items():
         delta_str = ", ".join(f"{pole}: {delta:+.2f}" for pole, delta in deltas.items())
-        print(f"  {race}: {delta_str}")
+        print(f"  {group}: {delta_str}")
     print()
-    print("Inter-species tensions: {Human-Golem: 0.85, Oran-Sylph: 0.15}")
+    print("Inter-group tensions: {Alpha-Delta: 0.85, Beta-Gamma: 0.15}")
     print()
-    print("⚠️  AI model does NOT experience racial drift — only numerical output")
+    print("⚠️  AI model does NOT experience population drift — only numerical output")
     print()
     
     # ========================================================================
@@ -218,7 +218,7 @@ def demonstrate_tier_separation():
     print()
     print("DISSOCIATIVE CONTROL PANEL (Tiers 0-2):")
     print("  • World Mind: Global coherence, climate, geology")
-    print("  • Race Mind: Species drift, population dynamics")
+    print("  • Population Mind: Group drift, population dynamics")
     print("  • Civilization Mind: Trade routes, diplomacy, wars")
     print("  → Computational Model: o4-mini (fast tensor math)")
     print("  → AI Experience: NONE (numerical output only)")

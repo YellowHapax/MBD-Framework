@@ -248,13 +248,13 @@ def _ensure_settlement_traits(lm: Dict, world_seed: int) -> Dict:
     return traits
 
 
-# --- Race & Lifecycle Configuration (from social_fabric_simulator.py) ---
-RACE_LIFECYCLES = {
-    "human": {"avg_lifespan": 80, "fertility_start": 16, "fertility_end": 45, "adulthood": 18},
-    "oran": {"avg_lifespan": 250, "fertility_start": 30, "fertility_end": 150, "adulthood": 40},
-    "sylph": {"avg_lifespan": 500, "fertility_start": 50, "fertility_end": 300, "adulthood": 60},
-    "golem": {"avg_lifespan": 1000, "fertility_start": 100, "fertility_end": 800, "adulthood": 120},
-    "default": {"avg_lifespan": 100, "fertility_start": 18, "fertility_end": 50, "adulthood": 20},
+# --- Population Archetype Configuration (mirrored from social_fabric.py) ---
+POPULATION_PROFILES = {
+    "standard":    {"avg_lifespan": 80,   "fertility_start": 16,  "fertility_end": 45,  "adulthood": 18},
+    "extended":    {"avg_lifespan": 250,  "fertility_start": 30,  "fertility_end": 150, "adulthood": 40},
+    "long_lived":  {"avg_lifespan": 500,  "fertility_start": 50,  "fertility_end": 300, "adulthood": 60},
+    "geological":  {"avg_lifespan": 1000, "fertility_start": 100, "fertility_end": 800, "adulthood": 120},
+    "default":     {"avg_lifespan": 100,  "fertility_start": 18,  "fertility_end": 50,  "adulthood": 20},
 }
 
 
@@ -291,7 +291,7 @@ def _generate_agents_and_relationships(landmarks: List[Dict], world_seed: int) -
             agent_count += 1
             
             # Use settlement properties to inform agent creation
-            lifecycle = RACE_LIFECYCLES.get(settlement_race, RACE_LIFECYCLES["default"])
+            lifecycle = POPULATION_PROFILES.get(settlement_race, POPULATION_PROFILES["default"])
             age = int(master_rng.gauss(mu=mean_age, sigma=15))
             age = max(1, min(lifecycle['avg_lifespan'], age)) # Clamp age
 
@@ -389,21 +389,21 @@ def evolve_once(data: Dict) -> Dict:
     existing_villages = [(lm['position'][0], lm['position'][1]) for lm in landmarks if lm.get('type') == 'village']
 
     # --- Population dynamics parameters to avoid exponential runaway ---
-    # Race-specific baseline growth and mortality (dimensionless per step), and life expectancy (steps)
-    race_params: Dict[str, Dict[str, float]] = {
-        'Human': {'r': 0.04, 'm': 0.010, 'L': 70.0, 'Kmul': 1.00},
-        'Oran':  {'r': 0.020, 'm': 0.005, 'L': 200.0, 'Kmul': 0.95},
-        'Sylph': {'r': 0.018, 'm': 0.006, 'L': 120.0, 'Kmul': 0.90},
-        'Golem': {'r': 0.010, 'm': 0.004, 'L': 150.0, 'Kmul': 0.85},
+    # Group-specific baseline growth and mortality (dimensionless per step), and life expectancy (steps)
+    population_params: Dict[str, Dict[str, float]] = {
+        'Alpha': {'r': 0.04, 'm': 0.010, 'L': 70.0, 'Kmul': 1.00},
+        'Beta':  {'r': 0.020, 'm': 0.005, 'L': 200.0, 'Kmul': 0.95},
+        'Gamma': {'r': 0.018, 'm': 0.006, 'L': 120.0, 'Kmul': 0.90},
+        'Delta': {'r': 0.010, 'm': 0.004, 'L': 150.0, 'Kmul': 0.85},
     }
 
-    # Race-specific preferences for biomes (for stress generation)
-    # Higher value means converting this biome causes more stress for the race.
-    RACE_BIOME_PREFERENCE = {
-        'Sylph': {'forest': 0.15, 'rainforest': 0.2, 'boreal_forest': 0.15, 'palm_canopy': 0.1, 'montane_forest': 0.1},
-        'Oran': {'mountain': 0.1, 'hills': 0.05, 'rock': 0.08},
-        'Human': {}, # Humans are adaptable, less attached
-        'Golem': {}, # Golems are indifferent to surface ecology
+    # Group-specific preferences for biomes (for stress generation)
+    # Higher value means converting this biome causes more stress for the group.
+    GROUP_BIOME_PREFERENCE = {
+        'Gamma': {'forest': 0.15, 'rainforest': 0.2, 'boreal_forest': 0.15, 'palm_canopy': 0.1, 'montane_forest': 0.1},
+        'Beta': {'mountain': 0.1, 'hills': 0.05, 'rock': 0.08},
+        'Alpha': {},  # Adaptable, less attached to specific biomes
+        'Delta': {},  # Indifferent to surface ecology
     }
 
     # Helper: local suitability (0..1) and carrying capacity K based on biome/slope/river/roads/stress
@@ -455,7 +455,7 @@ def evolve_once(data: Dict) -> Dict:
         
         stress_local = float(np.clip(stress_map[y, x], 0.0, 1.0))
         K *= (1.0 - float(stress_k_coeff) * stress_local)
-        K *= race_params.get(race, {}).get('Kmul', 1.0)
+        K *= population_params.get(race, {}).get('Kmul', 1.0)
         return max(50.0, K)  # minimum carrying capacity
 
     # --- Update existing villages: logistic growth with mortality & age ---
@@ -525,7 +525,7 @@ def evolve_once(data: Dict) -> Dict:
                         territory_id = int(territory_map[py, px]) # Cast to python int
                         if territory_id > 0 and territory_id in race_id_map:
                             affected_race = race_id_map[territory_id]
-                            prefs = RACE_BIOME_PREFERENCE.get(affected_race, {})
+                            prefs = GROUP_BIOME_PREFERENCE.get(affected_race, {})
                             if original_biome in prefs:
                                 stress_increase = prefs[original_biome]
                                 # Increase stress in a small radius
@@ -544,8 +544,8 @@ def evolve_once(data: Dict) -> Dict:
         if lm.get('type') not in ['village', 'town', 'city']:
             continue
         vx, vy = int(lm['position'][0]), int(lm['position'][1])
-        race = lm.get('race') or 'Human'
-        params = race_params.get(race, race_params['Human'])
+        race = lm.get('race') or 'Alpha'
+        params = population_params.get(race, population_params['Alpha'])
         traits = _ensure_settlement_traits(lm, int(world_seed))
         
         # Recalculate settlement farms after conversion phase
@@ -683,17 +683,17 @@ def evolve_once(data: Dict) -> Dict:
 
     # --- Generate Structures (Quadrafoil of Influence) ---
     structures = data.get('structures', [])
-    if not any(s['name'] == 'Bok Tower' for s in structures):
+    if not any(s['name'] == 'Central Sanctuary' for s in structures):
         # Find the highest point on the map
         max_elev_val = elev.max()
         highest_points = np.argwhere(elev == max_elev_val)
         # Select one deterministically
-        tower_pos_idx = _deterministic_seed(world_seed, 'bok_tower_pos') % len(highest_points)
+        tower_pos_idx = _deterministic_seed(world_seed, 'sanctuary_pos') % len(highest_points)
         ty, tx = highest_points[tower_pos_idx]
         
         structures.append({
-            "id": "struct_bok_tower",
-            "name": "Bok Tower",
+            "id": "struct_central_sanctuary",
+            "name": "Central Sanctuary",
             "type": "sanctuary",
             "position": [int(tx), int(ty)],
             "influence": {
@@ -702,7 +702,7 @@ def evolve_once(data: Dict) -> Dict:
                 "playfulness": 0.1
             }
         })
-        print(f"Placed Bok Tower Sanctuary at highest point: ({tx}, {ty})")
+        print(f"Placed Central Sanctuary at highest point: ({tx}, {ty})")
 
     data['structures'] = structures
 

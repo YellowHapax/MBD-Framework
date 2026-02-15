@@ -198,7 +198,7 @@ export default function ResonanceLab() {
         <div className="text-xs text-slate-400 space-y-2">
           <p>
             Without tier separation, a single AI model must simultaneously reason about plate tectonics,
-            trade economics, street-level NPC dialogue, and individual somatic experience — an impossible
+            trade economics, street-level agent dialogue, and individual somatic experience — an impossible
             context window burden that produces incoherence.
           </p>
           <p>

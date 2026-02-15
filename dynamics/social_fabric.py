@@ -28,13 +28,23 @@ WORLD_DATA_PATH = os.path.join(os.path.dirname(__file__), "public", "world_data.
 SIMULATION_TICKS = int(os.environ.get("SIM_TICKS", 24 * 90))  # Simulate 90 days by default
 BASE_INTERACTION_PROB = 0.005  # Lower base prob, as it will be amplified by desire
 
-# --- Race & Lifecycle Configuration ---
-RACE_LIFECYCLES = {
-    "human": {"avg_lifespan": 80, "fertility_start": 16, "fertility_end": 45, "adulthood": 18},
-    "oran": {"avg_lifespan": 250, "fertility_start": 30, "fertility_end": 150, "adulthood": 40},
-    "sylph": {"avg_lifespan": 500, "fertility_start": 50, "fertility_end": 300, "adulthood": 60},
-    "golem": {"avg_lifespan": 1000, "fertility_start": 100, "fertility_end": 800, "adulthood": 120},
-    "default": {"avg_lifespan": 100, "fertility_start": 18, "fertility_end": 50, "adulthood": 20},
+# --- Population Archetype Configuration ---
+# Four lifecycle profiles spanning different longevity scales.
+# These are abstract archetypes; concrete populations reference them by key.
+POPULATION_PROFILES = {
+    "standard":    {"avg_lifespan": 80,   "fertility_start": 16,  "fertility_end": 45,  "adulthood": 18},
+    "extended":    {"avg_lifespan": 250,  "fertility_start": 30,  "fertility_end": 150, "adulthood": 40},
+    "long_lived":  {"avg_lifespan": 500,  "fertility_start": 50,  "fertility_end": 300, "adulthood": 60},
+    "geological":  {"avg_lifespan": 1000, "fertility_start": 100, "fertility_end": 800, "adulthood": 120},
+    "default":     {"avg_lifespan": 100,  "fertility_start": 18,  "fertility_end": 50,  "adulthood": 20},
+}
+
+# Map group labels to their lifecycle profile
+GROUP_PROFILE_MAP = {
+    "alpha": "standard",
+    "beta":  "extended",
+    "gamma": "long_lived",
+    "delta": "geological",
 }
 
 # --- Helper Functions ---
@@ -60,12 +70,12 @@ def _synthesize_agents_and_edges(world_data: Dict[str, Any], per_race: int = 8) 
     no canonical agents/edges are present in world_data.json.
 
     Strategy:
-    - Use `capitals` races as canonical groups (Human, Oran, Sylph, Golem).
-    - Create `per_race` agents per race with plausible defaults for fields this simulator uses.
+    - Use `capitals` groups as canonical populations.
+    - Create `per_race` agents per group with plausible defaults for fields this simulator uses.
     - Create intra-group edges with low initial pressures; a few inter-group edges to seed variety.
     """
     capitals = world_data.get("capitals", {})
-    races = list(capitals.keys()) or ["Human", "Oran", "Sylph", "Golem"]
+    races = list(capitals.keys()) or ["Alpha", "Beta", "Gamma", "Delta"]
 
     agents: List[Dict[str, Any]] = []
     edges: List[Dict[str, Any]] = []
@@ -75,9 +85,11 @@ def _synthesize_agents_and_edges(world_data: Dict[str, Any], per_race: int = 8) 
 
     def init_agent(race: str, idx: int) -> Dict[str, Any]:
         race_key = race.lower()
-        # Rough adulthood anchors
-        adulthood = RACE_LIFECYCLES.get(race_key, RACE_LIFECYCLES["default"]).get("adulthood", 20)
-        fert_end = RACE_LIFECYCLES.get(race_key, RACE_LIFECYCLES["default"]).get("fertility_end", 50)
+        # Resolve lifecycle profile via group map, then fall back to direct key match
+        profile_key = GROUP_PROFILE_MAP.get(race_key, race_key)
+        profile = POPULATION_PROFILES.get(profile_key, POPULATION_PROFILES["default"])
+        adulthood = profile.get("adulthood", 20)
+        fert_end = profile.get("fertility_end", 50)
         age = max(12, min(fert_end, int(random.gauss(mu=(adulthood + fert_end) / 2, sigma=(fert_end - adulthood) / 4))))
         return {
             "id": f"{race[:3].upper()}-{idx}",
@@ -91,7 +103,7 @@ def _synthesize_agents_and_edges(world_data: Dict[str, Any], per_race: int = 8) 
             "psyche": {
                 "trust": random.uniform(0.2, 0.8),
                 "playful": random.uniform(0.2, 0.8),
-                "aggression": random.uniform(0.1, 0.4) * (1.5 if race_key == "oran" else 1.0), # Oran are more aggressive
+                "aggression": random.uniform(0.1, 0.4),
                 "reproductive_drive": random.uniform(0.05, 0.35),
                 "bonding_capacity": random.uniform(0.05, 0.25)
             },
@@ -158,7 +170,8 @@ def _update_reproductive_drive(agent: Dict, all_agents: List[Dict]):
     on age, race, and demographic pressures.
     """
     race = agent.get("race", "default")
-    lifecycle = RACE_LIFECYCLES.get(race, RACE_LIFECYCLES["default"])
+    profile_key = GROUP_PROFILE_MAP.get(race, race)
+    lifecycle = POPULATION_PROFILES.get(profile_key, POPULATION_PROFILES["default"])
     age = agent.get("body_morph", {}).get("age", lifecycle["adulthood"])
 
     # 1. Age Gating

@@ -1,18 +1,18 @@
 import { useState, useCallback } from 'react'
 import type { SocialSimulationResult, SocialSnapshot, SocialAgent } from '../types'
 
-const RACE_COLORS: Record<string, string> = {
-  human: '#3b82f6',
-  oran: '#ef4444',
-  sylph: '#a78bfa',
-  golem: '#f59e0b',
+const GROUP_COLORS: Record<string, string> = {
+  alpha: '#3b82f6',
+  beta: '#ef4444',
+  gamma: '#a78bfa',
+  delta: '#f59e0b',
 }
 
 function AgentDot({ agent, x, y, selected, onClick }: {
   agent: SocialAgent; x: number; y: number; selected: boolean;
   onClick: () => void;
 }) {
-  const color = RACE_COLORS[agent.race] || '#888'
+  const color = GROUP_COLORS[agent.race] || '#888'
   return (
     <g onClick={onClick} className="cursor-pointer">
       <circle cx={x} cy={y} r={selected ? 8 : 5}
@@ -91,7 +91,7 @@ function NetworkGraph({ snapshot, edgeType, selectedAgent, onSelect }: {
         const q = quadrants[ri % 4]
         return (
           <text key={race} x={q.cx} y={q.cy - 60} textAnchor="middle"
-            fill={RACE_COLORS[race] || '#888'} fontSize={11} fontWeight="bold" className="capitalize">
+            fill={GROUP_COLORS[race] || '#888'} fontSize={11} fontWeight="bold" className="capitalize">
             {race}
           </text>
         )
@@ -120,7 +120,7 @@ function AgentDetail({ agent }: { agent: SocialAgent }) {
   return (
     <div className="bg-surface-800/60 rounded-xl border border-surface-700/40 p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: RACE_COLORS[agent.race] || '#888' }} />
+        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: GROUP_COLORS[agent.race] || '#888' }} />
         <h4 className="text-sm font-semibold text-slate-200">{agent.name}</h4>
         <span className="text-xs text-slate-500">{agent.sex}, age {agent.age}</span>
       </div>
@@ -160,7 +160,7 @@ export default function SocialLab() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           per_race: perRace,
-          races: ['Human', 'Oran', 'Sylph', 'Golem'],
+          races: ['Alpha', 'Beta', 'Gamma', 'Delta'],
           ticks,
           seed: Math.floor(Math.random() * 10000),
         }),
@@ -301,8 +301,8 @@ export default function SocialLab() {
             Interaction probability scales with psyche compatibility, existing edge pressures, and drive state.
           </p>
           <p>
-            Race lifecycles (Human 80yr, Oran 250yr, Sylph 500yr, Golem 1000yr) gate fertility windows
-            and create inter-species temporal asymmetries in relationship formation.
+            Population lifecycles (Standard 80yr, Extended 250yr, Long-lived 500yr, Geological 1000yr) gate fertility windows
+            and create inter-group temporal asymmetries in relationship formation.
           </p>
         </div>
       </section>

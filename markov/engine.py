@@ -73,7 +73,7 @@ class MarkovBlanket(BaseModel):
     and the 'unobserved' environment (the rest of the world, simulated abstractly).
     
     The Blanket is dynamic. It expands and contracts based on the location of
-    'observers' (players, important NPCs, or areas of high narrative significance).
+    'observers' (players, important agents, or areas of high narrative significance).
     It is responsible for deciding which Hypercubes and Cubes need to be "woken up"
     to higher levels of lucidity.
     """

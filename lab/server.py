@@ -228,7 +228,7 @@ class SocialFabricOut(BaseModel):
 class SocialStepIn(BaseModel):
     """Run N ticks of social fabric simulation."""
     per_race: int = 6
-    races: List[str] = Field(default_factory=lambda: ["Human", "Oran", "Sylph", "Golem"])
+    races: List[str] = Field(default_factory=lambda: ["Alpha", "Beta", "Gamma", "Delta"])
     ticks: int = 24
     seed: int = 42
 
@@ -618,14 +618,14 @@ TIER_DATA = [
     },
     {
         "tier": 1,
-        "name": "Race Mind",
+        "name": "Population Mind",
         "model": "Lotka-Volterra population dynamics",
-        "ai_experience": "None — numerical output only",
-        "description": "Species-level cultural resonance. Population dynamics, inter-species tensions, racial baseline drift.",
+        "ai_experience": "None \u2014 numerical output only",
+        "description": "Group-level cultural resonance. Population dynamics, inter-group tensions, baseline drift across distinct populations.",
         "example_output": {
-            "Human": {"trust": -0.1, "boldness": 0.2},
-            "Oran": {"trust": 0.05, "connection": 0.1},
-            "Sylph": {"curiosity": 0.15, "playfulness": 0.1},
+            "Alpha": {"trust": -0.1, "boldness": 0.2},
+            "Beta": {"trust": 0.05, "connection": 0.1},
+            "Gamma": {"curiosity": 0.15, "playfulness": 0.1},
         },
     },
     {
@@ -635,8 +635,8 @@ TIER_DATA = [
         "ai_experience": "Minimal — event summaries possible",
         "description": "Faction-level coherence. Trade, diplomacy, war declarations, resource allocation between settlements.",
         "example_output": {
-            "trade_routes": [{"from": "Bok Tower", "to": "Oran Market", "volume": 340}],
-            "diplomatic_events": [{"type": "alliance", "factions": ["Sylph Chorus", "Human Merchants"]}],
+            "trade_routes": [{"from": "Central Sanctuary", "to": "Beta Market", "volume": 340}],
+            "diplomatic_events": [{"type": "alliance", "factions": ["Gamma Council", "Alpha Merchants"]}],
         },
     },
     {
@@ -644,11 +644,11 @@ TIER_DATA = [
         "name": "Settlement Mind",
         "model": "Full narrative AI (Claude-class)",
         "ai_experience": "Embodied — AI inhabits this scale",
-        "description": "Local coherence. Street-level events, NPC conversations, market prices, weather the characters feel. This is where narrative reality begins.",
+        "description": "Local coherence. Street-level events, agent conversations, market prices, weather the characters feel. This is where narrative reality begins.",
         "example_output": {
-            "market_scene": "The fishmonger argues price with a Sylph merchant while rain drips from the awning.",
+            "market_scene": "A merchant argues price with a traveler while rain drips from the awning.",
             "mood": "tense, anticipatory",
-            "npcs_active": 12,
+            "agents_active": 12,
         },
     },
     {
