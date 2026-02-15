@@ -162,6 +162,33 @@ export default function Overview() {
         </div>
       </div>
 
+      {/* Interactive Labs index */}
+      <div className="mt-10">
+        <h3 className="text-lg font-serif text-slate-200 mb-4">Interactive Labs</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[
+            { icon: '⬡', name: 'Influence Cube', path: '/cube', desc: '3D stella octangula with dual-pair geometry proof' },
+            { icon: '⟿', name: 'Baseline Lab', path: '/baseline', desc: 'Baseline trajectory simulation & trauma presets' },
+            { icon: '◇', name: 'Field Translation', path: '/fields', desc: 'TCPB → field modality mapping with narrative prompts' },
+            { icon: 'κ', name: 'Coupling Dynamics', path: '/coupling', desc: 'κ equation explorer with α×β parameter grid' },
+            { icon: '⊛', name: 'Social Fabric', path: '/social', desc: 'Multi-species agent network simulation' },
+            { icon: '⊡', name: 'Agent Architecture', path: '/agent', desc: 'Markov Blanket perception-action loop step-through' },
+            { icon: '⊘', name: 'Resonance Tiers', path: '/resonance', desc: '5-tier computational hierarchy: dissociative → embodied' },
+          ].map((lab) => (
+            <a key={lab.path} href={lab.path}
+              className="lab-card hover:border-primary-700/50 transition-colors group flex items-start gap-3">
+              <span className="text-lg text-primary-400 mt-0.5">{lab.icon}</span>
+              <div>
+                <h4 className="text-sm font-medium text-slate-200 group-hover:text-primary-300 transition-colors">
+                  {lab.name}
+                </h4>
+                <p className="text-xs text-slate-500 mt-0.5">{lab.desc}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
       {/* Footer attribution */}
       <div className="mt-12 pt-6 border-t border-surface-700/50 text-center">
         <p className="text-xs text-slate-600">

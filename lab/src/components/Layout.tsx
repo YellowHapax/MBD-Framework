@@ -5,6 +5,11 @@ const links = [
   { to: '/', label: 'Overview', icon: '◈' },
   { to: '/cube', label: 'Influence Cube', icon: '⬡' },
   { to: '/baseline', label: 'Baseline Lab', icon: '⟿' },
+  { to: '/fields', label: 'Field Translation', icon: '◇' },
+  { to: '/coupling', label: 'Coupling Dynamics', icon: 'κ' },
+  { to: '/social', label: 'Social Fabric', icon: '⊛' },
+  { to: '/agent', label: 'Agent Architecture', icon: '⊡' },
+  { to: '/resonance', label: 'Resonance Tiers', icon: '⊘' },
 ] as const
 
 function NavItem({ to, label, icon }: { to: string; label: string; icon: string }) {

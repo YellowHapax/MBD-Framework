@@ -94,3 +94,97 @@ export const VERTEX_NAMES = [
   'nature', 'nurture', 'haven', 'home',
   'displacement', 'fixation', 'erosion', 'capture',
 ] as const;
+
+/* ---- Field Translation ---- */
+
+export interface FieldPole {
+  pole: string;
+  field: string;
+  value: number;
+  magnitude: number;
+  field_effect: string;
+  somatic: string;
+  agency: string;
+  prompt: string;
+}
+
+export interface FieldTranslationResult {
+  poles: FieldPole[];
+  narrative_prompt: string;
+  gravity: number | null;
+}
+
+/* ---- Coupling Explorer ---- */
+
+export interface CouplingSeriesResult {
+  kappa_history: number[];
+  labels: string[];
+  alpha: number;
+  beta: number;
+}
+
+export interface CouplingGridResult {
+  alpha_values: number[];
+  beta_values: number[];
+  final_kappa: number[][];
+}
+
+/* ---- Social Fabric ---- */
+
+export interface SocialAgent {
+  id: string;
+  name: string;
+  race: string;
+  sex: string;
+  age: number;
+  trust: number;
+  playful: number;
+  aggression: number;
+  reproductive_drive: number;
+  frustration: number;
+}
+
+export interface SocialEdge {
+  a: string;
+  b: string;
+  intimacy: number;
+  love: number;
+  conflict: number;
+  pair_bonding: number;
+}
+
+export interface SocialSnapshot {
+  agents: SocialAgent[];
+  edges: SocialEdge[];
+  tick: number;
+}
+
+export interface SocialSimulationResult {
+  snapshots: SocialSnapshot[];
+  events: { tick: number; a: string; b: string; probability: number }[];
+}
+
+/* ---- Agent Architecture ---- */
+
+export interface AgentState {
+  agent_id: string;
+  beliefs: Record<string, { value: unknown; certainty: number }>;
+  needs: Record<string, number>;
+  action: { type: string; direction?: string; target?: unknown };
+  nearby_agents: number;
+}
+
+export interface AgentStepResult {
+  history: AgentState[];
+}
+
+/* ---- Resonance Tiers ---- */
+
+export interface ResonanceTier {
+  tier: number;
+  name: string;
+  model: string;
+  ai_experience: string;
+  description: string;
+  example_output: Record<string, unknown>;
+}

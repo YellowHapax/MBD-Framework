@@ -211,12 +211,6 @@ def _build_relationship_matrix(edges: List[Dict]) -> Dict[str, Dict[str, Dict[st
     """Transforms the edge list into a nested dictionary for O(1) lookups."""
     matrix = {}
     for edge in edges:
-
-
-def _build_relationship_matrix(edges: List[Dict]) -> Dict[str, Dict[str, Dict[str, float]]]:
-    """Transforms the edge list into a nested dictionary for O(1) lookups."""
-    matrix = {}
-    for edge in edges:
         a_id = edge["a"]
         b_id = edge["b"]
         
