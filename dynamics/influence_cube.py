@@ -134,9 +134,13 @@ HEAVEN = Vertex(
     coupling=Coupling.HIGH_KAPPA,
     temporality=Temporality.DYNAMIC,
     description=(
-        "Ongoing resonant connection that transforms the self: love, "
-        "communion, creative partnership, the therapeutic alliance. "
-        "Internal transformation driven by active high-κ bonds."
+        "Safe intimacy — the ongoing experience of being deeply known "
+        "and not destroyed by it. The place inside the self that only "
+        "exists because someone else made it safe to exist. Internal "
+        "transformation through vulnerability without annihilation: the "
+        "armor comes off and nothing bad happens. This is what drives "
+        "a person to conquer every mountain shown — not ambition, but "
+        "the knowledge that there is somewhere to put it all down."
     ),
     constructive=True,
 )
@@ -206,10 +210,13 @@ CAPTURE = Vertex(
     coupling=Coupling.HIGH_KAPPA,
     temporality=Temporality.DYNAMIC,
     description=(
-        "Active external resonant control: cult dynamics, abusive "
-        "relationships, epistemological capture, coercive institutions. "
-        "External, high-κ (it requires your participation), ongoing. "
-        "The anti-Nature — the vertex diagonally opposite to (0,0,0)."
+        "Active external resonant control: the dark mirror of Heaven. "
+        "Also requires the armor to come off — but overwrites what it "
+        "finds underneath. Cult dynamics, coercive bonding, abusive "
+        "relationships, epistemological capture. External, high-κ "
+        "(it needs your participation to function), ongoing. "
+        "The anti-Nature — vertex (1,1,1), diagonally opposite (0,0,0). "
+        "Maximum distance from what you genuinely are."
     ),
     constructive=False,
 )
