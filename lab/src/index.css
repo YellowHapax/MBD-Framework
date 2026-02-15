@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* MBD Lab — Academic research UI                                     */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --color-constructive: #3b82f6;
+  --color-destructive: #f43f5e;
+  --color-river: #8b5cf6;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+/* Academic serif headings */
+h1, h2, h3 {
+  font-family: 'Palatino Linotype', Palatino, Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+/* Clean scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+/* Math blocks */
+.katex-display { margin: 1em 0 !important; }
+
+/* Slider styling */
+input[type="range"] {
+  @apply w-full h-1.5 rounded-full appearance-none cursor-pointer;
+  background: linear-gradient(to right, #334155, #475569);
+}
+input[type="range"]::-webkit-slider-thumb {
+  @apply appearance-none w-3.5 h-3.5 rounded-full bg-primary-400 border-2 border-surface-900;
+}
+
+/* Card component */
+.lab-card {
+  @apply bg-surface-900 border border-surface-700/50 rounded-lg p-5;
+}
+
+/* Vertex badge */
+.vertex-badge-constructive {
+  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.vertex-badge-destructive {
+  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  background: rgba(244, 63, 94, 0.15);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+/* Equation block */
+.equation-block {
+  @apply bg-surface-800/50 border border-surface-700/30 rounded-lg px-6 py-4 my-4;
+  @apply font-mono text-sm text-slate-300 text-center;
+}
+
+/* Transition for panels */
+.panel-enter {
+  animation: fadeSlideIn 0.25s ease-out;
+}
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

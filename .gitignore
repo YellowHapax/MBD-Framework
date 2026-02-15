@@ -25,3 +25,7 @@ Thumbs.db
 # Reports and generated output
 reports/
 *.jsonl
+
+# Lab frontend build artifacts
+lab/node_modules/
+lab/dist/
