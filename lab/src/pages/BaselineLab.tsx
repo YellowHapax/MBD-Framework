@@ -130,7 +130,7 @@ function TrajectoryChart({ data }: { data: TrajectoryResult }) {
 function SimulationCharts({ data }: { data: SimulationResult }) {
   const bData = data.baseline_history.map((b, i) => ({
     event: data.trauma_labels[i] || `${i}`,
-    ...Object.fromEntries(['Valence', 'Arousal', 'Dominance'].map((l, j) => [l, b[j]])),
+    ...Object.fromEntries(['Valence', 'Activation', 'Dominance'].map((l, j) => [l, b[j]])),
   }))
 
   const kData = data.kappa_history.map((k, i) => ({
@@ -166,7 +166,7 @@ function SimulationCharts({ data }: { data: SimulationResult }) {
             />
             <Legend wrapperStyle={{ fontSize: 11 }} />
             <Line type="monotone" dataKey="Valence" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
-            <Line type="monotone" dataKey="Arousal" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} />
+            <Line type="monotone" dataKey="Activation" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} />
             <Line type="monotone" dataKey="Dominance" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
             <ReferenceLine y={0} stroke="#475569" strokeDasharray="2 2" />
           </LineChart>

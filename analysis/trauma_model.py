@@ -80,7 +80,7 @@ def run_simulation():
     """
     # --- Parameters ---
     # Agent's initial state
-    initial_baseline = Baseline([0.5, -0.2, 0.1]) # e.g., [Valence, Arousal, Dominance]
+    initial_baseline = Baseline([0.5, -0.2, 0.1]) # e.g., [Valence, Activation, Dominance]
 
     # Relational parameters
     initial_kappa = 0.1  # Initial coupling with another agent
@@ -122,7 +122,7 @@ def run_simulation():
     # Plot Baseline Drift
     baseline_history = np.array(baseline_history)
     ax1.plot(baseline_history[:, 0], 'o-', label='Valence', color='blue')
-    ax1.plot(baseline_history[:, 1], 'o-', label='Arousal', color='red')
+    ax1.plot(baseline_history[:, 1], 'o-', label='Activation', color='red')
     ax1.plot(baseline_history[:, 2], 'o-', label='Dominance', color='green')
     ax1.set_title("Personality Baseline (B) Evolution")
     ax1.set_ylabel("State Value")

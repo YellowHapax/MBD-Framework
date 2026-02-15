@@ -7,8 +7,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **Jupyter notebooks** (`notebooks/`): literate walkthroughs of Paper 1 (Baseline Deviation) and Paper 4 (Executive Load) with interactive visualisations
+
 ### Changed
 - Terminology: "cesspit" → "sink" (thermodynamic dissipation archetype)
+- Terminology: "Arousal" → "Activation" (VAD circumplex model alignment — Posner, Russell & Peterson 2005)
 
 ## [0.1.0] — 2026-02-15
 
