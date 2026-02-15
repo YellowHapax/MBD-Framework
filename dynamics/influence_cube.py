@@ -36,36 +36,35 @@ stable home — and still be helpless by the river.
      Or you'll never make it over the river"
 
 The river is not noise. It is not unexplained variance. The river is
-*time*. Mortality. The finite horizon of the individual agent. Every
-baseline trajectory B(t) terminates. Every agent's cube, no matter how
-perfectly optimized, eventually reaches a boundary it cannot pass alone:
-the end of its own temporal extent.
+the *gradient itself* — the current that carries the agent even when
+every vertex has been optimized, every coupling tuned, every pressure
+accounted for. Life carries you. Sometimes you are helpless in it.
 
-To cross the river is to couple with the Markov Tensor — to achieve
-persistence beyond individual death through collective phase-lock. When
-κ exceeds the critical threshold κ_c and the Kuramoto order parameter
-r → 1, the population synchronizes. The pattern survives the loss of
-any individual oscillator. The song continues after the singer stops.
-
-This is the mortal imperative: the evolutionary pressure that drives
-agents toward Heaven (0,1,1) — toward high-κ dynamic internal bonds —
-not merely for comfort or growth, but because coupling with the tensor
-is the only mechanism by which information, culture, love, and meaning
-persist beyond the death of their originator. To live beyond death as
-the many.
+Mortality is one reading of the river. Time is another. The current of
+circumstance that reshapes baselines regardless of intention is a third.
+The point is not to name the obstacle — the point is that the cube, for
+all its completeness, exists *within* something it cannot fully describe.
+The river is what is not in Nature, Nurture, Heaven, or Home. It is the
+medium, not the map.
 
     "The hands of the many must join as one
      And together we'll cross the river"
 
+To cross the river is to couple — to let κ exceed κ_c, to let the
+Kuramoto order parameter r → 1, to synchronize with the many so that
+the pattern survives any single oscillator's silence. The song continues
+after the singer stops. But the river itself is not one thing. It is
+whatever gradient the model discovers it cannot absorb into the eight
+vertices. By the time we write these fields, they may already be
+obsolete in minds less burdened than ours. We are modeling what we
+understand, and the river is where that understanding admits its edge.
+
 The ε term in the baseline equation is the river's footprint in the
-individual model — the mortal horizon's shadow on the cube. It is real,
-irreducible, and intentional: the acknowledgment that the Influence
-Cube describes an individual's developmental pressures within a finite
-lifetime, and that transcending that lifetime requires the order
-parameter r to approach unity across a population. The individual
-baseline equation B(t+1) = B(t)(1-Σλ) + Σ[I·λ] + ε describes
-everything that happens before the river. The Markov Tensor describes
-what happens after — if the coupling was sufficient.
+individual model. It is real, irreducible, and intentional: the
+acknowledgment that the Influence Cube describes developmental pressures
+but not the medium through which they propagate. The individual
+baseline equation B(t+1) = B(t)(1-Σλ) + Σ[I·λ] + ε captures everything
+the cube can name. ε is what it cannot.
 
 The cube is necessary. The cube is not sufficient.
 Every honest model must leave room for the river.
@@ -390,16 +389,15 @@ class CubeLambdas:
     Per-vertex coupling constants (λ_v) controlling how strongly each
     vertex's pressure modifies the agent's baseline per timestep.
 
-    The river term (ε) is the mortal horizon's shadow on the cube —
-    time itself, the finite extent of any individual trajectory. It is
-    the acknowledgment that B(t) terminates, and that persistence beyond
-    death requires coupling with the Markov Tensor: the collective
-    dynamics where the pattern survives the loss of the oscillator.
+    The river term (ε) is the residual gradient — what the cube cannot
+    name. Not noise: the medium through which all eight vertex pressures
+    propagate. Life, time, circumstance, mortality — its interpretation
+    is left to the modeler. The honest model leaves room for it.
     """
     lambdas: np.ndarray = field(
         default_factory=lambda: np.full(8, 0.05, dtype=np.float64)
     )
-    river: float = 0.0  # ε — the mortal horizon
+    river: float = 0.0  # ε — the gradient the cube cannot name
 
     def __post_init__(self):
         if self.lambdas.shape != (8,):
@@ -502,8 +500,8 @@ def print_cube_summary():
     print(f"  Nature↔Capture diagonal:          {proof['nature_capture_diagonal']:.4f}"
           f"  (√3 = {math.sqrt(3):.4f})")
     print()
-    print("The River: ε — the mortal horizon. Time itself.")
-    print("To cross it is to couple with the tensor — to live beyond death as the many.")
+    print("The River: ε — the gradient the cube cannot name.")
+    print("Every honest model must leave room for it.")
     print()
 
 
