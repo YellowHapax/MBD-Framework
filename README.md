@@ -127,4 +127,4 @@ If you use this code in your research, please cite the relevant paper(s). See `C
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Apache 2.0 — see [LICENSE](LICENSE).
