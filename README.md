@@ -10,12 +10,12 @@ This repository contains the computational implementations accompanying a series
 
 | Paper | Topic | DOI |
 |-------|-------|-----|
-| **Memory as Baseline Deviation** | Personality as state-space dynamics; baseline drift under trauma | [10.5281/zenodo.14538419](https://doi.org/10.5281/zenodo.14538419) |
-| **In Pursuit of the Markov Tensor** | Geometric framework for social cognition via tensor lattices | [10.5281/zenodo.14611281](https://doi.org/10.5281/zenodo.14611281) |
-| **Episodic Recall as Resonant Re-instantiation** | Fokker–Planck account of memory retrieval dynamics | [10.5281/zenodo.14611303](https://doi.org/10.5281/zenodo.14611303) |
-| **The Coupling Asymmetry** | Executive dysfunction as an eigenstate of the memory–baseline system | [10.5281/zenodo.14611399](https://doi.org/10.5281/zenodo.14611399) |
-| **The Emergent Gate** | Memory encoding as threshold-dependent consolidation | [10.5281/zenodo.14611353](https://doi.org/10.5281/zenodo.14611353) |
-| **The Resonant Gate** | Conversational insight as phase-locked coupling | [10.5281/zenodo.14611383](https://doi.org/10.5281/zenodo.14611383) |
+| **Memory as Baseline Deviation** | Personality as state-space dynamics; baseline drift under trauma | [10.5281/zenodo.17381536](https://doi.org/10.5281/zenodo.17381536) |
+| **In Pursuit of the Markov Tensor** | Geometric framework for social cognition via tensor lattices | [10.5281/zenodo.17537185](https://doi.org/10.5281/zenodo.17537185) |
+| **Episodic Recall as Resonant Re-instantiation** | Fokker–Planck account of memory retrieval dynamics | [10.5281/zenodo.17374270](https://doi.org/10.5281/zenodo.17374270) |
+| **The Coupling Asymmetry** | Executive dysfunction as an eigenstate of the memory–baseline system | [10.5281/zenodo.18519187](https://doi.org/10.5281/zenodo.18519187) |
+| **The Emergent Gate** | Memory encoding as threshold-dependent consolidation | [10.5281/zenodo.17344091](https://doi.org/10.5281/zenodo.17344091) |
+| **The Resonant Gate** | Conversational insight as phase-locked coupling | [10.5281/zenodo.17352481](https://doi.org/10.5281/zenodo.17352481) |
 
 ## Repository Structure
 
@@ -134,7 +134,7 @@ jupyter notebook notebooks/
 
 If you use this code in your research, please cite the relevant paper(s). See `CITATION.cff` for machine-readable metadata, or use:
 
-> Everett, B. (2025). *Memory as Baseline Deviation: A Formal Framework for Personality as State-Space Dynamics*. Zenodo. https://doi.org/10.5281/zenodo.14538419
+> Everett, B. (2025). *Memory as Baseline Deviation: A Formal Framework for Personality as State-Space Dynamics*. Zenodo. https://doi.org/10.5281/zenodo.17381536
 
 ## License
 

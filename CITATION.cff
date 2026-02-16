@@ -20,7 +20,7 @@ references:
       - given-names: Brandon
         family-names: Everett
     year: 2025
-    doi: 10.5281/zenodo.14538419
+    doi: 10.5281/zenodo.17381536
 
   - type: article
     title: "In Pursuit of the Markov Tensor: A Geometric Framework for Social Cognition"
@@ -28,7 +28,7 @@ references:
       - given-names: Brandon
         family-names: Everett
     year: 2025
-    doi: 10.5281/zenodo.14611281
+    doi: 10.5281/zenodo.17537185
 
   - type: article
     title: "Episodic Recall as Resonant Re-instantiation: A Fokker–Planck Account of Memory Retrieval"
@@ -36,7 +36,7 @@ references:
       - given-names: Brandon
         family-names: Everett
     year: 2025
-    doi: 10.5281/zenodo.14611303
+    doi: 10.5281/zenodo.17374270
 
   - type: article
     title: "The Coupling Asymmetry: Executive Dysfunction as an Eigenstate of the Memory–Baseline System"
@@ -44,7 +44,7 @@ references:
       - given-names: Brandon
         family-names: Everett
     year: 2025
-    doi: 10.5281/zenodo.14611399
+    doi: 10.5281/zenodo.18519187
 
   - type: article
     title: "The Emergent Gate: Memory Encoding as Threshold-Dependent Consolidation"
@@ -52,7 +52,7 @@ references:
       - given-names: Brandon
         family-names: Everett
     year: 2025
-    doi: 10.5281/zenodo.14611353
+    doi: 10.5281/zenodo.17344091
 
   - type: article
     title: "The Resonant Gate: Conversational Insight as Phase-Locked Coupling in the MBD Framework"
@@ -60,4 +60,4 @@ references:
       - given-names: Brandon
         family-names: Everett
     year: 2025
-    doi: 10.5281/zenodo.14611383
+    doi: 10.5281/zenodo.17352481

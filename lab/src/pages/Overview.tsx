@@ -7,32 +7,32 @@
 const papers = [
   {
     title: 'Memory as Baseline Deviation',
-    doi: '10.5281/zenodo.14538419',
+    doi: '10.5281/zenodo.17381536',
     desc: 'The foundational paper: personality as a drifting baseline vector, trauma as the force that moves it.',
   },
   {
     title: 'In Pursuit of the Markov Tensor',
-    doi: '10.5281/zenodo.14611281',
+    doi: '10.5281/zenodo.17537185',
     desc: 'Collective dynamics beyond the individual blanket — how populations form higher-order mathematical structures.',
   },
   {
     title: 'Episodic Recall via Active Inference',
-    doi: '10.5281/zenodo.14611303',
+    doi: '10.5281/zenodo.17374270',
     desc: 'Memory retrieval as free-energy minimization, not random-access lookup.',
   },
   {
     title: 'The Coupling Asymmetry',
-    doi: '10.5281/zenodo.14611399',
+    doi: '10.5281/zenodo.18519187',
     desc: 'Why κ grows slowly and decays fast — the thermodynamic arrow of bonding.',
   },
   {
     title: 'The Emergent Gate',
-    doi: '10.5281/zenodo.14611353',
+    doi: '10.5281/zenodo.17344091',
     desc: 'Phase transitions in social coupling — how populations crystallize.',
   },
   {
     title: 'The Resonant Gate',
-    doi: '10.5281/zenodo.14611383',
+    doi: '10.5281/zenodo.17352481',
     desc: 'Synchronization thresholds and the Kuramoto model applied to cognitive agents.',
   },
 ]

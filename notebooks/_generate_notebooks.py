@@ -25,7 +25,7 @@ nb01["cells"] = [
     md([
         "# Paper 1: Memory as Baseline Deviation\n",
         "\n",
-        "**DOI:** [10.5281/zenodo.14538419](https://doi.org/10.5281/zenodo.14538419)\n",
+        "**DOI:** [10.5281/zenodo.17381536](https://doi.org/10.5281/zenodo.17381536)\n",
         "\n",
         "This notebook walks through the core equation of the MBD framework:\n",
         "\n",
@@ -319,7 +319,7 @@ nb01["cells"] = [
         "\n",
         "*Everett, B. (2024). Memory as Baseline Deviation (MBD): A Formal Framework\n",
         "for Encoding Persistent Trauma in Autonomous Agents. Zenodo.*  \n",
-        "[10.5281/zenodo.14538419](https://doi.org/10.5281/zenodo.14538419)",
+        "[10.5281/zenodo.17381536](https://doi.org/10.5281/zenodo.17381536)",
     ]),
 ]
 
@@ -333,7 +333,7 @@ nb04["cells"] = [
     md([
         "# Paper 4: The Coupling Asymmetry \u2014 Executive Load as Eigenstate\n",
         "\n",
-        "**DOI:** [10.5281/zenodo.14611399](https://doi.org/10.5281/zenodo.14611399)\n",
+        "**DOI:** [10.5281/zenodo.18519187](https://doi.org/10.5281/zenodo.18519187)\n",
         "\n",
         "This notebook demonstrates the **Coupling Asymmetry**: the observation that\n",
         "executive dysfunction is not a deficit but an **eigenstate** of the memory\u2013baseline\n",
@@ -708,7 +708,7 @@ nb04["cells"] = [
         "\n",
         "*Everett, B. (2025). The Coupling Asymmetry: Executive Dysfunction as an\n",
         "Eigenstate of the Memory\u2013Baseline System. Zenodo.*  \n",
-        "[10.5281/zenodo.14611399](https://doi.org/10.5281/zenodo.14611399)",
+        "[10.5281/zenodo.18519187](https://doi.org/10.5281/zenodo.18519187)",
     ]),
 ]
 

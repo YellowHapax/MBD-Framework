@@ -72,11 +72,11 @@ Every honest model must leave room for the river.
 References
 ----------
 Everett, B. (2025). Memory as Baseline Deviation.
-    https://doi.org/10.5281/zenodo.14538419
+    https://doi.org/10.5281/zenodo.17381536
 Everett, B. (2025). The Coupling Asymmetry.
-    https://doi.org/10.5281/zenodo.14611399
+    https://doi.org/10.5281/zenodo.18519187
 Everett, B. (2025). In Pursuit of the Markov Tensor.
-    https://doi.org/10.5281/zenodo.14611281
+    https://doi.org/10.5281/zenodo.17537185
 """
 
 from __future__ import annotations
