@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 
 const links = [
   { to: '/', label: 'Overview', icon: '◈' },
+  { to: '/papers', label: 'Paper Labs', icon: '📄' },
   { to: '/cube', label: 'Influence Cube', icon: '⬡' },
   { to: '/baseline', label: 'Baseline Lab', icon: '⟿' },
   { to: '/fields', label: 'Field Translation', icon: '◇' },

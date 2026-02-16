@@ -676,6 +676,84 @@ def resonance_tiers():
 
 
 # ---------------------------------------------------------------------------
+# Paper Labs — standalone simulation modules
+# ---------------------------------------------------------------------------
+
+# Lazy-import registry: maps (paper, lab_name) → module path
+_LAB_REGISTRY: Dict[str, str] = {
+    # Paper 1: Baseline
+    "paper1/eq_lab":                 "labs.paper1_baseline.eq_lab",
+    "paper1/phenomena_adhd":         "labs.paper1_baseline.phenomena_adhd",
+    "paper1/phenomena_ossification": "labs.paper1_baseline.phenomena_ossification",
+    "paper1/phenomena_sbs":          "labs.paper1_baseline.phenomena_sbs",
+    "paper1/phenomena_phantom":      "labs.paper1_baseline.phenomena_phantom",
+    "paper1/phenomena_bipolar":      "labs.paper1_baseline.phenomena_bipolar",
+    # Paper 2: Markov
+    "paper2/echo_chamber":           "labs.paper2_markov.echo_chamber",
+    # Paper 3: Episodic
+    "paper3/reinstantiation":        "labs.paper3_episodic.reinstantiation",
+    # Paper 4: Coupling
+    "paper4/phenomena_aspd":         "labs.paper4_coupling.phenomena_aspd",
+    "paper4/phenomena_bpd":          "labs.paper4_coupling.phenomena_bpd",
+    "paper4/phenomena_asymmetry":    "labs.paper4_coupling.phenomena_asymmetry",
+    "paper4/phenomena_echo":         "labs.paper4_coupling.phenomena_echo",
+    "paper4/phenomena_fragmentation":"labs.paper4_coupling.phenomena_fragmentation",
+    # Paper 5: Emergent Gate
+    "paper5/mood_incongruent":       "labs.paper5_emergent_gate.mood_incongruent",
+    "paper5/dual_resonance":         "labs.paper5_emergent_gate.dual_resonance",
+    # Paper 6: Resonant Gate
+    "paper6/resonant_gate":          "labs.paper6_resonant_gate.resonant_gate",
+    "paper6/zeta_lab":               "labs.paper6_resonant_gate.zeta_lab",
+    "paper6/deontological_tests":    "labs.paper6_resonant_gate.deontological_tests",
+}
+
+import importlib
+_lab_cache: Dict[str, object] = {}
+
+
+def _get_lab(key: str):
+    if key not in _LAB_REGISTRY:
+        return None
+    if key not in _lab_cache:
+        _lab_cache[key] = importlib.import_module(_LAB_REGISTRY[key])
+    return _lab_cache[key]
+
+
+@app.get("/api/labs")
+def list_labs():
+    """Return metadata for all 18 paper labs."""
+    out = []
+    for key in _LAB_REGISTRY:
+        mod = _get_lab(key)
+        if mod and hasattr(mod, "describe"):
+            info = mod.describe()
+            info["key"] = key
+            out.append(info)
+    return out
+
+
+@app.get("/api/labs/{paper}/{lab_name}/describe")
+def lab_describe(paper: str, lab_name: str):
+    """Return metadata for a single lab."""
+    key = f"{paper}/{lab_name}"
+    mod = _get_lab(key)
+    if mod is None:
+        return {"error": f"Lab '{key}' not found"}
+    return mod.describe()
+
+
+@app.post("/api/labs/{paper}/{lab_name}/run")
+def lab_run(paper: str, lab_name: str, params: Dict = None):
+    """Run a lab simulation with optional parameters."""
+    key = f"{paper}/{lab_name}"
+    mod = _get_lab(key)
+    if mod is None:
+        return {"error": f"Lab '{key}' not found"}
+    kwargs = params or {}
+    return mod.run(**kwargs)
+
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":

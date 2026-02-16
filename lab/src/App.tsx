@@ -8,12 +8,14 @@ import CouplingLab from './pages/CouplingLab'
 import SocialLab from './pages/SocialLab'
 import AgentLab from './pages/AgentLab'
 import ResonanceLab from './pages/ResonanceLab'
+import PaperLabs from './pages/PaperLabs'
 
 export default function App() {
   return (
     <Layout>
       <Routes>
         <Route path="/" element={<Overview />} />
+        <Route path="/papers" element={<PaperLabs />} />
         <Route path="/cube" element={<CubeLab />} />
         <Route path="/baseline" element={<BaselineLab />} />
         <Route path="/fields" element={<FieldLab />} />
