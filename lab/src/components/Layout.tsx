@@ -4,13 +4,6 @@ import type { ReactNode } from 'react'
 const links = [
   { to: '/', label: 'Overview', icon: '◈' },
   { to: '/papers', label: 'Paper Labs', icon: '📄' },
-  { to: '/cube', label: 'Influence Cube', icon: '⬡' },
-  { to: '/baseline', label: 'Baseline Lab', icon: '⟿' },
-  { to: '/fields', label: 'Field Translation', icon: '◇' },
-  { to: '/coupling', label: 'Coupling Dynamics', icon: 'κ' },
-  { to: '/social', label: 'Social Fabric', icon: '⊛' },
-  { to: '/agent', label: 'Agent Architecture', icon: '⊡' },
-  { to: '/resonance', label: 'Resonance Tiers', icon: '⊘' },
 ] as const
 
 function NavItem({ to, label, icon }: { to: string; label: string; icon: string }) {
@@ -57,7 +50,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* Footer */}
         <div className="px-5 py-4 border-t border-surface-700/50 text-xs text-slate-600">
           <p>Everett, B. (2025)</p>
-          <p className="mt-0.5">Apache 2.0 · v1.0.0</p>
+          <p className="mt-0.5">Apache 2.0 · v0.1.0</p>
         </div>
       </aside>
 
