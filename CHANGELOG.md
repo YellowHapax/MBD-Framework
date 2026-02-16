@@ -7,8 +7,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-02-15
+
 ### Added
 - **Jupyter notebooks** (`notebooks/`): literate walkthroughs of Paper 1 (Baseline Deviation) and Paper 4 (Executive Load) with interactive visualisations
+- `.zenodo.json` — rich Zenodo landing-page metadata (HTML description, keywords, all six paper DOIs as related identifiers)
+- `README.md` now lists notebooks in the directory tree and quick-start section
 
 ### Changed
 - Terminology: "cesspit" → "sink" (thermodynamic dissipation archetype)
@@ -35,5 +39,6 @@ First public release. DOI: [10.5281/zenodo.18652919](https://doi.org/10.5281/zen
 - Cohort profiles use dimensionless, timescale-agnostic parametrisation (no hard-coded lifespans)
 - Population archetypes are abstract (Alpha/Beta/Gamma/Delta) with no fantasy race references
 
-[Unreleased]: https://github.com/YellowHapax/MBD-Framework/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/YellowHapax/MBD-Framework/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/YellowHapax/MBD-Framework/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/YellowHapax/MBD-Framework/releases/tag/v0.1.0
