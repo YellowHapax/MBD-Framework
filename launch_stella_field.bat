@@ -6,18 +6,14 @@ echo  The novelty signal is the poppit that moves through cube-space.
 echo ========================================================================
 echo.
 
-:: Resolve Python — try Sanctuary venv, fall back to system python
-set PYEXE=C:\Sanctuary\venv\Scripts\python.exe
-if not exist "%PYEXE%" (
-    echo [WARN] Sanctuary venv not found at %PYEXE%
-    set PYEXE=python
-)
+:: Resolve Python — prefer a local venv, fall back to PATH
+set "PYEXE=python"
+if exist "%~dp0venv\Scripts\python.exe" set "PYEXE=%~dp0venv\Scripts\python.exe"
 
 :: Ensure we're in the MBD-Framework root
 cd /d "%~dp0"
 
-:: Inject the project root into sys.path so dynamics/ imports resolve
-"%PYEXE%" -c "import sys; sys.path.insert(0, '.'); exec(open('dynamics/field_agent.py').read())"
+"%PYEXE%" visualize_stella.py
 
 echo.
 echo ========================================================================

@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- `.gitignore`: exclude `runtime/`, personal API-council scripts, and `.openrouter.key` from all future commits
+- `launch_stella_field.bat`, `view_stella_octangula.bat`: replace hardcoded local venv path with `python` (PATH) default; local `venv/` takes precedence if present
+- `launch_stella_field.bat`: replace `exec(open(...))` hack with a clean `python visualize_stella.py` invocation
+- `visualize_stella.py`: correct author attribution
+- `README.md`: document `dynamics/` module in repository structure
+
 ## [0.1.0] — 2026-02-16
 
 First public release — paper-focused simulation labs.

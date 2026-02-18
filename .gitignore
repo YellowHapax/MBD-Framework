@@ -29,3 +29,14 @@ reports/
 # Lab frontend build artifacts
 lab/node_modules/
 lab/dist/
+
+# Runtime (chat/persona/memory) — lives in Sanctuary, not here
+runtime/
+
+# Personal conversation / AI-council scripts (never commit)
+ask_the_spirits.py
+ask_kimi_deep.py
+reply_to_kimi.py
+reply_to_kimi_threaded.py
+reply_to_kimi_turn3.py
+.openrouter.key

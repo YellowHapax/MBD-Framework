@@ -10,14 +10,9 @@ REM ═════════════════════════�
 
 cd /d "%~dp0"
 
-REM --- Locate Python ---
-set "PYEXE=C:\Sanctuary\venv\Scripts\python.exe"
-if not exist "%PYEXE%" (
-    echo [ERROR] Python not found at %PYEXE%
-    echo Please set PYEXE in this script to your Python environment.
-    pause
-    exit /b 1
-)
+REM --- Locate Python (local venv preferred, falls back to PATH) ---
+set "PYEXE=python"
+if exist "%~dp0venv\Scripts\python.exe" set "PYEXE=%~dp0venv\Scripts\python.exe"
 
 echo.
 echo   ╔═══════════════════════════════════════════════╗

@@ -88,6 +88,11 @@ MBD-Framework/
 ├── analysis/                Core MBD equations
 │   └── trauma_model.py     B(t+1) = B(t)(1-λ) + I(t)λ, κ dynamics
 │
+├── dynamics/                Live MBD field engine
+│   ├── influence_cube.py   Stella octangula vertex geometry (InfluenceState, CubeLambdas)
+│   ├── field_agent.py      FieldAgent: attractor basins, behavioral exemplars, novelty field
+│   └── social_fabric.py    Group interaction probability under coupling pressure
+│
 ├── notebooks/               Jupyter walkthroughs
 │   ├── 01_baseline_deviation.ipynb  Paper 1 walkthrough
 │   └── 04_executive_load.ipynb      Paper 4 walkthrough
@@ -96,6 +101,7 @@ MBD-Framework/
 │   ├── server.py            FastAPI backend (paper labs endpoints)
 │   └── src/                 React + Recharts frontend
 │
+├── visualize_stella.py      Interactive 3D Influence Cube visualizer
 ├── CITATION.cff             Machine-readable citation metadata
 ├── LICENSE                  Apache-2.0
 └── requirements.txt         numpy, pydantic, matplotlib

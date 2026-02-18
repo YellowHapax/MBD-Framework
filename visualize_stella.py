@@ -14,7 +14,7 @@ Three axes:
     Y — Coupling:    Low-κ (0) ↔ High-κ (1)
     Z — Temporality: Static (0) ↔ Dynamic (1)
 
-Author: Gimel (⌐■_■)✓
+Author: Brandon Everett
 Date:   2026-02-16
 """
 
