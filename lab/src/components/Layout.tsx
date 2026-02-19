@@ -49,8 +49,8 @@ export default function Layout({ children }: { children: ReactNode }) {
 
         {/* Footer */}
         <div className="px-5 py-4 border-t border-surface-700/50 text-xs text-slate-600">
-          <p>Everett, B. (2025)</p>
-          <p className="mt-0.5">Apache 2.0 · v0.1.0</p>
+          <p>Everett, B. (2026)</p>
+          <p className="mt-0.5">Apache 2.0 · v0.1.2</p>
         </div>
       </aside>
 

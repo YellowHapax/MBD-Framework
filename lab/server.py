@@ -40,7 +40,7 @@ from analysis.trauma_model import (
 app = FastAPI(
     title="MBD Lab",
     description="Academic research API for the Memory as Baseline Deviation framework — Paper Labs",
-    version="0.1.0",
+    version="0.1.2",
 )
 
 app.add_middleware(
@@ -252,6 +252,49 @@ def lab_describe(paper: str, lab_name: str):
     return mod.describe()
 
 
+# ---------------------------------------------------------------------------
+# Input hardening — cap steps, validate types, catch crashes
+# ---------------------------------------------------------------------------
+_MAX_STEPS = 50_000          # absolute ceiling for any 'steps' parameter
+_RUN_TIMEOUT_S = 15.0        # per-run wall-clock timeout
+_MAX_BODY_BYTES = 64_000     # reject absurdly large param dicts
+
+_NUMERIC_PARAMS = {
+    "lambda_a", "lambda_b", "alpha_a", "alpha_b", "alpha", "beta",
+    "b0_a", "b0_b", "beta_decay", "kappa_0", "kappa", "gamma",
+    "lambda_rate", "plasticity", "novelty", "duration",
+    "zeta", "threshold", "decay", "lr",
+}
+
+def _sanitise_params(raw: dict | None) -> dict:
+    """Validate and clamp user-supplied lab parameters."""
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        raise ValueError("Parameters must be a JSON object")
+    out: Dict = {}
+    for k, v in raw.items():
+        if not isinstance(k, str):
+            continue
+        # Step cap
+        if k in ("steps", "n_steps", "rounds", "epochs", "n_turns", "turns"):
+            try:
+                v = int(v)
+            except (TypeError, ValueError):
+                raise ValueError(f"'{k}' must be an integer")
+            if v < 0:
+                v = 0
+            v = min(v, _MAX_STEPS)
+        # Numeric validation
+        elif k in _NUMERIC_PARAMS:
+            try:
+                v = float(v)
+            except (TypeError, ValueError):
+                raise ValueError(f"'{k}' must be a number")
+        out[k] = v
+    return out
+
+
 @app.post("/api/labs/{paper}/{lab_name}/run")
 def lab_run(paper: str, lab_name: str, params: Dict = None):
     """Run a lab simulation with optional parameters."""
@@ -259,8 +302,17 @@ def lab_run(paper: str, lab_name: str, params: Dict = None):
     mod = _get_lab(key)
     if mod is None:
         return {"error": f"Lab '{key}' not found"}
-    kwargs = params or {}
-    return mod.run(**kwargs)
+    try:
+        kwargs = _sanitise_params(params)
+    except ValueError as e:
+        return {"error": f"Invalid parameters: {e}"}
+    try:
+        result = mod.run(**kwargs)
+    except (TypeError, ValueError) as e:
+        return {"error": f"Lab rejected parameters: {e}"}
+    except Exception as e:
+        return {"error": f"Lab execution error: {type(e).__name__}: {e}"}
+    return result
 
 
 # ---------------------------------------------------------------------------
