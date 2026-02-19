@@ -75,6 +75,31 @@ export default function Overview() {
         </p>
       </div>
 
+      {/* Variable glossary */}
+      <div className="mb-10">
+        <h3 className="text-lg font-serif text-slate-200 mb-4">Variables &amp; Notation</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {[
+            { sym: 'B(t)',  name: 'Baseline state',       def: 'The agent\'s current personality / cognitive resting point — a vector in state space. Drifts over time under experience.' },
+            { sym: 'I(t)',  name: 'Input signal',          def: 'The sensory or social experience arriving at this timestep. Pulls B toward it at rate λ.' },
+            { sym: 'λ',     name: 'Plasticity (lambda)',   def: 'How deeply an experience rewrites the baseline. High λ = highly malleable; low λ → ossification, nothing lands.' },
+            { sym: 'κ',     name: 'Coupling (kappa)',      def: 'Relational bond strength between two agents (0–1). Grows with familiarity and low novelty; decays when unused.' },
+            { sym: 'α',     name: 'Learning rate (alpha)', def: 'How quickly κ grows in response to low-novelty interaction.' },
+            { sym: 'β',     name: 'Decay rate (beta)',     def: 'How quickly unused κ fades — the relationship\'s forgetting rate.' },
+            { sym: 'ζ',     name: 'Zeta',                  def: 'Deontological attention filter. Low ζ: agent attends to world input (I). High ζ: agent tunes out world and locks onto the relational Other (D).' },
+            { sym: 'N',     name: 'Novelty',               def: '|I − B| — the prediction error. High novelty opens the encoding gate; low novelty closes it.' },
+          ].map(({ sym, name, def }) => (
+            <div key={sym} className="flex gap-3 p-3 rounded-lg bg-surface-800/40 border border-surface-700/30">
+              <span className="font-serif text-primary-300 text-base w-6 flex-shrink-0">{sym}</span>
+              <div>
+                <span className="text-xs font-semibold text-slate-200">{name}</span>
+                <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{def}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Papers → Labs */}
       <div>
         <h3 className="text-lg font-serif text-slate-200 mb-4">Papers & Simulation Labs</h3>

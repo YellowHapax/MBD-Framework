@@ -65,6 +65,57 @@ const COLORS = [
   '#00C49F', '#FFBB28', '#FF8042', '#a4de6c', '#d0ed57',
 ]
 
+/** Human-readable names for known series/summary keys, so scientists
+ *  can read chart legends and result panels without decoding code names. */
+const HUMAN_LABELS: Record<string, string> = {
+  // Core state
+  kappa:               'Coupling (κ)',
+  baselineA:           'Baseline A',
+  baselineB:           'Baseline B',
+  bA:                  'Baseline A',
+  bB:                  'Baseline B',
+  baseline:            'Baseline',
+  mutualError:         'Mutual prediction error',
+  input:               'Input signal (I)',
+  novelty:             'Novelty',
+  p_write:             'P(encode)',
+  // Dual resonance / emergent gate
+  novelty_a:           'Novelty — Agent A',
+  novelty_b:           'Novelty — Agent B',
+  // Zeta lab
+  world_N:             'World novelty',
+  relational_N:        'Relational novelty',
+  I_contribution:      'World input weight',
+  D_contribution:      'Relational input weight',
+  // Recall lab
+  p_recall:            'P(recall)',
+  encoding_strength:   'Encoding strength',
+  // Echo chamber
+  mean_baseline:       'Mean baseline',
+  std_baseline:        'Baseline std σ',
+  fragmentation:       'Fragmentation',
+  // Deontological
+  world_error:         'World prediction error',
+  social_error:        'Social prediction error (D)',
+  // Summary keys
+  finalKappa:          'Final κ',
+  finalBaselineA:      'Final baseline A',
+  finalBaselineB:      'Final baseline B',
+  finalError:          'Final prediction error',
+  turnsToConverge:     'Turns to convergence',
+  incongruence_boost:  'Incongruence boost',
+  sad_novelty:         'Sad-baseline novelty',
+  neutral_novelty:     'Neutral-baseline novelty',
+  happy_novelty:       'Happy-baseline novelty',
+  optimal_kappa:       'Optimal κ',
+  peak_secondary_novelty: 'Peak secondary novelty',
+  amnesia_severity:    'Amnesia severity',
+}
+
+function humanLabel(key: string): string {
+  return HUMAN_LABELS[key] ?? key
+}
+
 /* ── Generic result renderer ──────────────────────────────────────────────── */
 
 /** Detect which key a timeseries array uses for its X axis. */
@@ -110,7 +161,7 @@ function ResultCharts({ data }: { data: Record<string, unknown> }) {
             <Tooltip contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }} />
             <Legend />
             {keys.map((k, i) => (
-              <Line key={k} dataKey={k} stroke={COLORS[i % COLORS.length]} dot={false} strokeWidth={1.5} name={k} />
+              <Line key={k} dataKey={k} stroke={COLORS[i % COLORS.length]} dot={false} strokeWidth={1.5} name={humanLabel(k)} />
             ))}
           </LineChart>
         </ResponsiveContainer>
@@ -160,7 +211,7 @@ function ResultCharts({ data }: { data: Record<string, unknown> }) {
               <Tooltip contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }} />
               <Legend />
               {numKeys.map((k, i) => (
-                <Line key={k} dataKey={k} stroke={COLORS[(groupIdx + si + i) % COLORS.length]} dot={false} strokeWidth={1.5} name={k} />
+                <Line key={k} dataKey={k} stroke={COLORS[(groupIdx + si + i) % COLORS.length]} dot={false} strokeWidth={1.5} name={humanLabel(k)} />
               ))}
             </LineChart>
           </ResponsiveContainer>
@@ -199,11 +250,11 @@ function ResultCharts({ data }: { data: Record<string, unknown> }) {
   if (summary && typeof summary === 'object') {
     charts.push(
       <div key="summary" className="mt-4 p-4 rounded-lg bg-surface-800/60 border border-surface-700/40">
-        <h4 className="text-xs font-semibold text-primary-400 mb-2 uppercase tracking-wider">Summary</h4>
+        <h4 className="text-xs font-semibold text-primary-400 mb-2 uppercase tracking-wider">Simulation Summary</h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {Object.entries(summary).map(([k, v]) => (
             <div key={k} className="text-xs text-slate-300">
-              <span className="text-slate-500">{k}: </span>
+              <span className="text-slate-500">{humanLabel(k)}: </span>
               <span className="font-mono">{typeof v === 'number' ? (v as number).toFixed(4) : String(v)}</span>
             </div>
           ))}
@@ -264,7 +315,21 @@ function LabCard({ lab }: { lab: LabMeta }) {
       {/* Body */}
       {open && (
         <div className="px-5 pb-5 border-t border-surface-700/30">
-          <div className="flex items-center gap-3 mt-3">
+
+          {/* Full thesis — readable by a scientist arriving cold */}
+          <div className="mt-4 mb-4 p-4 rounded-lg bg-surface-800/40 border-l-2 border-primary-600/50">
+            <p className="text-xs text-slate-300 leading-relaxed">{lab.thesis}</p>
+            <a
+              href={`https://doi.org/${lab.paper_doi}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-2 text-[10px] font-mono text-primary-500 hover:text-primary-300 transition-colors"
+            >
+              ↗ doi:{lab.paper_doi}
+            </a>
+          </div>
+
+          <div className="flex items-center gap-3">
             <button
               onClick={handleRun}
               disabled={loading}
@@ -283,7 +348,14 @@ function LabCard({ lab }: { lab: LabMeta }) {
             <p className="text-xs text-red-400 mt-3">{error}</p>
           )}
 
-          {results && <ResultCharts data={results} />}
+          {results && (
+            <>
+              <h4 className="text-xs font-semibold text-slate-400 mt-5 mb-1 uppercase tracking-wider">
+                Simulation Results
+              </h4>
+              <ResultCharts data={results} />
+            </>
+          )}
         </div>
       )}
     </div>
