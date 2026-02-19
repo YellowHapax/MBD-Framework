@@ -118,6 +118,11 @@ function humanLabel(key: string): string {
 
 /* ── Generic result renderer ──────────────────────────────────────────────── */
 
+/** Human-readable X-axis label. */
+function xAxisLabel(key: string): string {
+  return key === 'turn' ? 'Turn' : 'Time'
+}
+
 /** Detect which key a timeseries array uses for its X axis. */
 function xAxisKey(item: Record<string, unknown>): string {
   if ('time' in item) return 'time'
@@ -156,8 +161,10 @@ function ResultCharts({ data }: { data: Record<string, unknown> }) {
         <ResponsiveContainer>
           <LineChart data={ts as Record<string, unknown>[]}>
             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-            <XAxis dataKey={xk} stroke="#666" tick={{ fontSize: 11 }} />
-            <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+            <XAxis dataKey={xk} stroke="#666" tick={{ fontSize: 11 }}
+              label={{ value: xAxisLabel(xk), position: 'insideBottomRight', offset: -4, fontSize: 11, fill: '#888' }} />
+            <YAxis stroke="#666" tick={{ fontSize: 11 }}
+              label={{ value: 'Value', angle: -90, position: 'insideLeft', offset: 10, fontSize: 11, fill: '#888' }} />
             <Tooltip contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }} />
             <Legend />
             {keys.map((k, i) => (
@@ -178,6 +185,13 @@ function ResultCharts({ data }: { data: Record<string, unknown> }) {
     novelty: 'Novelty Focus (World vs Relational)',
     trials: '',
     series: '',
+  }
+  const GROUP_YAXIS: Record<string, string> = {
+    kappa: 'κ',
+    baseline: 'Contribution',
+    novelty: 'Novelty',
+    trials: 'Value',
+    series: 'Value',
   }
   let groupIdx = 0
   for (const [topKey, val] of Object.entries(data)) {
@@ -206,8 +220,10 @@ function ResultCharts({ data }: { data: Record<string, unknown> }) {
           <ResponsiveContainer>
             <LineChart data={sd}>
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis dataKey={xk} stroke="#666" tick={{ fontSize: 10 }} />
-              <YAxis stroke="#666" tick={{ fontSize: 10 }} />
+              <XAxis dataKey={xk} stroke="#666" tick={{ fontSize: 10 }}
+                label={{ value: xAxisLabel(xk), position: 'insideBottomRight', offset: -4, fontSize: 10, fill: '#888' }} />
+              <YAxis stroke="#666" tick={{ fontSize: 10 }}
+                label={{ value: GROUP_YAXIS[topKey] ?? 'Value', angle: -90, position: 'insideLeft', offset: 10, fontSize: 10, fill: '#888' }} />
               <Tooltip contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }} />
               <Legend />
               {numKeys.map((k, i) => (
@@ -232,8 +248,10 @@ function ResultCharts({ data }: { data: Record<string, unknown> }) {
         <ResponsiveContainer>
           <BarChart data={comp as Record<string, unknown>[]}>
             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-            <XAxis dataKey={labelKey} stroke="#666" tick={{ fontSize: 10 }} />
-            <YAxis stroke="#666" tick={{ fontSize: 10 }} />
+            <XAxis dataKey={labelKey} stroke="#666" tick={{ fontSize: 10 }}
+              label={{ value: 'Condition', position: 'insideBottomRight', offset: -4, fontSize: 10, fill: '#888' }} />
+            <YAxis stroke="#666" tick={{ fontSize: 10 }}
+              label={{ value: 'Value', angle: -90, position: 'insideLeft', offset: 10, fontSize: 10, fill: '#888' }} />
             <Tooltip contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }} />
             <Legend />
             {numKeys.map((k, i) => (
