@@ -268,7 +268,22 @@ def lab_run(paper: str, lab_name: str, params: Dict = None):
 # ---------------------------------------------------------------------------
 _DIST = Path(__file__).parent / "dist"
 
-if _DIST.exists():
+if not _DIST.exists():
+    import textwrap
+    print(textwrap.dedent("""
+        ⚠  lab/dist/ not found.
+
+        The pre-built frontend is missing.  Build it once with:
+
+            cd lab
+            npm install
+            npm run build
+            cd ..
+
+        Then re-run:  python lab/server.py
+        API docs are still available at http://localhost:8050/docs
+    """))
+else:
     # Serve hashed asset bundles from /assets (immutable, cache-friendly)
     _assets = _DIST / "assets"
     if _assets.exists():

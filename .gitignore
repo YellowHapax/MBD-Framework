@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info/
-dist/
+/dist/
 build/
 *.egg
 
@@ -28,7 +28,7 @@ reports/
 
 # Lab frontend build artifacts
 lab/node_modules/
-lab/dist/
+# lab/dist/ is intentionally committed so `python lab/server.py` works from a fresh clone
 
 # Runtime (chat/persona/memory) — lives in Sanctuary, not here
 runtime/

@@ -109,21 +109,42 @@ MBD-Framework/
 
 ## Quick Start
 
+### Command-line only (no Node.js required)
+
 ```bash
 pip install -r requirements.txt
 
-# Run any lab from the command line
+# Run any lab and print results to stdout
 python -m labs.paper1_baseline.eq_lab
 python -m labs.paper4_coupling.phenomena_bpd
 python -m labs.paper6_resonant_gate.zeta_lab
 
-# Or start the interactive web UI
-python lab/server.py                # API at localhost:8050
-cd lab && npm install && npm run dev  # UI at localhost:5173
-
-# Jupyter notebooks
+# Jupyter walkthroughs
 jupyter notebook notebooks/
 ```
+
+### Interactive web UI (recommended)
+
+Node.js is only needed once to install dependencies. After that, the server
+serves everything — no Node process required at runtime.
+
+```bash
+pip install -r requirements.txt
+
+# First time only: build the frontend
+cd lab
+npm install
+npm run build
+cd ..
+
+# Start the server — UI + API on one port
+python lab/server.py
+# → open http://localhost:8050
+```
+
+> **Note:** If you cloned from GitHub, the pre-built `lab/dist/` is included
+> in the repository so you may be able to skip the `npm` steps and run
+> `python lab/server.py` directly.
 
 ## Lab Module Interface
 
