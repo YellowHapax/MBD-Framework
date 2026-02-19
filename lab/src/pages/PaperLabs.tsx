@@ -67,76 +67,107 @@ const COLORS = [
 
 /* ── Generic result renderer ──────────────────────────────────────────────── */
 
+/** Detect which key a timeseries array uses for its X axis. */
+function xAxisKey(item: Record<string, unknown>): string {
+  if ('time' in item) return 'time'
+  if ('turn' in item) return 'turn'
+  return 'time'
+}
+
+/** True when v is an object whose own values are all non-empty arrays of objects. */
+function isDictOfSeries(v: unknown): v is Record<string, Record<string, unknown>[]> {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return false
+  const vals = Object.values(v as Record<string, unknown>)
+  if (vals.length === 0) return false
+  return vals.every((arr) => Array.isArray(arr) && arr.length > 0 && typeof arr[0] === 'object')
+}
+
+const SKIP_RENDER_KEYS = new Set([
+  'summary', 'params', 'comparison', 'constitution', 'cross_state_recall',
+  'labels', 'peak_novelties', 'encoding_safe', 'encoding_trauma',
+])
+
 function ResultCharts({ data }: { data: Record<string, unknown> }) {
   const charts: JSX.Element[] = []
 
-  // Try to render timeseries (the most common shape)
-  const ts = (data.timeseries ?? data.series ?? data.trials ?? data.kappa) as unknown
-  if (Array.isArray(ts) && ts.length > 0 && typeof ts[0] === 'object') {
-    const keys = Object.keys(ts[0] as Record<string, unknown>).filter(
-      (k) => k !== 'time' && k !== 'turn' && typeof (ts[0] as Record<string, unknown>)[k] === 'number'
+  // 1. Flat timeseries — any top-level key that is a non-empty array of tick objects
+  const FLAT_KEYS = ['timeseries', 'series']
+  for (const fk of FLAT_KEYS) {
+    const ts = data[fk]
+    if (!Array.isArray(ts) || ts.length === 0 || typeof ts[0] !== 'object') continue
+    const first = ts[0] as Record<string, unknown>
+    const xk = xAxisKey(first)
+    const keys = Object.keys(first).filter(
+      (k) => k !== 'time' && k !== 'turn' && typeof first[k] === 'number'
     )
     charts.push(
-      <div key="ts" className="h-72">
+      <div key={`flat-${fk}`} className="h-72">
         <ResponsiveContainer>
           <LineChart data={ts as Record<string, unknown>[]}>
             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-            <XAxis dataKey="time" stroke="#666" tick={{ fontSize: 11 }} />
+            <XAxis dataKey={xk} stroke="#666" tick={{ fontSize: 11 }} />
             <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-            <Tooltip
-              contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }}
-            />
+            <Tooltip contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }} />
             <Legend />
             {keys.map((k, i) => (
-              <Line
-                key={k}
-                dataKey={k}
-                stroke={COLORS[i % COLORS.length]}
-                dot={false}
-                strokeWidth={1.5}
-                name={k}
-              />
+              <Line key={k} dataKey={k} stroke={COLORS[i % COLORS.length]} dot={false} strokeWidth={1.5} name={k} />
             ))}
           </LineChart>
         </ResponsiveContainer>
       </div>
     )
+    break
   }
 
-  // If result is a dict of named series (e.g. dual_resonance trials, zeta kappa)
-  if (ts && !Array.isArray(ts) && typeof ts === 'object') {
-    const seriesMap = ts as Record<string, unknown[]>
+  // 2. Dict-of-series groups — scan ALL top-level keys (handles zeta_lab kappa/baseline/novelty,
+  //    mood_incongruent series, dual_resonance trials, etc.)
+  const GROUP_LABEL: Record<string, string> = {
+    kappa: 'κ Coupling Dynamics',
+    baseline: 'Baseline Constitution (I vs D)',
+    novelty: 'Novelty Focus (World vs Relational)',
+    trials: '',
+    series: '',
+  }
+  let groupIdx = 0
+  for (const [topKey, val] of Object.entries(data)) {
+    if (SKIP_RENDER_KEYS.has(topKey)) continue
+    if (!isDictOfSeries(val)) continue
+    const seriesMap = val
     const seriesKeys = Object.keys(seriesMap)
-    if (
-      seriesKeys.length > 0 &&
-      Array.isArray(seriesMap[seriesKeys[0]]) &&
-      seriesMap[seriesKeys[0]].length > 0
-    ) {
-      seriesKeys.forEach((sk, si) => {
-        const sd = seriesMap[sk] as Record<string, unknown>[]
-        if (sd.length === 0 || typeof sd[0] !== 'object') return
-        const numKeys = Object.keys(sd[0]).filter(
-          (k) => k !== 'time' && k !== 'turn' && typeof sd[0][k] === 'number'
-        )
-        charts.push(
-          <div key={`series-${sk}`} className="h-60 mt-4">
-            <h4 className="text-xs text-slate-400 mb-1">{sk}</h4>
-            <ResponsiveContainer>
-              <LineChart data={sd}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis dataKey={numKeys.length > 0 ? undefined : 'turn'} stroke="#666" tick={{ fontSize: 10 }} />
-                <YAxis stroke="#666" tick={{ fontSize: 10 }} />
-                <Tooltip contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }} />
-                <Legend />
-                {numKeys.map((k, i) => (
-                  <Line key={k} dataKey={k} stroke={COLORS[(si + i) % COLORS.length]} dot={false} strokeWidth={1.5} name={k} />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )
-      })
-    }
+    const groupLabel = GROUP_LABEL[topKey] ?? topKey
+
+    seriesKeys.forEach((sk, si) => {
+      const sd = seriesMap[sk]
+      if (sd.length === 0 || typeof sd[0] !== 'object') return
+      const first = sd[0] as Record<string, unknown>
+      const xk = xAxisKey(first)
+      const numKeys = Object.keys(first).filter(
+        (k) => k !== 'time' && k !== 'turn' && typeof first[k] === 'number'
+      )
+      charts.push(
+        <div key={`group-${topKey}-${sk}`} className="h-60 mt-4">
+          {si === 0 && groupLabel && (
+            <h4 className="text-xs font-semibold text-primary-400/70 mb-1 uppercase tracking-wider">
+              {groupLabel}
+            </h4>
+          )}
+          <p className="text-xs text-slate-400 mb-1">{sk}</p>
+          <ResponsiveContainer>
+            <LineChart data={sd}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+              <XAxis dataKey={xk} stroke="#666" tick={{ fontSize: 10 }} />
+              <YAxis stroke="#666" tick={{ fontSize: 10 }} />
+              <Tooltip contentStyle={{ background: '#1e1e2e', border: '1px solid #444', borderRadius: 8 }} />
+              <Legend />
+              {numKeys.map((k, i) => (
+                <Line key={k} dataKey={k} stroke={COLORS[(groupIdx + si + i) % COLORS.length]} dot={false} strokeWidth={1.5} name={k} />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    })
+    groupIdx++
   }
 
   // Render comparison/constitution bars if present

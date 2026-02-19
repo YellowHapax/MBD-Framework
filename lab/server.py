@@ -16,6 +16,8 @@ sys.path.insert(0, str(FRAMEWORK_ROOT))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from typing import List, Dict
 import importlib
@@ -43,7 +45,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:8050",
+        "http://127.0.0.1:8050",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -257,9 +264,29 @@ def lab_run(paper: str, lab_name: str, params: Dict = None):
 
 
 # ---------------------------------------------------------------------------
+# Static file serving — built React SPA
+# ---------------------------------------------------------------------------
+_DIST = Path(__file__).parent / "dist"
+
+if _DIST.exists():
+    # Serve hashed asset bundles from /assets (immutable, cache-friendly)
+    _assets = _DIST / "assets"
+    if _assets.exists():
+        app.mount("/assets", StaticFiles(directory=str(_assets)), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def spa_fallback(full_path: str):
+        """Serve the React SPA for any path not matched by an API route."""
+        target = _DIST / full_path
+        if target.exists() and target.is_file():
+            return FileResponse(str(target))
+        return FileResponse(str(_DIST / "index.html"))
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     import uvicorn
-    print("MBD Lab API — http://localhost:8050/docs")
+    print("MBD Lab API — http://localhost:8050")
+    print("MBD Lab Docs — http://localhost:8050/docs")
     uvicorn.run(app, host="127.0.0.1", port=8050, log_level="info")

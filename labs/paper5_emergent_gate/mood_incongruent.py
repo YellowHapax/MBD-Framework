@@ -20,10 +20,10 @@ from typing import Any, Dict, List
 PAPER = 5
 PAPER_TITLE = "The Emergent Gate"
 PAPER_DOI = "10.5281/zenodo.17344091"
-LAB_TITLE = "Phenomenon P6: Mood-Incongruent Memory"
+LAB_TITLE = "Phenomenon: Mood-Incongruent Memory"
 
 THESIS = (
-    "P6 — Mood-Incongruent Memory formation. In standard encoding models, "
+    "Mood-Incongruent Memory formation. In standard encoding models, "
     "a happy event during a happy mood is 'expected' and barely encoded. "
     "MBD predicts the reverse: a happy event experienced from a depressed "
     "baseline produces enormous novelty, because the deviation from *what "

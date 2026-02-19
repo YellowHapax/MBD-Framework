@@ -21,10 +21,10 @@ import numpy as np
 PAPER = 5
 PAPER_TITLE = "The Emergent Gate"
 PAPER_DOI = "10.5281/zenodo.17344091"
-LAB_TITLE = "Phenomenon P7: Dual Resonance"
+LAB_TITLE = "Phenomenon: Dual Resonance"
 
 THESIS = (
-    "P7 — When two agents are coupled via κ, the novelty of an event "
+    "When two agents are coupled via κ, the novelty of an event "
     "experienced by one reverberates through the other. If baselines are "
     "sufficiently divergent and coupling is moderate, the resonance *amplifies* "
     "the original novelty signal. If coupling overwhelms baseline identity "
