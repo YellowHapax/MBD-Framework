@@ -182,4 +182,115 @@ The mathematics are unchanged. The meaning of every term in them has to be reneg
 
 ---
 
+## 10. Formal Correspondence with Friston's Active Inference / Free Energy Principle
+
+The Free Energy Principle (FEP) and its active inference framework (Friston, 2010–2025) describe cognition as variational Bayesian inference: all neural dynamics minimize a bound on surprise, and action is the mechanism by which organisms bring sensory observations into alignment with their prior preferences. MBD and FEP share deep structural roots. This section establishes the formal correspondence, identifies the novel contributions that each framework brings to the other, and anchors the correspondence to the empirical literature.
+
+### 10.1 Variable Correspondence Table
+
+| MBD Variable | AIF / FEP Variable | Formal Relationship | Interpretation |
+|---|---|---|---|
+| $B(t)$ — baseline state vector | $\mu$ — posterior mean (variational belief) | **Structural identity.** Both represent the system's current best estimate of its internal/environmental state. Both resist deviation proportionally to their encoded confidence. | B(t) *is* the running-average posterior. The weighted update rule $B(t+1) = B(t)(1-\lambda) + I(t)\lambda$ is a first-order variational update. |
+| $I(t) - B(t)$ — deviation signal | $\varepsilon = o - g(\mu)$ — prediction error | **Structural identity.** Both measure *observed minus expected*. The magnitude of this quantity drives all downstream encoding, coupling, and gate dynamics in MBD; it is the literal update signal in predictive coding. | The dysgranular mid-insula is the proposed neural substrate for this computation (Seth & Friston, 2016; Adamic et al., 2024). |
+| $\lambda$ — update rate | $\pi_s / (\pi_s + \pi_p)$ — precision-weighted update | **Parametric correspondence.** Precision $\pi = 1/\sigma^2$ (inverse variance). The Bayesian update weight is $\pi_{sensory}/(\pi_{sensory} + \pi_{prior})$. Setting $\lambda \equiv \pi_s/(\pi_s + \pi_p)$ recovers the MBD update rule. | Low $\lambda$ in MBD = high prior precision relative to sensory precision in FEP = the prior resists updating = the baseline resists deviation. Depression as low $\lambda$ (Barrett et al., 2016; Smith et al., 2020). |
+| $\kappa$ — social coupling coefficient | *(no direct AIF equivalent)* | **MBD novel contribution.** AIF models individual agents; collective behavior studies (Heins, Millidge, da Costa, Mann, Friston & Couzin, *PNAS* 2024) show that social forces *emerge* from shared generative models under surprise minimization, but no single parameter governs inter-agent update rates. $\kappa$ is the explicit handle on this emergent dynamic. | $\kappa$ makes between-agent recursive baseline updating tractable to measure, vary, and intervene on — a parametric gap in the FEP architecture. |
+| $D$ — deontological demand | $\tilde{P}(o)$ — prior preferences over outcomes | **Approximate correspondence.** FEP agents have preferred outcomes encoded as prior beliefs; the cost of occupying non-preferred states enters directly into free energy. $D$ generalizes this to the *environment* as an agent: built spaces (Sanctuaries, Arenas, Markets, Cesspits) generate structural demand fields that deform the agent's effective $\tilde{P}(o)$. | Context-sensitive reward in Barrett, Quigley & Hamilton (2016): allostatic context shapes what constitutes a "preferred" interoceptive state. |
+| Endemic $B(0)$ | Pathological attractor formed by early adversity | **Bidirectional mapping.** FEP literature models resistant priors as deep attractors in the free energy landscape — states that persist because the gradient of surprise does not point away from them for the agent's generative model. Endemic $B(0)$ is exactly this: a deep attractor whose walls are high because *all evidence ever received was generated within it*. | Barrett et al. 2016 (allostasis/depression); Smith et al. 2020 (computational model of treatment response); early-adversity prior-formation literature. |
+| $\mathcal{H} = H_{accessible} \setminus H_{agent}$ — Horizon | *(no direct AIF equivalent)* | **MBD novel contribution.** AIF accommodates uncertainty about *known* states (imprecise beliefs about states the generative model contains). $\mathcal{H}$ formalizes a structurally different epistemic barrier: states that are absent from the generative model not because of uncertainty, but because they have never been occupied and therefore were never encoded into the prior. | The agranular anterior insula generates predictive forward models for anticipated interoceptive states (Adamic et al., 2024). ADE individuals show *pruned agranular activation* during anticipatory uncertainty — consistent with the prediction that $\mathcal{H}$ contains states for which no forward model can be generated. |
+
+### 10.2 What MBD Adds to the AIF Conversation
+
+FEP is a single-agent framework with no native parametric account of inter-agent baseline modification. The social force literature (Heins et al., *PNAS* 2024) shows that collective phenomena emerge from individual surprise minimization, but the coupling is an emergent property — not a measurable, manipulable parameter.
+
+MBD contributes three things FEP currently lacks:
+
+1. **$\kappa$ as an explicit mediator of social baseline coupling.** The therapeutic relationship, the culture, the peer group — these modify $B(t)$ through the same mathematical mechanism as sensory input, but at a different rate and subject to a rejection threshold. This is not epiphenomenal; it is the primary mechanism by which social scaffolding is or is not integrated. FEP has no variable that captures this.
+
+2. **$\mathcal{H}$ as a structural concept for prior non-occupancy.** FEP routinely models high uncertainty over states. It does not model the case where states are absent from the generative model because they have never been visited — the phenomenological gap of Paper 7. This is a genuinely novel structure.
+
+3. **Deontological demand $D$ as an environmental agency.** FEP places all agency in the agent. $D$ places structural preference-shaping in the physical and social environment — the Quadrafoil is a field of attractors that systematically deform agent priors over time. This is a non-trivial architectural distinction.
+
+### 10.3 What FEP Contributes to the MBD Conversation
+
+FEP provides three things MBD currently handles loosely:
+
+1. **Hierarchical precision.** MBD uses a single $\lambda$. FEP has precision at every level of a hierarchical generative model, with context-dependent modulation. A full account of the endemic baseline probably requires precision to vary across representational levels — the prior at the self-model level may be more resistant than the prior at the sensory level.
+
+2. **Neural substrate predictions.** The insula hierarchy (granular → dysgranular → agranular, posterior → anterior) provides specific, testable predictions about *where* in the brain the $I(t) - B(t)$ computation occurs, where the precision modulation occurs, and what breaks in psychiatric disorders. Adamic et al. (2024) provides fMRI data directly testable against endemic baseline predictions.
+
+3. **Action as free energy minimization.** MBD's Re-zeroing Protocol describes a sequence of inputs. FEP provides the deeper account of how active inference *selects* those inputs — the agent acts to bring future sensory states into alignment with prior preferences. For re-zeroing, the protocol must first establish preferred states in $\mathcal{H}$ before action selection can target them.
+
+### 10.4 The Empirical Bridge: Adamic et al. (2024), eLife
+
+The most direct neural evidence for the MBD endemic baseline prediction comes from *Hemispheric divergence of interoceptive processing across psychiatric disorders* (Adamic, Teed, Avery, de la Cruz & Khalsa, *eLife* 13:RP92820, 2024). Key findings:
+
+**Population:** 46 individuals with anxiety, depression, and/or eating disorders (ADE; 72% lifetime MDD) and 46 matched healthy comparisons (HC), measured during pharmacological interoceptive perturbation (isoproterenol IV infusion) and voluntary interoceptive attention tasks.
+
+**Finding 1 — Blunted anticipatory agranular activation (MBD: λ failure under uncertainty):**
+> "The reduced spatial extent of this activation in the ADE versus HC group could plausibly stem from an overreliance on top-down predictions and perhaps a pruning of spatial activation in the associated regions... Such 'efficient' neural exchanges might even result from a chronic inability to adjust confidence in bodily input in relation to its ambiguity."
+
+In MBD terms: when faced with a genuinely uncertain situation (isoproterenol anticipated but not yet arrived), HC individuals expand agranular insula recruitment — they *generate forward models* for anticipated states. ADE individuals do not. This is low $\lambda$ at the predictive level: the system lacks the machinery to update B(t) in response to anticipated deviation, not just actual deviation.
+
+For the endemic baseline specifically: if $\mathcal{H}$ contains states that have never been anticipated because they have never been occupied, then *there is no forward model to retrieve*. The agranular pruning in ADE is, under this reading, partly a function of never having built the anticipatory infrastructure for healthy states.
+
+**Finding 2 — Altered insula-frontal connectivity correlated with depression severity:**
+> "The magnitude of functional connectivity change between these two areas was associated with trait anxiety (...) and trait depression (...) but not the magnitude of ISO-induced heart rate."
+
+The neural signature tracks the phenomenological/trait dimension, not the peripheral signal strength. The disruption is at the *interpretive layer* — the B(t) level — not at the sensory input level. This replicates the core MBD claim: pathology is not in the signal; it is in the baseline that interprets the signal.
+
+**Finding 3 — Dysgranular mid-insula as locus of interoceptive disruption (previously: Nord et al., 2021):**
+> "These hemispheric asymmetries, and the disparate spatial patterns within the left dysgranular insula, support the conceptualization of this subregion as a 'locus of disruption' for interoceptive symptomatology in these disorders."
+
+The dysgranular mid-insula is proposed as the site where prediction errors $\varepsilon = I(t) - B(t)$ are computed. Its disruption in ADE is the neural expression of a corrupted deviation signal — corrupted because $B(t)$ was set under pathological conditions.
+
+### 10.5 The Multi-Agent Bridge: Heins et al. (PNAS 2024)
+
+*Collective behavior from surprise minimization* (Heins, Millidge, da Costa, Mann, Friston & Couzin, *PNAS* 121(17), 2024) demonstrates that cohesion, milling, and directed group motion emerge when individual agents minimize their variational free energy with respect to a shared generative model. Social forces — attraction, repulsion, alignment — recover naturally as prediction-error suppression at the inter-agent level.
+
+**MBD translation:**  
+$\kappa$ is the parametric handle on this emergent dynamic. When the Architect builds a therapy room with high $\kappa$ between therapist and client, they are tuning the *effective social force* that governs whether I(t) from the therapist's world can update B(t) in the client's generative model. The Heins et al. mathematics confirm: this is not metaphor. Social force *is* inter-agent prediction error suppression. $\kappa$ is the gain on that channel. The Re-zeroing Protocol's mandate to build $\kappa$ *before* horizon inputs is the practical expression of: you cannot minimize prediction error with respect to another agent's generative model until you share enough of the model to make the errors legible.
+
+### 10.6 Summary: Correspondence and Divergence
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│              MBD ↔ FEP: Structure of Correspondence                      │
+├───────────────┬────────────────────────────────┬───────────────────────── ┤
+│ SHARED CORE   │ Both frameworks                │ Identical math layer    │
+│               │ B(t) ≡ μ                       │                         │
+│               │ I(t)−B(t) ≡ ε = o−g(μ)        │                         │
+│               │ λ ≡ πs/(πs+πp)                │                         │
+├───────────────┼────────────────────────────────┼─────────────────────────┤
+│ MBD NOVEL     │ κ — explicit inter-agent        │ FEP: emergent, no param │
+│               │ coupling coefficient           │                         │
+│               │ H — Horizon: non-occupancy     │ FEP: models imprecision,│
+│               │ as epistemic barrier           │ not structural absence  │
+│               │ D — environmental deontological│ FEP: agent-level prefs  │
+│               │ demand field                   │ only                    │
+├───────────────┼────────────────────────────────┼─────────────────────────┤
+│ FEP NOVEL     │ Hierarchical precision (multi- │ MBD: single λ layer     │
+│               │ level λ)                       │                         │
+│               │ Neural substrate predictions   │ MBD: substrate-agnostic │
+│               │ (insula laminar hierarchy)     │                         │
+│               │ Action as free energy          │ MBD: inputs specified;  │
+│               │ minimization                   │ selection mechanism open│
+└───────────────┴────────────────────────────────┴─────────────────────────┘
+```
+
+The endemic baseline is the region of this correspondence space where MBD and FEP most directly converge: a pathological attractor formed by early adversity, where the prior (B(0)) correctly describes the only world ever occupied, and where the Horizon ($\mathcal{H}$) identifies the states for which neither a generative model nor prior preferences yet exist. The endemic flag is the formal indicator that both frameworks' standard intervention assumptions fail simultaneously.
+
+---
+
+### Cited works (this section)
+
+- Adamic EM, Teed AR, Avery J, de la Cruz F, Khalsa SS (2024). Hemispheric divergence of interoceptive processing across psychiatric disorders. *eLife* 13:RP92820. [https://doi.org/10.7554/eLife.92820](https://doi.org/10.7554/eLife.92820)
+- Barrett LF, Quigley KS, Hamilton P (2016). An active inference theory of allostasis and interoception in depression. *Phil Trans R Soc B* 371:20160011. [https://doi.org/10.1098/rstb.2016.0011](https://doi.org/10.1098/rstb.2016.0011)
+- Heins C, Millidge B, da Costa L, Mann R, Friston K, Couzin I (2024). Collective behavior from surprise minimization. *Proc Natl Acad Sci* 121(17):e2320239121. [https://doi.org/10.1073/pnas.2320239121](https://doi.org/10.1073/pnas.2320239121)
+- Nord CL, Lawson RP, Dalgleish T (2021). Disrupted dorsal mid-insula activation during interoception across psychiatric disorders. *Am J Psychiatry* 178:761–770.
+- Paulus MP, Feinstein JS, Khalsa SS (2019). An active inference approach to interoceptive psychopathology. *Annu Rev Clin Psychol* 15:97–122. [https://doi.org/10.1146/annurev-clinpsy-050718-095617](https://doi.org/10.1146/annurev-clinpsy-050718-095617)
+- Seth AK, Friston KJ (2016). Active interoceptive inference and the emotional brain. *Phil Trans R Soc B* 371:20160007. [https://doi.org/10.1098/rstb.2016.0007](https://doi.org/10.1098/rstb.2016.0007)
+- Smith R et al. (2020). Computational models of interoception and body regulation. *Trends Neurosci* 44:63–76.
+
+---
+
 *Previous paper in series: [The Resonant Gate, DOI: 10.5281/zenodo.17352481](https://doi.org/10.5281/zenodo.17352481)*
