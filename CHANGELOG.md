@@ -7,7 +7,11 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- `citation_watchdog.py`: two-stage citation monitoring — queries OpenAlex, Semantic Scholar, and GitHub Search for uncited derivatives of all registered DOIs
+
 ### Fixed
+- `CITATION.cff`, `.zenodo.json`: add canonical ORCID (`0000-0001-7521-5469`) to author record
 - `.gitignore`: exclude `runtime/`, personal API-council scripts, and `.openrouter.key` from all future commits
 - `launch_stella_field.bat`, `view_stella_octangula.bat`: replace hardcoded local venv path with `python` (PATH) default; local `venv/` takes precedence if present
 - `launch_stella_field.bat`: replace `exec(open(...))` hack with a clean `python visualize_stella.py` invocation

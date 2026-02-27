@@ -7,6 +7,7 @@ type: software
 authors:
   - given-names: Brandon
     family-names: Everett
+    orcid: "https://orcid.org/0000-0001-7521-5469"
 repository-code: https://github.com/YellowHapax/MBD-Framework
 license: Apache-2.0
 version: 0.1.0
