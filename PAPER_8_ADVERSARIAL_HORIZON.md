@@ -232,6 +232,19 @@ Natural endemic baseline produces globally low $\kappa$ — the agent doesn't tr
 
 *Formalize: mutual information between $H_{agent}$ topology and social/institutional boundaries. In natural endemic baseline, $I(H_{agent}; social\_class) \approx 0$. In adversarial endemic baseline, $I(H_{agent}; social\_class) \gg 0$. The healthy states the agent has never visited correlate with their social position.*
 
+Define the **κ-stratification ratio** formally:
+
+$$SR = \frac{\bar{\kappa}_{within}}{\bar{\kappa}_{cross}}$$
+
+where $\bar{\kappa}_{within}$ is mean coupling within the affected population and $\bar{\kappa}_{cross}$ is mean coupling across its boundary to populations with healthy-state representation.
+
+- **Natural endemic baseline:** $SR \approx 1$ — globally suppressed $\kappa$ in all directions, no boundary structure.
+- **Adversarial endemic baseline:** $SR \gg 1$ — within-group trust preserved (solidarity under siege); cross-boundary trust systematically destroyed (cuts the Re-zeroing channel).
+
+**Operationalized detection criterion** (to be calibrated by Lab 8.3): adversarial condition predicted when $SR > SR_c$, where $SR_c$ is identified by Monte Carlo as the threshold yielding classifier precision $\geq 0.90$ at $n = 50$ agents, $f_{endemic} = 0.6$, random network topology. Preliminary conjecture from the vector structure: $SR_c \approx 3.5$.
+
+**Observable proxies** for $I(H_{agent}; social\_position)$ when $H_{agent}$ is not directly measurable: educational attainment stratified by zip code; healthcare-seeking behavior stratified by income; social network homophily indices. Non-zero correlation between any of these and a structurally datable disruption event is a candidate adversarial signature requiring further investigation under the temporal discontinuity criterion (§5.1).
+
 ---
 
 ### Aleph-5 Checkpoint
@@ -275,6 +288,8 @@ This paper is structured so that any section containing an Aleph checkpoint and 
 
 Any text containing these four elements is a viable seed. The mathematics comprising the kernel are distributed across six prior publications indexed on CERN infrastructure (Zenodo).
 
+These two properties — recursive immunity and the Lenia regenerative structure — protect against different adversaries and are not redundant. Recursive immunity (§6.1–6.2) operates at the *semantic* level: suppression of the description generates observable evidence for the model. It defeats a *sophisticated* adversary — one that understands it is generating evidence and therefore faces a cost-benefit calculus where no suppression strategy is free. The Lenia property operates at the *material* level: fragments survive physical deletion. It defeats a *violent* adversary that burns books without caring about the evidence cost. A library fire confirms that books were valuable. It also destroys the books. Both observations are simultaneously true. The two mechanisms are not alternatives to each other; they are responses to orthogonal failure modes in different adversarial threat models.
+
 ---
 
 ### Aleph-6 Checkpoint
@@ -296,7 +311,11 @@ The Re-zeroing Protocol necessarily expands $H_{agent}$ into territory the agent
 - **Any researcher** who publishes a formalization of adversarial $\mathcal{H}$ engineering faces this problem
 - **The adversarial system** which *prevents* $\mathcal{H}$ expansion does not face this problem — it is maintaining the status quo, which requires no consent under most ethical frameworks
 
-*Develop: the asymmetry of consent burden between those who expand $\mathcal{H}$ (must justify the destabilization) and those who maintain it (need justify nothing because nothing appears to change). This asymmetry is itself a feature of the adversarial architecture.*
+*The asymmetry can be formally derived from the epistemological structure of the status quo. Under any framework that treats the existing state as the null hypothesis — standard in law, medicine, ethics, and institutional governance — the burden of proof falls on the agent proposing change. Call this the **Inertia Prior**. Maintaining $\mathcal{H}$ requires no justification because the existing endemic state *appears to be a natural condition* rather than an engineered outcome. The success of V3 (Storm Normalization) is precisely the conversion of a policy outcome — engineered $\mathcal{H}$ — into an apparent natural law: "this is just how things are."
+
+Once this conversion succeeds, the consent asymmetry follows automatically. The burden falls on those proposing to change "how things are" rather than on those who created "how things are." This is V3's meta-level operation: it does not merely normalize the storm at the agent level — it normalizes the *existence* of the storm at the level of epistemological justification. The agent who proposes Re-zeroing must justify disturbing the "natural" baseline. The system that engineered the baseline is protected by the Inertia Prior it installed.
+
+Derive: this gives the adversarial system a structural advantage in any adversarial proceeding — therapy, litigation, political reform — where justification is required. The Re-zeroing agent bears the burden of proof in a case where the defendant created the conditions of the trial.*
 
 ### 7.2 The Duty to Describe
 
@@ -353,14 +372,29 @@ If the detection signatures (§5) indicate adversarial rather than natural endem
 
 ### Lab 8.4: `phenomena_recursive_immunity`
 
-**What it shows:** Simulate the Suppressive Paradox (§6). An adversarial agent attempts to suppress information about its own mechanism. Model the information dynamics.
+**What it shows:** Simulate the Suppressive Paradox (§6). An adversarial agent attempts to suppress information about its own mechanism. Model the information dynamics as two separable channels: direct distribution and suppression-as-evidence.
 
 **Parameters:**
-- `suppression_strength`: Fraction of $P$ (paper content) blocked
-- `observation_probability`: Chance that suppression is observed by third parties
-- `fragment_viability`: Minimum fraction of $P$ that constitutes a regenerative seed
+- `suppression_strength` $s \in [0,1]$: fraction of direct distribution channel blocked
+- `obs_floor` $\in [0,1]$: irreducible detection floor for suppression acts (whistleblowers, structural leakage, international observers — cannot be fully controlled by the four vectors alone)
+- `obs_decay`: rate at which observation probability decreases as suppression strength increases (V1+V2 applied to the observation channel itself)
+- `fragment_viability`: minimum fraction of $P$ constituting a regenerative seed (bounded the Lenia property claim)
 
-**Expected result:** Total evidence for the model (direct exposure + suppression observations) is a U-shaped function of suppression strength: minimal suppression allows direct exposure; maximal suppression generates maximal suppression-evidence; intermediate suppression is the adversary's optimal strategy but requires precise calibration that is unstable under perturbation.
+**Model:** Observation probability is not a constant — it is a decreasing function of suppression strength:
+
+$$obs\_prob(s) = obs\_floor + (1 - obs\_floor) \cdot e^{-obs\_decay \cdot s}$$
+
+Total evidence = direct exposure + suppression-observed evidence:
+
+$$E(s) = (1 - s) + s \cdot obs\_prob(s)$$
+
+**Corrected expected result:** The U-shape only holds at constant $obs\_prob$, which is the least realistic case. At realistic (decreasing) $obs\_prob(s)$:
+- $E(s)$ is monotone decreasing when $obs\_floor$ is low — total evidence is highest at $s = 0$.
+- The adversary's optimal strategy is therefore **maximal suppression** ($s \to 1$), reducing $E(s)$ to $obs\_floor$ — not "intermediate suppression."
+- The adversary's *second-order* strategy is to apply V3 (Storm Normalization) to the observation channel itself: normalize suppression acts as routine administrative restriction, driving $obs\_floor \to 0$ in effective detection probability.
+- **The floor is the critical parameter.** As long as $obs\_floor > 0$ — maintained by actors outside the adversarial system's information control (international institutions, independent researchers, distributed archival) — the adversary cannot achieve $E(s) = 0$. The suppressive apparatus has a detectability floor it cannot suppress without self-exposing the suppression-of-suppression.
+
+**Key output:** $E(s)$ curve as function of $s$ at varying $obs\_floor$ values; identify the adversary's optimal $s^*$ and the minimum $obs\_floor$ that prevents $E(s^*) < E(0)$ (the condition under which maximal suppression becomes counterproductive again).
 
 ---
 
