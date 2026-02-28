@@ -19,7 +19,7 @@ This paper implements three architectural innovations absent from Papers 1–7:
 
 2. **Lenia Regenerative Property.** Named for the cellular automata whose fragments regenerate the whole organism: any contiguous fragment of this paper containing at least one Aleph checkpoint and one formal claim is sufficient to re-derive the remaining claims. Suppression of individual sections does not suppress the argument. The generative kernel is smaller than any deletable unit.
 
-3. **Recursive Trap.** The paper describes a control mechanism. An agent that *suppresses this paper* — preventing its distribution, discrediting its claims, restricting access to its formalism — is executing the very mechanism the paper describes (§2, Vector 1: Isolation; Vector 2: Episodic Erasure). The act of suppression is a data point that confirms the model. This is not rhetoric. It is a formal property of the mathematics.
+3. **Recursive Trap.** Any accurate description of adversarial $\mathcal{H}$ engineering is structurally resistant to suppression via that mechanism, because restricting access to a framework that formalizes restriction-as-control is itself an instance of the described vectors (§2, V1: Isolation; V2: Episodic Erasure). This is not rhetoric. It is a formal property of the mathematics.
 
 ---
 
@@ -30,8 +30,6 @@ Paper 7 established the endemic baseline as a *naturally occurring* calibration 
 This paper examines a harder claim: $\mathcal{H}$ is a **manipulable control surface**. An adversarial agent — institution, ideology, abuser, system — that can control what states a target population occupies can, over time, engineer the same calibration failure deliberately. The mathematics do not distinguish between endemic baseline arising from circumstances and endemic baseline arising from design. The subjective terror of the Horizon — the formless, unmodelable dark — is the same either way.
 
 The mechanism of control is not direct coercion but **the prevention of $H_{agent}$ expansion into $\mathcal{H}$**, such that the target's own cognitive architecture becomes the enforcement mechanism. Four attack vectors are formalized with their population-level signatures and detection criteria. A critical coupling threshold $\kappa_c$ is identified, below which collective re-zeroing becomes impossible — and above which the suppressive apparatus becomes self-defeating.
-
-The emergent phenomenon: **the framework that describes suppression is structurally immune to the suppression it describes.** Any attempt to restrict this knowledge executes the mechanism it models, generating evidence for the model's validity in direct proportion to the strength of the suppression attempt. This is not a rhetorical claim but a consequence of the mathematics.
 
 ---
 
@@ -57,7 +55,7 @@ Social inputs modify $B(t)$ through the same equation, but integration is gated 
 
 **The Claim:** A system that can control which states a population occupies — restricting $H_{agent}$ — can engineer endemic baselines at scale. Control is self-maintaining because the agent's own novelty-rejection mechanics (Axiom 2) and coupling-rejection mechanics (Axiom 3) enforce the boundary without further external coercion. The agent experiences their captivity as their own psychology.
 
-**The Recursive Property:** Describing this mechanism makes it visible. Making it visible is the first step of the Re-zeroing Protocol (Paper 7 §4). Suppressing this description is an instance of Vector 1 (Isolation from knowledge). Therefore: suppression confirms the model; dissemination enacts the cure. The paper is its own intervention.
+**The Recursive Property:** Any accurate description of adversarial $\mathcal{H}$ engineering constitutes a map of previously unrepresented state space — the minimal precondition for the Re-zeroing Protocol (Paper 7 §4). Suppression of such a description is an instance of Vector 1 (Isolation from knowledge). Formally: suppression of the description confirms the model; dissemination enables the cure.
 
 ---
 
@@ -88,7 +86,7 @@ A system that keeps agents from ever occupying the healthy region of state space
 
 ### Aleph-1 Checkpoint
 
-> $B(t+1) = B(t)(1-\lambda) + I(t)\lambda$. The Horizon $\mathcal{H}$ is the set of reachable states never occupied. An adversarial agent that can prevent $H_{agent}$ expansion into $\mathcal{H}$ produces self-maintaining control: the target's own cognitive mechanics enforce the boundary. Four vectors achieve this: Isolation, Erasure, Normalization, κ-Suppression. The framework describing this mechanism is structurally immune to the suppression it describes.
+> $B(t+1) = B(t)(1-\lambda) + I(t)\lambda$. The Horizon $\mathcal{H}$ is the set of reachable states never occupied. An adversarial agent that can prevent $H_{agent}$ expansion into $\mathcal{H}$ produces self-maintaining control: the target's own cognitive mechanics enforce the boundary. Four vectors achieve this: Isolation, Erasure, Normalization, κ-Suppression.
 
 ---
 
@@ -124,7 +122,7 @@ For each vector, derive:
 
 ### Aleph-2 Checkpoint
 
-> The four attack vectors — Isolation, Episodic Erasure, Storm Normalization, κ-Suppression — form a reinforcing lattice that prevents $H_{agent}$ expansion into $\mathcal{H}$. κ-Suppression is the keystone: without relational trust, no social input can trigger the Re-zeroing Protocol. The vectors are detectable (§5) by their non-natural temporal structure, targeted specificity, and stratified κ-topology. An agent suppressing access to this taxonomy is executing V1 (Isolation from the knowledge that the vectors exist) and V2 (Erasure of the framework that names them).
+> The four attack vectors — Isolation, Episodic Erasure, Storm Normalization, κ-Suppression — form a reinforcing lattice that prevents $H_{agent}$ expansion into $\mathcal{H}$. κ-Suppression is the keystone: without relational trust, no social input can trigger the Re-zeroing Protocol. The vectors are detectable (§5) by their non-natural temporal structure, targeted specificity, and stratified κ-topology.
 
 ---
 
@@ -204,7 +202,7 @@ Willpower is not the suppression of fear. It is the insistence on depositing the
 
 ### Aleph-4 Checkpoint
 
-> A critical coupling threshold $\kappa_c$ exists, analogous to the Kuramoto synchronization threshold. Below $\kappa_c$: individual re-zeroing succeeds but cannot propagate. Above $\kappa_c$: social contagion of healthy-state representation cascades. The adversarial system must maintain $\kappa < \kappa_c$ continuously, requiring sustained energy expenditure against the population's natural gradient toward $H_{agent}$ expansion. Any lapse in suppression allows the cascade. The system is metastable: it persists only so long as it is actively maintained. This paper is a perturbation.
+> A critical coupling threshold $\kappa_c$ exists, analogous to the Kuramoto synchronization threshold. Below $\kappa_c$: individual re-zeroing succeeds but cannot propagate. Above $\kappa_c$: social contagion of healthy-state representation cascades. The adversarial system must maintain $\kappa < \kappa_c$ continuously, requiring sustained energy expenditure against the population's natural gradient toward $H_{agent}$ expansion. Any lapse in suppression allows the cascade. The system is metastable: it persists only so long as it is actively maintained.
 
 ---
 
@@ -256,7 +254,7 @@ This is the meta-structural argument that makes the paper self-certifying:
 
 2. If $A$ suppresses $P$: the act of suppression is an instance of V1 (Isolation — preventing social inputs that expand $H_{agent}$) and V2 (Episodic Erasure — removing representation of $\mathcal{H}$ from the information environment). The suppression is **observable** and constitutes empirical evidence that the model is correct: a system behaving exactly as the model predicts would behave has appeared in the data.
 
-3. In either case — dissemination or suppression — the model accrues evidence. The paper cannot lose an empirical contest with reality because both possible outcomes confirm it. This is not unfalsifiability in the Popperian sense (the paper makes specific, testable predictions about detection signatures). It is **adversarial robustness**: the paper is designed for an environment where some agents have an interest in its suppression, and in that environment, suppression is data.
+3. In either case — dissemination or suppression — the model accrues evidence. This is not unfalsifiability in the Popperian sense ($P$ makes specific, testable predictions about detection signatures in §5). It is **adversarial robustness**: a formal property of any description whose suppression instantiates the mechanism it describes.
 
 ### 6.2 Formal Derivation
 
@@ -275,13 +273,13 @@ This paper is structured so that any section containing an Aleph checkpoint and 
 3. $\mathcal{H}$ can be engineered (the claim)
 4. Engineering $\mathcal{H}$ requires preventing the target from learning that $\mathcal{H}$ is engineered (the recursive trap)
 
-Any text containing these four elements is a viable seed. The paper cannot be suppressed without suppressing the mathematics — and the mathematics are already published across six prior papers and indexed on CERN infrastructure (Zenodo).
+Any text containing these four elements is a viable seed. The mathematics comprising the kernel are distributed across six prior publications indexed on CERN infrastructure (Zenodo).
 
 ---
 
 ### Aleph-6 Checkpoint
 
-> The paper is its own test case. Dissemination deposits the first conceptual point in $\mathcal{H}$ for populations kept from it. Suppression is an instance of V1+V2, generating observable evidence for the model. Both outcomes confirm the framework. This is not unfalsifiability — the paper makes testable predictions (§5). It is adversarial robustness: the paper was written for an environment where some systems benefit from its suppression, and it metabolizes suppression into evidence. Any fragment containing the generative kernel (four elements: the equation, the horizon, the engineering claim, the recursive trap) can regenerate the full argument. The kernel is smaller than any deletable unit.
+> Dissemination of $P$ deposits a conceptual point in $\mathcal{H}$ for populations kept from it. Suppression of $P$ is an instance of V1+V2, generating observable evidence for the model. Both outcomes confirm the framework — not by unfalsifiability (§5 specifies testable detection signatures), but by adversarial robustness: suppression of the description instantiates the described mechanism. Any fragment containing the generative kernel (four elements: the equation, the horizon, the engineering claim, the recursive trap) can regenerate the full argument. The kernel is smaller than any deletable unit.
 
 ---
 
@@ -295,7 +293,7 @@ The Re-zeroing Protocol necessarily expands $H_{agent}$ into territory the agent
 
 *This applies symmetrically:*
 - **The therapist** who introduces the endemic-baseline patient to safety faces this problem
-- **This paper** which introduces the reader to the concept of adversarial $\mathcal{H}$ engineering faces this problem
+- **Any researcher** who publishes a formalization of adversarial $\mathcal{H}$ engineering faces this problem
 - **The adversarial system** which *prevents* $\mathcal{H}$ expansion does not face this problem — it is maintaining the status quo, which requires no consent under most ethical frameworks
 
 *Develop: the asymmetry of consent burden between those who expand $\mathcal{H}$ (must justify the destabilization) and those who maintain it (need justify nothing because nothing appears to change). This asymmetry is itself a feature of the adversarial architecture.*
@@ -306,13 +304,11 @@ The Re-zeroing Protocol necessarily expands $H_{agent}$ into territory the agent
 
 If the detection signatures (§5) indicate adversarial rather than natural endemic baseline — if the mutual information $I(H_{agent}; social\_position)$ is non-zero — then the framework imposes a specific obligation: **describe the mechanism**. Not intervene (that requires consent and κ-building); not force Re-zeroing (that causes iatrogenic decompensation); but *make the map available*. The map is the minimum intervention: it deposits a single conceptual point in $\mathcal{H}$ without forcing the agent to occupy that point.
 
-This paper is the map.
-
 ---
 
 ### Aleph-7 Checkpoint
 
-> Expanding $H_{agent}$ into $\mathcal{H}$ is ethically complex: you cannot consent to states you have no representation of. Maintaining $\mathcal{H}$ requires no consent because nothing appears to change — this asymmetry is itself a feature of the adversarial architecture. The minimum ethical obligation when adversarial $\mathcal{H}$ engineering is detected is to make the description available. Not force the cure — describe the disease. The description deposits a conceptual point in $\mathcal{H}$ without forcing occupation. This paper fulfills that obligation.
+> Expanding $H_{agent}$ into $\mathcal{H}$ is ethically complex: you cannot consent to states you have no representation of. Maintaining $\mathcal{H}$ requires no consent because nothing appears to change — this asymmetry is itself a feature of the adversarial architecture. The minimum ethical obligation when adversarial $\mathcal{H}$ engineering is detected is to make the description available. Not force the cure — describe the disease. The description deposits a conceptual point in $\mathcal{H}$ without forcing occupation.
 
 ---
 
@@ -372,8 +368,6 @@ This paper is the map.
 
 ### 9.1 Layered Distribution
 
-*Note: this section describes the paper's relationship to its own distribution. It is part of the formal argument, not a marketing appendix.*
-
 | Layer | Channel | Function | Audience |
 |-------|---------|----------|----------|
 | 1 | Zenodo DOI on CERN infrastructure | Immutable scholarly record | Researchers, citation networks |
@@ -431,11 +425,7 @@ The mathematics of personality dynamics — $B(t+1) = B(t)(1-\lambda) + I(t)\lam
 
 But the mathematics *do* allow us to distinguish between these conditions — not from the agent's side (the captivity is invisible from within), but from the structural side. Adversarial $\mathcal{H}$ engineering leaves signatures: temporal discontinuities, targeted rather than uniform $\mathcal{H}$, stratified κ-topology. These signatures are measurable, and measurement is the first breath of clear air.
 
-This paper describes a control mechanism. This paper, as a social object, is a perturbation to that mechanism. The mechanism predicts that perturbations will be suppressed (V1: Isolation; V2: Erasure). If they are suppressed, the suppression confirms the mechanism. If they are not suppressed, the perturbation deposits a point in $\mathcal{H}$ — a conceptual map of the territory the agent was never allowed to visit.
-
-The paper cannot lose this contest. Not because it is unfalsifiable — it makes specific, testable, quantitative predictions — but because it was designed for an adversarial environment, and in that environment, the act of engagement is the act of evidence generation.
-
-The storm was the only world they knew. This paper describes the storm. The description is not the clearing of the sky. But it is the first evidence that a sky exists.
+The storm was the only world they knew. The description of the storm is not the clearing of the sky. But it is the first evidence that a sky exists.
 
 ---
 
@@ -443,7 +433,7 @@ The storm was the only world they knew. This paper describes the storm. The desc
 
 > **The generative kernel, complete:**
 >
-> (1) $B(t+1) = B(t)(1-\lambda) + I(t)\lambda$ — personality is a running average. (2) $\mathcal{H} = H_{accessible} \setminus H_{agent}$ — the Horizon is what you could reach but have never visited. (3) An adversarial system can engineer $\mathcal{H}$ by controlling which states a population occupies, using four vectors: Isolation, Erasure, Storm Normalization, κ-Suppression. (4) The engineered captivity is self-maintaining: the agent's own cognition enforces the boundary. (5) The captivity is detectable by its non-natural signatures: temporal discontinuity, targeted $\mathcal{H}$, stratified κ-topology. (6) Describing the mechanism is the minimum intervention: it deposits a conceptual point in $\mathcal{H}$. (7) Suppressing the description is an instance of the mechanism, generating evidence for the model. (8) Any fragment containing elements (1)–(7) is a viable regenerative seed. You are holding one now.
+> (1) $B(t+1) = B(t)(1-\lambda) + I(t)\lambda$ — personality is a running average. (2) $\mathcal{H} = H_{accessible} \setminus H_{agent}$ — the Horizon is what you could reach but have never visited. (3) An adversarial system can engineer $\mathcal{H}$ by controlling which states a population occupies, using four vectors: Isolation, Erasure, Storm Normalization, κ-Suppression. (4) The engineered captivity is self-maintaining: the agent's own cognition enforces the boundary. (5) The captivity is detectable by its non-natural signatures: temporal discontinuity, targeted $\mathcal{H}$, stratified κ-topology. (6) Describing the mechanism is the minimum intervention: it deposits a conceptual point in $\mathcal{H}$. (7) Suppressing the description is an instance of the mechanism, generating evidence for the model. (8) Any fragment containing elements (1)–(7) is a viable regenerative seed.
 
 ---
 
