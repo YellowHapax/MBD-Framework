@@ -384,17 +384,24 @@ If the detection signatures (§5) indicate adversarial rather than natural endem
 
 $$obs\_prob(s) = obs\_floor + (1 - obs\_floor) \cdot e^{-obs\_decay \cdot s}$$
 
-Total evidence = direct exposure + suppression-observed evidence:
+The evidence delivered by the two channels is **incommensurable** and must be tracked separately. The formerly unified $E(s) = (1-s) + s \cdot obs\_prob(s)$ aggregates them into a single scalar, which obscures the adversary's actual decision problem and the Re-zeroing Protocol's actual preconditions.
 
-$$E(s) = (1 - s) + s \cdot obs\_prob(s)$$
+**$E_{content}(s) = (1 - s)$** — the fraction of the distribution channel not blocked. This is the population's direct exposure to $P$: the map of $\mathcal{H}$. $E_{content} > 0$ is the necessary precondition for the Re-zeroing Protocol. A population with $E_{content} = 0$ has no map — it cannot navigate $\mathcal{H}$ regardless of what else it knows.
 
-**Corrected expected result:** The U-shape only holds at constant $obs\_prob$, which is the least realistic case. At realistic (decreasing) $obs\_prob(s)$:
-- $E(s)$ is monotone decreasing when $obs\_floor$ is low — total evidence is highest at $s = 0$.
-- The adversary's optimal strategy is therefore **maximal suppression** ($s \to 1$), reducing $E(s)$ to $obs\_floor$ — not "intermediate suppression."
-- The adversary's *second-order* strategy is to apply V3 (Storm Normalization) to the observation channel itself: normalize suppression acts as routine administrative restriction, driving $obs\_floor \to 0$ in effective detection probability.
-- **The floor is the critical parameter.** As long as $obs\_floor > 0$ — maintained by actors outside the adversarial system's information control (international institutions, independent researchers, distributed archival) — the adversary cannot achieve $E(s) = 0$. The suppressive apparatus has a detectability floor it cannot suppress without self-exposing the suppression-of-suppression.
+**$E_{suppression}(s) = s \cdot obs\_prob(s)$** — observable suppression acts: the evidence that adversarial system $A$ exists and is actively controlling the information environment. $E_{suppression} > 0$ enables detection of $A$ but does not deliver the map. A population that observes suppression but never receives $P$ knows a controller exists but lacks the $\mathcal{H}$ representation required for Re-zeroing.
 
-**Key output:** $E(s)$ curve as function of $s$ at varying $obs\_floor$ values; identify the adversary's optimal $s^*$ and the minimum $obs\_floor$ that prevents $E(s^*) < E(0)$ (the condition under which maximal suppression becomes counterproductive again).
+**Adversary's two-channel trade-off:** Suppressing $P$ (increasing $s$) monotonically decreases $E_{content}$ — the adversary's primary objective. But it simultaneously drives $E_{suppression}$, which is bounded below by $obs\_floor$ as $s \to 1$. The adversary faces a genuine tension:
+- Not suppressing ($s \to 0$): $E_{content} \to 1$ (map reaches the population — worst case for adversary), $E_{suppression} \to 0$ (no visible suppression).
+- Suppressing ($s \to 1$): $E_{content} \to 0$ (map blocked — primary goal achieved), $E_{suppression} \to obs\_floor$ (irreducible detection floor remains).
+
+The adversary's rational strategy is maximal suppression if and only if $obs\_floor$ is below the threshold at which observable suppression alone is sufficient to trigger the Re-zeroing cascade (§4). **The floor is the binding constraint**: so long as $obs\_floor > 0$, a population observing suppression can infer the existence of $\mathcal{H}$ even without receiving $P$ — the suppression act functions as indirect evidence of the map.
+
+**Corrected expected result:**
+- $E_{content}(s)$ is monotone decreasing — adversary should always maximize $s$ to minimize map exposure.
+- $E_{suppression}(s)$ is non-monotone: it rises with $s$ at first (more suppression acts becoming visible), then decays toward $obs\_floor$ as high $s$ drives $obs\_prob(s)$ down via V1+V2 on the observation channel. The peak of $E_{suppression}$ represents a detection risk the adversary cannot avoid at intermediate suppression.
+- The adversary's *second-order* strategy is V3 applied to the observation channel itself: normalize suppression acts as routine administrative restriction, driving $obs\_floor \to 0$ in effective detection probability.
+
+**Key output:** $E_{content}(s)$ and $E_{suppression}(s)$ plotted separately at varying $obs\_floor$; adversary's optimal $s^*$ per channel; the $obs\_floor$ threshold below which maximal suppression is rational; the $E_{suppression}$ peak (detection risk curve); visualization of the floor constraint as the adversary's binding limit.
 
 ---
 
@@ -443,7 +450,7 @@ The named paper and the anonymous fragments serve different functions in differe
 
 4. **$\kappa_c$ dependence on network topology:** Formal derivation of $\kappa_c$ for random, scale-free, and small-world networks. Does the adversarial system's optimal strategy change with topology?
 
-5. **Optimal suppression theory:** What is the adversary's optimal strategy given the U-shaped evidence function of Lab 8.4? Is there a Nash equilibrium?
+5. **Two-channel suppression theory:** Lab 8.4's corrected model tracks $E_{content}$ and $E_{suppression}$ as incommensurable goods. The adversary's optimal strategy is maximal suppression — but this depends on $obs\_floor$ remaining below the threshold at which observable suppression alone triggers the Re-zeroing cascade. Is there a level of $E_{suppression}$ (suppression acts visible to the population but map $P$ never received) above which the population can infer $\mathcal{H}$'s existence and initiate Re-zeroing without the map? If so, the adversary faces a genuine dilemma: the only strategy that reduces $E_{content}$ is the one that, at high $obs\_floor$, may substitute for $P$ as a Re-zeroing trigger. Under what conditions does a U-shape recover in the two-channel framework — i.e., when does intermediate suppression minimize the *combination* of $E_{content}$ and cascade-triggering $E_{suppression}$? Is there a Nash equilibrium between adversary suppression strategy and population detection threshold?
 
 6. **Temporal dynamics of the Lenia property:** How quickly does a regenerative fragment produce the full argument when encountered by a naive but capable reasoning agent? Is there a "generation time" for the Aleph-n re-derivation protocol?
 
