@@ -172,6 +172,16 @@ input[type=checkbox] { accent-color:var(--accent); }
 }
 #run-btn:hover { background:var(--accent2); }
 
+.export-btns { display:flex; gap:6px; margin-top:8px; }
+.export-btn {
+  flex:1; padding:7px 4px;
+  background:transparent; border:1px solid var(--border);
+  border-radius:6px; color:var(--muted);
+  font-size:11px; font-weight:600; cursor:pointer;
+  transition:all .15s; text-transform:uppercase; letter-spacing:.04em;
+}
+.export-btn:hover { border-color:var(--accent2); color:var(--accent2); background:var(--surface2); }
+
 /* Chart area */
 #chart-area {
   flex:1; display:flex; flex-direction:column;
@@ -270,6 +280,10 @@ input[type=checkbox] { accent-color:var(--accent); }
           <h4>Parameters</h4>
           <div id="params-container"></div>
           <button id="run-btn" onclick="runCurrentLab()">▶ Run</button>
+          <div class="export-btns">
+            <button class="export-btn" onclick="exportCSV()" title="Download simulation data as CSV">⬇ CSV</button>
+            <button class="export-btn" onclick="exportPNG()" title="Download chart as PNG image">⬇ PNG</button>
+          </div>
         </div>
         <div id="chart-area">
           <div id="chart-wrap">
@@ -1319,6 +1333,8 @@ function drawBarChart(canvas, data, seriesMeta) {
 
 let currentLabId = null;
 let currentParams = {};
+let lastRunData = null;
+let lastRunMeta = null;
 
 function renderSidebar() {
   const list = document.getElementById('lab-list');
@@ -1435,9 +1451,11 @@ function runCurrentLab() {
   if (!lab) return;
 
   const data = lab.run({ ...currentParams });
+  lastRunData = data;
 
   const canvas = document.getElementById('chart');
   const seriesMeta = typeof lab.series === 'function' ? lab.series(data) : lab.series;
+  lastRunMeta = seriesMeta;
 
   if (lab.barMode) {
     drawBarChart(canvas, data, seriesMeta);
@@ -1463,6 +1481,47 @@ function runCurrentLab() {
       `<div class="srow"><span class="skey">${k}:</span><span class="sval">${v}</span></div>`
     ).join('');
   }
+}
+
+function exportCSV() {
+  if (!lastRunData || !lastRunData.length) return;
+  const lab = LABS.find(l => l.id === currentLabId);
+  const keys = Object.keys(lastRunData[0]);
+  const rows = [keys.join(',')];
+  for (const row of lastRunData) {
+    rows.push(keys.map(k => {
+      const v = row[k];
+      return typeof v === 'number' ? v : `"${String(v).replace(/"/g,'""')}"`;
+    }).join(','));
+  }
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  const fname = `mbd-${lab?.id || 'lab'}_${ts}.csv`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportPNG() {
+  const src = document.getElementById('chart');
+  if (!src) return;
+  const lab = LABS.find(l => l.id === currentLabId);
+  // Composite onto a canvas with opaque dark background
+  const out = document.createElement('canvas');
+  out.width  = src.width;
+  out.height = src.height;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#070710';
+  ctx.fillRect(0, 0, out.width, out.height);
+  ctx.drawImage(src, 0, 0);
+  const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  const fname = `mbd-${lab?.id || 'lab'}_${ts}.png`;
+  const a = document.createElement('a');
+  a.href = out.toDataURL('image/png');
+  a.download = fname;
+  a.click();
 }
 
 function goHome() {
