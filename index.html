@@ -1539,10 +1539,18 @@ function exportPNG() {
 }
 
 function setupChartOverlay() {
-  const wrap = document.getElementById('chart-wrap');
-  if (!wrap) return;
-  wrap.addEventListener('mousemove', e => drawChartOverlay(e.offsetX, e.offsetY));
+  const chart = document.getElementById('chart');
+  const wrap  = document.getElementById('chart-wrap');
+  if (!chart || !wrap) return;
+
+  let rafId = null;
+  chart.addEventListener('mousemove', e => {
+    if (rafId) cancelAnimationFrame(rafId);
+    const x = e.offsetX, y = e.offsetY;
+    rafId = requestAnimationFrame(() => { drawChartOverlay(x, y); rafId = null; });
+  });
   wrap.addEventListener('mouseleave', () => {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     const ov = document.getElementById('chart-overlay');
     if (ov) ov.getContext('2d').clearRect(0, 0, ov.width, ov.height);
   });
