@@ -833,8 +833,9 @@ function simPhantom(p) {
   const ts = [];
   const steps = p.steps|0;
   const amp = p.t_amputation|0;
+  const postInput = p.input_post ?? 0;
   for (let t = 0; t < steps; t++) {
-    const inp   = t < amp ? p.input_pre : p.input_post;
+    const inp   = t < amp ? p.input_pre : postInput;
     const error = Math.abs(p.baseline_limb - inp);
     ts.push({time:t, baseline:p.baseline_limb, input:inp, prediction_error:error});
   }
