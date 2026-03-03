@@ -193,6 +193,10 @@ input[type=checkbox] { accent-color:var(--accent); }
 #chart {
   width:100%; height:100%; display:block;
 }
+#chart-overlay {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  pointer-events:none; display:block;
+}
 #legend {
   display:flex; flex-wrap:wrap; gap:12px; font-size:11.5px;
   padding:0 4px; flex-shrink:0;
@@ -288,6 +292,7 @@ input[type=checkbox] { accent-color:var(--accent); }
         <div id="chart-area">
           <div id="chart-wrap">
             <canvas id="chart"></canvas>
+            <canvas id="chart-overlay"></canvas>
           </div>
           <div id="legend"></div>
           <div id="summary">
@@ -1280,6 +1285,11 @@ function drawChart(canvas, data, seriesMeta, xKey) {
   ctx.beginPath();
   ctx.moveTo(PAD.left, PAD.top); ctx.lineTo(PAD.left, PAD.top+cH);
   ctx.lineTo(PAD.left+cW, PAD.top+cH); ctx.stroke();
+
+  // Save state for tooltip overlay
+  lastChartState = { data, seriesMeta, xKey, yMin, yMax, xMin, xMax, W, H, PAD };
+  const overlay = document.getElementById('chart-overlay');
+  if (overlay) { overlay.width = canvas.width; overlay.height = canvas.height; }
 }
 
 function drawBarChart(canvas, data, seriesMeta) {
@@ -1290,6 +1300,9 @@ function drawBarChart(canvas, data, seriesMeta) {
   canvas.height = H * dpr;
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, W, H);
+  lastChartState = null; // no tooltip for bar charts
+  const _ov = document.getElementById('chart-overlay');
+  if (_ov) { const _c = _ov.getContext('2d'); _c.clearRect(0,0,_ov.width,_ov.height); }
 
   if (!data || data.length === 0) return;
 
@@ -1335,6 +1348,7 @@ let currentLabId = null;
 let currentParams = {};
 let lastRunData = null;
 let lastRunMeta = null;
+let lastChartState = null;
 
 function renderSidebar() {
   const list = document.getElementById('lab-list');
@@ -1524,6 +1538,117 @@ function exportPNG() {
   a.click();
 }
 
+function setupChartOverlay() {
+  const wrap = document.getElementById('chart-wrap');
+  if (!wrap) return;
+  wrap.addEventListener('mousemove', e => drawChartOverlay(e.offsetX, e.offsetY));
+  wrap.addEventListener('mouseleave', () => {
+    const ov = document.getElementById('chart-overlay');
+    if (ov) ov.getContext('2d').clearRect(0, 0, ov.width, ov.height);
+  });
+}
+
+function drawChartOverlay(mx, my) {
+  const ov = document.getElementById('chart-overlay');
+  if (!ov || !lastChartState) return;
+  const { data, seriesMeta, xKey, yMin, yMax, xMin, xMax, W, H, PAD } = lastChartState;
+  const dpr = window.devicePixelRatio || 1;
+  const ctx = ov.getContext('2d');
+  ctx.clearRect(0, 0, ov.width, ov.height);
+  if (!data || data.length < 2) return;
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top  - PAD.bottom;
+  if (mx < PAD.left || mx > W - PAD.right) return;
+
+  ctx.save();
+  ctx.scale(dpr, dpr);
+
+  const xs    = data.map(d => d[xKey] ?? 0);
+  const xRange = xMax - xMin || 1;
+  const toX   = v => PAD.left + (v - xMin) / xRange * cW;
+  const toY   = v => PAD.top  + (1 - (v - yMin) / (yMax - yMin)) * cH;
+
+  // Find nearest data point
+  let nearest = 0, minDist = Infinity;
+  for (let i = 0; i < data.length; i++) {
+    const d = Math.abs(toX(xs[i]) - mx);
+    if (d < minDist) { minDist = d; nearest = i; }
+  }
+  const row = data[nearest];
+  const px  = toX(xs[nearest]);
+
+  // Vertical crosshair
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(px, PAD.top); ctx.lineTo(px, PAD.top + cH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // Series dots
+  for (const s of seriesMeta) {
+    const v = row[s.key];
+    if (v === undefined || !isFinite(v)) continue;
+    const py = toY(v);
+    ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = s.color; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  // Tooltip
+  const xVal   = row[xKey] ?? nearest;
+  const xLabel = `${xKey}: ${typeof xVal === 'number' ? (xVal % 1 === 0 ? xVal|0 : xVal.toFixed(3)) : xVal}`;
+  const rows   = [];
+  for (const s of seriesMeta) {
+    const v = row[s.key];
+    if (v !== undefined && isFinite(v)) rows.push({ label: s.name, value: v.toFixed(4), color: s.color });
+  }
+
+  const FS = 11, LH = 16, TPX = 10, TPY = 8;
+  ctx.font = `600 ${FS}px "Inter",sans-serif`;
+  let maxTW = ctx.measureText(xLabel).width;
+  ctx.font = `${FS}px "Inter",sans-serif`;
+  for (const r of rows) {
+    const w = ctx.measureText(`${r.label}: ${r.value}`).width + 14;
+    if (w > maxTW) maxTW = w;
+  }
+  const boxW = maxTW + TPX * 2;
+  const boxH = (1 + rows.length) * LH + TPY * 2;
+  let tx = px + 14;
+  let ty = Math.max(PAD.top, my - boxH / 2);
+  if (tx + boxW > W - PAD.right + 10) tx = px - boxW - 14;
+  if (ty + boxH > PAD.top + cH) ty = PAD.top + cH - boxH;
+  if (ty < PAD.top) ty = PAD.top;
+
+  ctx.fillStyle = 'rgba(9,9,24,0.93)';
+  ctx.strokeStyle = 'rgba(124,93,232,0.55)';
+  ctx.lineWidth = 1;
+  if (ctx.roundRect) {
+    ctx.beginPath(); ctx.roundRect(tx, ty, boxW, boxH, 5); ctx.fill(); ctx.stroke();
+  } else {
+    ctx.fillRect(tx, ty, boxW, boxH); ctx.strokeRect(tx, ty, boxW, boxH);
+  }
+
+  let ly = ty + TPY + FS;
+  ctx.font = `600 ${FS}px "Inter",sans-serif`;
+  ctx.fillStyle = '#8892b0'; ctx.textAlign = 'left';
+  ctx.fillText(xLabel, tx + TPX, ly); ly += LH;
+
+  for (const r of rows) {
+    ctx.beginPath(); ctx.arc(tx + TPX + 4, ly - FS * 0.4, 3, 0, Math.PI * 2);
+    ctx.fillStyle = r.color; ctx.fill();
+    ctx.font = `${FS}px "Inter",sans-serif`; ctx.fillStyle = '#ccd6f6';
+    ctx.fillText(`${r.label}: `, tx + TPX + 12, ly);
+    const lw = ctx.measureText(`${r.label}: `).width;
+    ctx.font = `600 ${FS}px monospace`; ctx.fillStyle = '#ffffff';
+    ctx.fillText(r.value, tx + TPX + 12 + lw, ly);
+    ly += LH;
+  }
+
+  ctx.restore();
+}
+
 function goHome() {
   document.getElementById('home').classList.remove('hidden');
   document.getElementById('lab-view').classList.add('hidden');
@@ -1545,6 +1670,7 @@ document.getElementById('sidebar-header').style.cursor = 'pointer';
 // Init
 renderSidebar();
 renderOverviewCards();
+setupChartOverlay();
 </script>
 </body>
 </html>
