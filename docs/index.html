@@ -28,10 +28,10 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
 a { color:var(--accent2); text-decoration:none; }
 a:hover { text-decoration:underline; }
 
-/* ─── Layout ─────────────────────────────────────────── */
+/* --─ Layout ------------------------------------------─ */
 #app { display:flex; height:100vh; }
 
-/* ─── Sidebar ─────────────────────────────────────────── */
+/* --─ Sidebar ------------------------------------------─ */
 #sidebar {
   width:var(--sidebar); min-width:var(--sidebar);
   background:var(--surface); border-right:1px solid var(--border);
@@ -75,7 +75,7 @@ a:hover { text-decoration:underline; }
 }
 .lab-item.active .lab-subtitle { color:var(--pink); }
 
-/* ─── Main ─────────────────────────────────────────────── */
+/* --─ Main ----------------------------------------------─ */
 #main {
   flex:1; display:flex; flex-direction:column;
   overflow:hidden; background:var(--bg);
@@ -246,7 +246,7 @@ input[type=checkbox] { accent-color:var(--accent); }
 .badge7 { background:#ffd740; color:#000; }
 .badge8 { background:#82ca9d; color:#000; }
 
-/* ─── Foundations sidebar ─────────────────────────── */
+/* --─ Foundations sidebar --------------------------─ */
 .sidebar-section-hdr {
   padding:10px 14px 4px;
   font-size:9.5px; font-weight:700; text-transform:uppercase;
@@ -263,7 +263,7 @@ input[type=checkbox] { accent-color:var(--accent); }
 .found-item.active { background:var(--surface2); border-left-color:var(--gold); color:var(--gold); }
 .found-item-p { font-size:9px; font-weight:700; margin-right:5px; opacity:.75; }
 
-/* ─── Foundation view ──────────────────────────────── */
+/* --─ Foundation view -------------------------------- */
 #foundation-view { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 #foundation-view.hidden { display:none; }
 #found-header { padding:20px 24px 14px; border-bottom:1px solid var(--border); flex-shrink:0; }
@@ -310,7 +310,7 @@ input[type=checkbox] { accent-color:var(--accent); }
 }
 .found-adj-chip:hover { border-color:var(--gold); background:var(--surface); }
 
-/* ─── Per-lab philosophy drawer ─────────────────────── */
+/* --─ Per-lab philosophy drawer ----------------------─ */
 #phil-drawer {
   flex-shrink:0; background:var(--surface); border:1px solid var(--border);
   border-radius:8px;
@@ -424,9 +424,9 @@ input[type=checkbox] { accent-color:var(--accent); }
 </div>
 
 <script>
-// ╔══════════════════════════════════════════════════════════════╗
-// ║  LAB REGISTRY                                               ║
-// ╚══════════════════════════════════════════════════════════════╝
+// +==============================================================+
+// |  LAB REGISTRY                                               |
+// +==============================================================+
 
 const PALETTE = ['#7c5de8','#40c4ff','#69f0ae','#ff9e80','#ff5370','#ce93d8','#ffd740','#82ca9d'];
 
@@ -541,7 +541,7 @@ const FOUNDATIONS = [
 ];
 
 const LABS = [
-  // ── Paper 1 ──────────────────────────────────────────────────────
+  // -- Paper 1 ------------------------------------------------------
   {
     id:'eq-lab', paper:1, name:'EQ Lab',
     subtitle:'Relational Learning Rate',
@@ -680,7 +680,7 @@ const LABS = [
     summarize: r => ({'Peak (mania)': Math.max(...r.map(d=>d.baseline)).toFixed(3), 'Trough (depress.)': Math.min(...r.map(d=>d.baseline)).toFixed(3)})
   },
 
-  // ── Paper 2 ──────────────────────────────────────────────────────
+  // -- Paper 2 ------------------------------------------------------
   {
     id:'echo-chamber', paper:2, name:'Echo Chamber Collapse',
     subtitle:'Resonant Cavity Shattering',
@@ -706,7 +706,7 @@ const LABS = [
     }
   },
 
-  // ── Paper 3 ──────────────────────────────────────────────────────
+  // -- Paper 3 ------------------------------------------------------
   {
     id:'reinstantiation', paper:3, name:'Resonant Re-instantiation',
     subtitle:'Novelty-Gated Encoding & Recall',
@@ -732,7 +732,7 @@ const LABS = [
     }
   },
 
-  // ── Paper 4 ──────────────────────────────────────────────────────
+  // -- Paper 4 ------------------------------------------------------
   {
     id:'aspd', paper:4, name:'ASPD',
     subtitle:'Deontological Immunity',
@@ -844,7 +844,7 @@ const LABS = [
     }
   },
 
-  // ── Paper 5 ──────────────────────────────────────────────────────
+  // -- Paper 5 ------------------------------------------------------
   {
     id:'dual-resonance', paper:5, name:'Dual Resonance',
     subtitle:'Amplification vs. Overshadowing',
@@ -886,7 +886,7 @@ const LABS = [
     }
   },
 
-  // ── Paper 6 ──────────────────────────────────────────────────────
+  // -- Paper 6 ------------------------------------------------------
   {
     id:'deontological', paper:6, name:'Deontological Gate',
     subtitle:'κ_c Threshold and Collective Turn',
@@ -955,7 +955,7 @@ const LABS = [
     }
   },
 
-  // ── Paper 7 ──────────────────────────────────────────────────────
+  // -- Paper 7 ------------------------------------------------------
   {
     id:'endemic-baseline', paper:7, name:'Endemic Baseline Threshold',
     subtitle:'Critical κ for Collective Memory',
@@ -978,7 +978,7 @@ const LABS = [
     }
   },
 
-  // ── Paper 8 ──────────────────────────────────────────────────────
+  // -- Paper 8 ------------------------------------------------------
   {
     id:'suppressive', paper:8, name:'Suppressive Attractor',
     subtitle:'V1–V4 Attack Vectors',
@@ -1003,9 +1003,9 @@ const LABS = [
   },
 ];
 
-// ╔══════════════════════════════════════════════════════════════╗
-// ║  SIMULATION FUNCTIONS                                       ║
-// ╚══════════════════════════════════════════════════════════════╝
+// +==============================================================+
+// |  SIMULATION FUNCTIONS                                       |
+// +==============================================================+
 
 function simEqLab(p) {
   let bA = p.b0_a, bB = p.b0_b, kappa = 0;
@@ -1390,9 +1390,9 @@ function simSuppressive(p) {
   return ts;
 }
 
-// ╔══════════════════════════════════════════════════════════════╗
-// ║  CHART RENDERER                                             ║
-// ╚══════════════════════════════════════════════════════════════╝
+// +==============================================================+
+// |  CHART RENDERER                                             |
+// +==============================================================+
 
 function drawChart(canvas, data, seriesMeta, xKey) {
   const ctx = canvas.getContext('2d');
@@ -1557,9 +1557,9 @@ function drawBarChart(canvas, data, seriesMeta) {
   ctx.beginPath(); ctx.moveTo(PAD.left, PAD.top); ctx.lineTo(PAD.left, PAD.top+cH); ctx.lineTo(PAD.left+cW, PAD.top+cH); ctx.stroke();
 }
 
-// ╔══════════════════════════════════════════════════════════════╗
-// ║  UI LOGIC                                                   ║
-// ╚══════════════════════════════════════════════════════════════╝
+// +==============================================================+
+// |  UI LOGIC                                                   |
+// +==============================================================+
 
 let currentLabId = null;
 let currentParams = {};
@@ -1571,7 +1571,7 @@ function renderSidebar() {
   const list = document.getElementById('lab-list');
   list.innerHTML = '';
 
-  // ── Philosophy section ──
+  // -- Philosophy section --
   const foundHdr = document.createElement('div');
   foundHdr.className = 'sidebar-section-hdr';
   foundHdr.textContent = '◆ Philosophy';
@@ -1587,7 +1587,7 @@ function renderSidebar() {
     list.appendChild(item);
   }
 
-  // ── Simulations section ──
+  // -- Simulations section --
   const simHdr = document.createElement('div');
   simHdr.className = 'sidebar-section-hdr';
   simHdr.textContent = '⚗ Simulations';
