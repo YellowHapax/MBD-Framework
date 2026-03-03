@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MBD Online Labs — Memory as Baseline Deviation</title>
+<style>
+:root {
+  --bg:      #070710;
+  --surface: #0e0e22;
+  --surface2:#13132e;
+  --border:  #1e1e3f;
+  --accent:  #7c5de8;
+  --accent2: #a07bff;
+  --gold:    #ffd740;
+  --cyan:    #40c4ff;
+  --green:   #69f0ae;
+  --orange:  #ff9e80;
+  --red:     #ff5370;
+  --pink:    #ce93d8;
+  --text:    #ccd6f6;
+  --muted:   #6272a4;
+  --sidebar: 256px;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text);
+  font-family:'Inter',system-ui,sans-serif; font-size:14px; }
+a { color:var(--accent2); text-decoration:none; }
+a:hover { text-decoration:underline; }
+
+/* ─── Layout ─────────────────────────────────────────── */
+#app { display:flex; height:100vh; }
+
+/* ─── Sidebar ─────────────────────────────────────────── */
+#sidebar {
+  width:var(--sidebar); min-width:var(--sidebar);
+  background:var(--surface); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+#sidebar-header {
+  padding:18px 14px 12px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#sidebar-header h1 {
+  font-size:13px; font-weight:700; letter-spacing:.04em;
+  text-transform:uppercase; color:var(--accent2);
+}
+#sidebar-header p { font-size:11px; color:var(--muted); margin-top:3px; }
+#lab-list { overflow-y:auto; flex:1; padding:8px 0 16px; }
+.paper-group { margin-bottom:4px; }
+.paper-label {
+  padding:8px 14px 4px;
+  font-size:10px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.08em; color:var(--muted);
+  display:flex; align-items:center; gap:6px;
+}
+.paper-dot {
+  width:7px; height:7px; border-radius:50%; flex-shrink:0;
+}
+.lab-item {
+  display:block; padding:7px 14px 7px 26px;
+  font-size:12.5px; color:var(--text); cursor:pointer;
+  border-left:2px solid transparent; transition:all .15s;
+  line-height:1.3;
+}
+.lab-item:hover { background:var(--surface2); color:#fff; }
+.lab-item.active {
+  background:var(--surface2);
+  border-left-color:var(--accent);
+  color:var(--accent2);
+}
+.lab-item .lab-subtitle {
+  font-size:10.5px; color:var(--muted); display:block; margin-top:1px;
+}
+.lab-item.active .lab-subtitle { color:var(--pink); }
+
+/* ─── Main ─────────────────────────────────────────────── */
+#main {
+  flex:1; display:flex; flex-direction:column;
+  overflow:hidden; background:var(--bg);
+}
+
+/* Home overview */
+#home { flex:1; overflow-y:auto; padding:32px; }
+#home h2 {
+  font-size:22px; font-weight:700; margin-bottom:6px;
+  background:linear-gradient(135deg, var(--accent2), var(--cyan));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+#home .lead { color:var(--muted); font-size:13.5px; line-height:1.65; max-width:620px; margin-bottom:28px; }
+.paper-section { margin-bottom:32px; }
+.paper-section h3 {
+  font-size:13px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--muted); margin-bottom:12px;
+  display:flex; align-items:center; gap:8px;
+}
+.paper-section h3 span { height:1px; flex:1; background:var(--border); }
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:14px;
+  cursor:pointer; transition:all .18s;
+}
+.card:hover { border-color:var(--accent); background:var(--surface2); transform:translateY(-1px); }
+.card-name { font-size:12.5px; font-weight:600; margin-bottom:4px; }
+.card-thesis { font-size:11px; color:var(--muted); line-height:1.45;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* Lab view */
+#lab-view { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+#lab-view.hidden { display:none; }
+#home.hidden { display:none; }
+
+#lab-header {
+  padding:20px 24px 14px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#lab-paper-badge {
+  display:inline-block; font-size:10px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.06em;
+  color:#fff; padding:2px 8px; border-radius:12px;
+  margin-bottom:8px;
+}
+#lab-title { font-size:18px; font-weight:700; margin-bottom:6px; }
+#lab-doi { font-size:11px; color:var(--muted); margin-bottom:8px; }
+#lab-thesis {
+  font-size:12.5px; color:#a0aec0; line-height:1.6; max-width:700px;
+}
+
+#lab-body {
+  flex:1; display:flex; gap:0; overflow:hidden;
+}
+
+/* Controls panel */
+#controls-panel {
+  width:220px; min-width:220px;
+  border-right:1px solid var(--border);
+  padding:16px 14px; overflow-y:auto;
+  background:var(--surface);
+}
+#controls-panel h4 {
+  font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--muted); margin-bottom:10px;
+}
+.param-group { margin-bottom:14px; }
+.param-label {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:11.5px; color:var(--text); margin-bottom:5px;
+}
+.param-label .pval {
+  font-family:monospace; font-size:11px; color:var(--accent2);
+  min-width:36px; text-align:right;
+}
+input[type=range] {
+  -webkit-appearance:none; width:100%; height:3px;
+  background:var(--border); border-radius:2px; outline:none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:12px; height:12px;
+  background:var(--accent); border-radius:50%; cursor:pointer;
+}
+input[type=checkbox] { accent-color:var(--accent); }
+
+#run-btn {
+  width:100%; margin-top:16px; padding:9px;
+  background:var(--accent); border:none; border-radius:6px;
+  color:#fff; font-size:12px; font-weight:600;
+  cursor:pointer; transition:background .15s;
+  text-transform:uppercase; letter-spacing:.04em;
+}
+#run-btn:hover { background:var(--accent2); }
+
+/* Chart area */
+#chart-area {
+  flex:1; display:flex; flex-direction:column;
+  padding:16px 20px; overflow:hidden; gap:10px;
+}
+#chart-wrap {
+  flex:1; min-height:0; position:relative;
+}
+#chart {
+  width:100%; height:100%; display:block;
+}
+#legend {
+  display:flex; flex-wrap:wrap; gap:12px; font-size:11.5px;
+  padding:0 4px; flex-shrink:0;
+}
+.legend-item { display:flex; align-items:center; gap:5px; }
+.legend-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+
+/* Summary box */
+#summary {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:12px 16px; flex-shrink:0;
+}
+#summary h5 { font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:8px; }
+.summary-grid { display:flex; flex-wrap:wrap; gap:8px 20px; }
+.skey { font-size:11px; color:var(--muted); }
+.sval { font-size:11.5px; font-weight:600; color:var(--accent2); font-family:monospace; }
+.srow { display:flex; align-items:baseline; gap:5px; }
+
+/* coming-soon badge */
+.badge-soon {
+  display:inline-block; font-size:9px; text-transform:uppercase;
+  background:#1e1e3a; color:var(--muted); padding:1px 6px; border-radius:10px;
+  margin-left:4px; vertical-align:middle;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* Paper colors */
+.p1 { color:#7c5de8; } .dot1 { background:#7c5de8; }
+.p2 { color:#40c4ff; } .dot2 { background:#40c4ff; }
+.p3 { color:#69f0ae; } .dot3 { background:#69f0ae; }
+.p4 { color:#ff9e80; } .dot4 { background:#ff9e80; }
+.p5 { color:#ff5370; } .dot5 { background:#ff5370; }
+.p6 { color:#ce93d8; } .dot6 { background:#ce93d8; }
+.p7 { color:#ffd740; } .dot7 { background:#ffd740; }
+.p8 { color:#82ca9d; } .dot8 { background:#82ca9d; }
+
+.badge1 { background:#7c5de8; }
+.badge2 { background:#40c4ff; color:#000; }
+.badge3 { background:#69f0ae; color:#000; }
+.badge4 { background:#ff9e80; color:#000; }
+.badge5 { background:#ff5370; }
+.badge6 { background:#ce93d8; color:#000; }
+.badge7 { background:#ffd740; color:#000; }
+.badge8 { background:#82ca9d; color:#000; }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div id="sidebar-header">
+      <h1>MBD Online Labs</h1>
+      <p>Interactive simulations — no install needed</p>
+    </div>
+    <div id="lab-list">
+      <!-- populated by JS -->
+    </div>
+  </aside>
+
+  <main id="main">
+    <!-- Home overview -->
+    <div id="home">
+      <h2>Memory as Baseline Deviation</h2>
+      <p class="lead">18 interactive simulation labs — each demonstrating a core consequence of the single equation
+        <strong>B(t+1) = B(t)·(1−λ) + I(t)·λ</strong>.
+        Select a lab from the sidebar, adjust parameters, and run the simulation in your browser.
+        No installation required.
+      </p>
+      <div id="overview-cards"><!-- populated by JS --></div>
+    </div>
+
+    <!-- Lab view -->
+    <div id="lab-view" class="hidden">
+      <div id="lab-header">
+        <div id="lab-paper-badge"></div>
+        <div id="lab-title"></div>
+        <div id="lab-doi"></div>
+        <div id="lab-thesis"></div>
+      </div>
+      <div id="lab-body">
+        <div id="controls-panel">
+          <h4>Parameters</h4>
+          <div id="params-container"></div>
+          <button id="run-btn" onclick="runCurrentLab()">▶ Run</button>
+        </div>
+        <div id="chart-area">
+          <div id="chart-wrap">
+            <canvas id="chart"></canvas>
+          </div>
+          <div id="legend"></div>
+          <div id="summary">
+            <h5>Summary</h5>
+            <div id="summary-content" class="summary-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  LAB REGISTRY                                               ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+const PALETTE = ['#7c5de8','#40c4ff','#69f0ae','#ff9e80','#ff5370','#ce93d8','#ffd740','#82ca9d'];
+
+const PAPERS = [
+  { id:1, label:'Paper 1  ·  Memory as Baseline Deviation',        doi:'10.5281/zenodo.17381536', cls:'p1', dotCls:'dot1', badgeCls:'badge1' },
+  { id:2, label:'Paper 2  ·  Pursuit of the Markov Tensor',         doi:'10.5281/zenodo.17537185', cls:'p2', dotCls:'dot2', badgeCls:'badge2' },
+  { id:3, label:'Paper 3  ·  Episodic Recall as Resonant Re-instantiation', doi:'10.5281/zenodo.17374270', cls:'p3', dotCls:'dot3', badgeCls:'badge3' },
+  { id:4, label:'Paper 4  ·  The Coupling Asymmetry',               doi:'10.5281/zenodo.18519187', cls:'p4', dotCls:'dot4', badgeCls:'badge4' },
+  { id:5, label:'Paper 5  ·  The Emergent Gate',                    doi:'10.5281/zenodo.17344091', cls:'p5', dotCls:'dot5', badgeCls:'badge5' },
+  { id:6, label:'Paper 6  ·  The Resonant Gate',                    doi:'10.5281/zenodo.17352481', cls:'p6', dotCls:'dot6', badgeCls:'badge6' },
+  { id:7, label:'Paper 7  ·  The Endemic Baseline',                 doi:'10.5281/zenodo.18825795', cls:'p7', dotCls:'dot7', badgeCls:'badge7' },
+  { id:8, label:'Paper 8  ·  The Suppressive and Emergent Phenomenon', doi:'10.5281/zenodo.18825797', cls:'p8', dotCls:'dot8', badgeCls:'badge8' },
+];
+
+const LABS = [
+  // ── Paper 1 ──────────────────────────────────────────────────────
+  {
+    id:'eq-lab', paper:1, name:'EQ Lab',
+    subtitle:'Relational Learning Rate',
+    thesis:'Two agents with distinct baseline plasticity (λ) and coupling learning rate (α) interact over time. As mutual prediction error decreases, κ grows, pulling baselines toward convergence. Reveals how λ and α govern the speed and stability of relational learning.',
+    params:[
+      {key:'lambda_a',  label:'λ Agent A',    min:.01, max:.5,  step:.01, def:.10},
+      {key:'lambda_b',  label:'λ Agent B',    min:.01, max:.5,  step:.01, def:.10},
+      {key:'alpha_a',   label:'α Agent A',    min:.01, max:.5,  step:.01, def:.10},
+      {key:'alpha_b',   label:'α Agent B',    min:.01, max:.5,  step:.01, def:.10},
+      {key:'b0_a',      label:'B₀ Agent A',   min:-1,  max:1,   step:.05, def:.80},
+      {key:'b0_b',      label:'B₀ Agent B',   min:-1,  max:1,   step:.05, def:-.80},
+      {key:'beta_decay',label:'β decay',       min:.01, max:.2,  step:.01, def:.05},
+      {key:'steps',     label:'Steps',         min:50,  max:300, step:10,  def:150, int:true},
+    ],
+    run: simEqLab,
+    series: r => [
+      {name:'Baseline A', key:'baselineA', color:'#7c5de8'},
+      {name:'Baseline B', key:'baselineB', color:'#ff9e80'},
+      {name:'κ (coupling)', key:'kappa',   color:'#69f0ae'},
+    ],
+    xKey:'turn',
+    summarize: r => {
+      const f = r[r.length-1];
+      return {
+        'Final κ': f.kappa.toFixed(4),
+        'Final B_A': f.baselineA.toFixed(4),
+        'Final B_B': f.baselineB.toFixed(4),
+        'Final Error': f.mutualError.toFixed(4),
+      };
+    }
+  },
+  {
+    id:'adhd', paper:1, name:'ADHD Model',
+    subtitle:'High-λ Baseline Decay',
+    thesis:'ADHD as excessively high decay rate (λ). The predictive scaffold never stabilises — most inputs are processed as highly novel, producing perpetual distractibility and epistemic foraging.',
+    params:[
+      {key:'lambda_typical', label:'λ Typical',     min:.01, max:.5,  step:.01, def:.10},
+      {key:'lambda_adhd',    label:'λ ADHD',        min:.3,  max:.99, step:.01, def:.80},
+      {key:'adhd_extra_decay',label:'ADHD extra decay', min:.5, max:1, step:.01, def:.85},
+      {key:'steps',          label:'Steps',         min:50, max:200,  step:10,  def:100, int:true},
+    ],
+    run: simADHD,
+    series: r => [
+      {name:'Typical Baseline', key:'typical', color:'#7c5de8'},
+      {name:'ADHD Baseline',    key:'adhd',    color:'#ff5370'},
+      {name:'Novelty (Typical)', key:'novelty_typical', color:'#40c4ff'},
+      {name:'Novelty (ADHD)',    key:'novelty_adhd',    color:'#ff9e80'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const ev = r.filter(d => d.input > 0);
+      const avgNT = ev.reduce((s,d) => s+d.novelty_typical, 0)/Math.max(1,ev.length);
+      const avgNA = ev.reduce((s,d) => s+d.novelty_adhd,    0)/Math.max(1,ev.length);
+      return {'Avg Novelty (Typical)': avgNT.toFixed(4), 'Avg Novelty (ADHD)': avgNA.toFixed(4), 'Novelty Ratio': avgNT > 0 ? (avgNA/avgNT).toFixed(2) : '∞'};
+    }
+  },
+  {
+    id:'ossification', paper:1, name:'Ossification',
+    subtitle:'Fossilised Predictive Scaffold',
+    thesis:'λ→0 over the lifespan fossilises the baseline. New experiences fail to shift the integral. The agent becomes a perfect predictor of the past but incapable of genuine learning.',
+    params:[
+      {key:'lambda_initial', label:'λ initial',     min:.1,  max:.9,  step:.05, def:.50},
+      {key:'lambda_floor',   label:'λ floor',       min:.001,max:.1,  step:.001,def:.01},
+      {key:'decay_rate',     label:'decay rate',    min:.01, max:.2,  step:.01, def:.05},
+      {key:'constant_novelty',label:'novelty',      min:1,   max:20,  step:.5,  def:10},
+      {key:'steps',          label:'Steps',         min:50,  max:200, step:10,  def:100, int:true},
+    ],
+    run: simOssification,
+    series: r => [
+      {name:'λ (plasticity)',  key:'lambda_val',  color:'#a07bff'},
+      {name:'dB/dt (rate of change)', key:'dB_dt', color:'#ff9e80'},
+    ],
+    xKey:'time',
+    summarize: r => ({'λ early': r[0].lambda_val.toFixed(4), 'λ late': r[r.length-1].lambda_val.toFixed(4), 'dB/dt early': r[0].dB_dt.toFixed(4), 'dB/dt late': r[r.length-1].dB_dt.toFixed(4)})
+  },
+  {
+    id:'sbs', paper:1, name:'SBS',
+    subtitle:'Strategic Baseline Simplification',
+    thesis:'Chronic error → λ increase → dB/dt collapse → plasticity dies. A coping mechanism that \"dumbs down\" the working baseline to minimise prediction error, catastrophically sabotaging long-term integration.',
+    params:[
+      {key:'error_rise_rate', label:'error rise rate', min:.01, max:.3,  step:.01, def:.10},
+      {key:'error_floor',     label:'error floor',     min:.01, max:.3,  step:.01, def:.10},
+      {key:'error_ceil',      label:'error ceiling',   min:.3,  max:.99, step:.01, def:.80},
+      {key:'lambda_base',     label:'λ base',          min:.01, max:.2,  step:.01, def:.05},
+      {key:'lambda_scale',    label:'λ scale',         min:.1,  max:2,   step:.1,  def:.70},
+      {key:'steps',           label:'Steps',           min:50,  max:200, step:10,  def:100, int:true},
+    ],
+    run: simSBS,
+    series: r => [
+      {name:'Chronic Error',      key:'chronic_error', color:'#ff5370'},
+      {name:'λ (plasticity)',     key:'lambda_val',    color:'#ff9e80'},
+      {name:'dB/dt (adaptation)', key:'dB_dt',         color:'#69f0ae'},
+    ],
+    xKey:'time',
+    summarize: r => ({'Error early': r[0].chronic_error.toFixed(3), 'Error late': r[r.length-1].chronic_error.toFixed(3), 'λ late': r[r.length-1].lambda_val.toFixed(3), 'dB/dt late': r[r.length-1].dB_dt.toFixed(3)})
+  },
+  {
+    id:'phantom', paper:1, name:'Phantom Limb',
+    subtitle:'Unquenched Prediction Error',
+    thesis:'The integrated limb baseline persists after amputation. The gap between the high baseline and null sensory input produces a large, persistent prediction error experienced as phantom pain.',
+    params:[
+      {key:'baseline_limb', label:'Limb baseline', min:.1,  max:1,   step:.05, def:.80},
+      {key:'input_pre',     label:'Input (pre)',   min:.1,  max:1,   step:.05, def:.80},
+      {key:'t_amputation',  label:'Amputation t',  min:10,  max:90,  step:5,   def:50, int:true},
+      {key:'steps',         label:'Steps',         min:50,  max:200, step:10,  def:100, int:true},
+    ],
+    run: simPhantom,
+    series: r => [
+      {name:'Baseline (predicted)', key:'baseline',          color:'#7c5de8'},
+      {name:'Sensory Input',        key:'input',             color:'#69f0ae'},
+      {name:'Prediction Error',     key:'prediction_error',  color:'#ff5370'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const pre = r.filter(d => d.input > 0);
+      const post = r.filter(d => d.input === 0);
+      return {'Error (pre-amp)': (pre.reduce((s,d)=>s+d.prediction_error,0)/Math.max(1,pre.length)).toFixed(4), 'Error (post-amp)': (post.reduce((s,d)=>s+d.prediction_error,0)/Math.max(1,post.length)).toFixed(4)};
+    }
+  },
+  {
+    id:'bipolar', paper:1, name:'Bipolar Disorder',
+    subtitle:'Dysregulated Integration Rate',
+    thesis:'Dysregulation of the baseline\'s temporal integration constant λ. Manic phases reflect pathologically low λ (runaway integration of positive valence). Depressive phases reflect high λ for positive input and low λ for negative, creating a sink state.',
+    params:[
+      {key:'manic_start',      label:'Mania starts',   min:0,   max:80,  step:5, def:20, int:true},
+      {key:'manic_end',        label:'Mania ends',     min:20,  max:120, step:5, def:80, int:true},
+      {key:'depressive_start', label:'Depress. starts',min:80,  max:160, step:5, def:120,int:true},
+      {key:'depressive_end',   label:'Depress. ends',  min:100, max:200, step:5, def:180,int:true},
+      {key:'rise_rate',        label:'Rise rate',      min:.01, max:.2,  step:.01, def:.05},
+      {key:'fall_rate',        label:'Fall rate',      min:.01, max:.2,  step:.01, def:.05},
+      {key:'steps',            label:'Steps',          min:100, max:300, step:10,  def:200,int:true},
+    ],
+    run: simBipolar,
+    series: r => [{name:'Affective Baseline', key:'baseline', color:'#40c4ff'}],
+    xKey:'time',
+    summarize: r => ({'Peak (mania)': Math.max(...r.map(d=>d.baseline)).toFixed(3), 'Trough (depress.)': Math.min(...r.map(d=>d.baseline)).toFixed(3)})
+  },
+
+  // ── Paper 2 ──────────────────────────────────────────────────────
+  {
+    id:'echo-chamber', paper:2, name:'Echo Chamber Collapse',
+    subtitle:'Resonant Cavity Shattering',
+    thesis:'A group with high average κ and low baseline divergence forms a resonant cavity. An undeniable external truth causes catastrophic novelty spike that shatters κ, producing relational fragmentation.',
+    params:[
+      {key:'n_agents',           label:'N agents',         min:2,   max:8,   step:1,   def:4, int:true},
+      {key:'t_shock',            label:'Shock at t',       min:20,  max:80,  step:5,   def:60, int:true},
+      {key:'steps',              label:'Steps',            min:80,  max:200, step:10,  def:100, int:true},
+      {key:'convergence_rate',   label:'Convergence rate', min:1.0, max:1.15,step:.005,def:1.05},
+      {key:'shock_novelty',      label:'Shock novelty',    min:1,   max:10,  step:.5,  def:5.0},
+      {key:'kappa_shock_factor', label:'κ shock factor',   min:.05, max:.5,  step:.05, def:.20},
+    ],
+    run: simEchoChamber,
+    series: r => [
+      {name:'Avg κ (coupling)',   key:'avgCoupling',       color:'#7c5de8'},
+      {name:'Total Novelty',      key:'totalNovelty',      color:'#ff9e80'},
+      {name:'Baseline Divergence',key:'baselineDivergence',color:'#ff5370'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const shock = r.find(d => d.totalNovelty > 1) || r[0];
+      return {'κ pre-shock': r[shock ? r.indexOf(shock)-1 : 0]?.avgCoupling.toFixed(4) || 'n/a', 'κ final': r[r.length-1].avgCoupling.toFixed(4), 'Divergence final': r[r.length-1].baselineDivergence.toFixed(4)};
+    }
+  },
+
+  // ── Paper 3 ──────────────────────────────────────────────────────
+  {
+    id:'reinstantiation', paper:3, name:'Resonant Re-instantiation',
+    subtitle:'Novelty-Gated Encoding & Recall',
+    thesis:'Episodic memory is novelty-gated. Only events deviating sufficiently from the current baseline (> θ_h) trigger a state write. Retrieval is context-scaffolded: memory is only accessible if current context matches encoding context within θ_search.',
+    params:[
+      {key:'n_timesteps',       label:'Time steps',      min:50,  max:150, step:10,  def:100, int:true},
+      {key:'theta_gate_write',  label:'θ_h write gate',  min:.1,  max:.7,  step:.05, def:.35},
+      {key:'theta_search',      label:'θ search radius', min:.1,  max:.6,  step:.05, def:.30},
+      {key:'t_novel_event',     label:'Novel event at t',min:10,  max:90,  step:5,   def:40, int:true},
+      {key:'t_recall_matched',  label:'Recall at t',     min:50,  max:99,  step:5,   def:80, int:true},
+    ],
+    run: simReinstantiation,
+    series: r => [
+      {name:'Novelty signal',   key:'novelty',  color:'#ff9e80'},
+      {name:'P(write)',         key:'p_write',  color:'#69f0ae'},
+      {name:'Trace written',    key:'written',  color:'#7c5de8'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const written = r.filter(d => d.written > 0).length;
+      const recalled = r.some(d => d.recalled > 0);
+      return {'Episodes encoded': written+'', 'Context recall': recalled ? 'YES ✓' : 'NO — context mismatch'};
+    }
+  },
+
+  // ── Paper 4 ──────────────────────────────────────────────────────
+  {
+    id:'aspd', paper:4, name:'ASPD',
+    subtitle:'Deontological Immunity',
+    thesis:'κ locked near zero. The agent\'s baseline is constituted solely by self-experience (I), immune to relational constitution (D). Not a missing theory of mind — a functional solipsism.',
+    params:[
+      {key:'kappa_typical',   label:'κ Typical',       min:.3,  max:.9,  step:.05, def:.60},
+      {key:'kappa_aspd',      label:'κ ASPD',          min:.0,  max:.2,  step:.01, def:.05},
+      {key:'lambda_val',      label:'λ',               min:.01, max:.3,  step:.01, def:.10},
+      {key:'social_event_t',  label:'Social event t',  min:0,   max:18,  step:1,   def:2, int:true},
+      {key:'social_event_d',  label:'Social D strength',min:-1, max:1,   step:.05, def:-.4},
+    ],
+    run: simASPD,
+    series: r => [
+      {name:'Typical Agent', key:'typical', color:'#7c5de8'},
+      {name:'ASPD Agent',    key:'aspd',    color:'#ff5370'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const f = r[r.length-1];
+      return {'Typical B final': f.typical.toFixed(4), 'ASPD B final': f.aspd.toFixed(4), 'Delta': Math.abs(f.typical - f.aspd).toFixed(4)};
+    }
+  },
+  {
+    id:'bpd', paper:4, name:'BPD',
+    subtitle:'Coupling Instability',
+    thesis:'BPD as pathology of coupling dynamics. κ oscillates between near-total fusion (idealisation) and near-zero (devaluation) in response to perceived relational threats, creating a volatile baseline and fractured sense of self.',
+    params:[
+      {key:'kappa_typical', label:'κ Typical',    min:.3,  max:.9,  step:.05, def:.70},
+      {key:'lambda_val',    label:'λ',            min:.01, max:.3,  step:.01, def:.10},
+      {key:'steps',         label:'Steps',        min:50,  max:100, step:5,   def:71, int:true},
+    ],
+    run: simBPD,
+    series: r => [
+      {name:'BPD κ(t)',           key:'kappa_bpd',      color:'#ff5370'},
+      {name:'Typical κ',          key:'kappa_typical',  color:'#69f0ae'},
+      {name:'BPD |dB/dt|',        key:'bpd_dB',         color:'#ff9e80'},
+      {name:'Typical |dB/dt|',    key:'typical_dB',     color:'#7c5de8'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const k = r.map(d=>d.kappa_bpd);
+      return {'κ mean': (k.reduce((a,b)=>a+b,0)/k.length).toFixed(4), 'κ std': Math.sqrt(k.reduce((s,v)=>s+(v-k[0])**2,0)/k.length).toFixed(4), 'κ range': (Math.max(...k)-Math.min(...k)).toFixed(4)};
+    }
+  },
+  {
+    id:'asymmetry', paper:4, name:'Coupling Asymmetry',
+    subtitle:'One-Way Relational Constitution',
+    thesis:'One-way coupling: the Host is constituted largely by the Parasite (κ=0.9) while the Parasite is barely influenced by the Host (κ=0.1). See how baseline trajectories diverge despite interaction.',
+    params:[
+      {key:'kappa_host',    label:'κ Host',     min:.5,  max:.99, step:.05, def:.90},
+      {key:'kappa_parasite',label:'κ Parasite', min:.0,  max:.4,  step:.05, def:.10},
+      {key:'lambda_val',    label:'λ',          min:.01, max:.3,  step:.01, def:.10},
+      {key:'b0_host',       label:'B₀ Host',    min:-1,  max:1,   step:.05, def:.4},
+      {key:'b0_parasite',   label:'B₀ Parasite',min:-1,  max:1,   step:.05, def:-.3},
+      {key:'steps',         label:'Steps',      min:50,  max:200, step:10,  def:100, int:true},
+    ],
+    run: simAsymmetry,
+    series: r => [
+      {name:'Host Baseline',    key:'host',    color:'#7c5de8'},
+      {name:'Parasite Baseline',key:'parasite',color:'#ff9e80'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const f = r[r.length-1];
+      return {'Host B final': f.host.toFixed(4), 'Parasite B final': f.parasite.toFixed(4), 'Divergence': Math.abs(f.host-f.parasite).toFixed(4)};
+    }
+  },
+  {
+    id:'internal-other', paper:4, name:'Internal Other',
+    subtitle:'Internalised Past-Other Echo',
+    thesis:'An agent\'s baseline is constituted partly by a persisting internalised Other (D_self). κ_self=0.7 means 70% of the agent\'s identity is the memory of who the Other was — even after they are gone.',
+    params:[
+      {key:'kappa_self',   label:'κ self (internalised)', min:.0, max:.99, step:.05, def:.70},
+      {key:'d_self_val',   label:'D_self (Other memory)', min:-1, max:1,   step:.05, def:.8},
+      {key:'lambda_val',   label:'λ',                   min:.01,max:.3,   step:.01, def:.10},
+      {key:'steps',        label:'Steps',               min:50, max:200,  step:10,  def:100, int:true},
+    ],
+    run: simInternalOther,
+    series: r => [
+      {name:'Agent with internal Other', key:'with_other',    color:'#ff9e80'},
+      {name:'Agent without',             key:'without_other', color:'#7c5de8'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const f = r[r.length-1];
+      return {'With Other B final': f.with_other.toFixed(4), 'Without Other B final': f.without_other.toFixed(4)};
+    }
+  },
+  {
+    id:'fragmentation', paper:4, name:'Fragmentation (DID)',
+    subtitle:'State-Dependent Identity Switching',
+    thesis:'Multiple baselines (B₁, B₂, B₃) encode experience in different states. The active baseline switches at critical stress- or context-thresholds, producing discontinuous identity experience.',
+    params:[
+      {key:'switch_interval', label:'Switch interval',  min:10, max:50, step:5, def:25, int:true},
+      {key:'lambda_val',      label:'λ',               min:.01,max:.3,  step:.01, def:.10},
+      {key:'steps',           label:'Steps',           min:60, max:200, step:10,  def:100, int:true},
+    ],
+    run: simFragmentation,
+    series: r => [
+      {name:'Active Baseline', key:'active',   color:'#ff9e80'},
+      {name:'State B1',        key:'b1',       color:'#7c5de8'},
+      {name:'State B2',        key:'b2',       color:'#69f0ae'},
+      {name:'State B3',        key:'b3',       color:'#ff5370'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const switches = r.filter((d,i) => i > 0 && r[i-1].active !== d.active).length;
+      return {'Identity switches': switches+'', 'B1 final': r[r.length-1].b1.toFixed(4), 'B2 final': r[r.length-1].b2.toFixed(4), 'B3 final': r[r.length-1].b3.toFixed(4)};
+    }
+  },
+
+  // ── Paper 5 ──────────────────────────────────────────────────────
+  {
+    id:'dual-resonance', paper:5, name:'Dual Resonance',
+    subtitle:'Amplification vs. Overshadowing',
+    thesis:'When two agents are coupled, novelty reverberates via κ. Moderate κ + distinct baselines amplifies. High κ collapses baseline identity and extinguishes novelty. The sweet spot is where memory is most powerfully formed.',
+    params:[
+      {key:'b0_a',          label:'B₀ Agent A',   min:-1,  max:1,  step:.05, def:.30},
+      {key:'b0_b',          label:'B₀ Agent B',   min:-1,  max:1,  step:.05, def:-.20},
+      {key:'event_valence', label:'Event valence', min:.1,  max:1.5,step:.05, def:.80},
+      {key:'event_time',    label:'Event at t',    min:10,  max:70, step:5,   def:40, int:true},
+      {key:'lambda_val',    label:'λ',            min:.01, max:.3,  step:.01, def:.10},
+      {key:'steps',         label:'Steps',        min:60,  max:120, step:10,  def:80, int:true},
+    ],
+    run: simDualResonance,
+    series: r => r.map((s, i) => ({name:`κ=${s.kappa.toFixed(1)} peak-B novelty`, key:'peak_novelty_b', color: PALETTE[i % PALETTE.length], isBar:true})),
+    xKey:'kappa',
+    barMode: true,
+    summarize: r => ({'Optimal κ': r.reduce((best,d) => d.peak_novelty_b > best.peak_novelty_b ? d : best, r[0]).kappa.toFixed(1), 'Peak secondary novelty': r.reduce((m,d) => Math.max(m, d.peak_novelty_b), 0).toFixed(4)})
+  },
+  {
+    id:'mood-incongruent', paper:5, name:'Mood-Incongruent Memory',
+    subtitle:'State-Context Mismatch on Retrieval',
+    thesis:'Memories encoded in a specific affective state can only be retrieved when the current context re-enters the encoding radius θ_search. Mood incongruence is a structural failure of context-scaffolded recall.',
+    params:[
+      {key:'encode_baseline',  label:'Encoding state',   min:-1,  max:1,  step:.05, def:.8},
+      {key:'recall_state',     label:'Recall state',     min:-1,  max:1,  step:.05, def:-.5},
+      {key:'theta_search',     label:'θ search',         min:.1,  max:.8, step:.05, def:.3},
+      {key:'steps',            label:'Steps',            min:50,  max:200,step:10,  def:100,int:true},
+    ],
+    run: simMoodIncongruent,
+    series: r => [
+      {name:'Encoding context',key:'encode_state', color:'#7c5de8'},
+      {name:'Recall context',  key:'recall_state', color:'#40c4ff'},
+      {name:'Retrieval P',     key:'p_retrieve',   color:'#ff9e80'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const f = r[r.length-1];
+      return {'Context distance': f.context_dist.toFixed(4), 'Recall probability': f.p_retrieve.toFixed(4), 'Mood congruent': f.p_retrieve > .5 ? 'YES' : 'NO'};
+    }
+  },
+
+  // ── Paper 6 ──────────────────────────────────────────────────────
+  {
+    id:'deontological', paper:6, name:'Deontological Gate',
+    subtitle:'κ_c Threshold and Collective Turn',
+    thesis:'Below the critical coupling threshold κ_c, agents evolve independently. Above κ_c, a discontinuous phase transition occurs — agents synchronise and moral salience is distributed. The gate is not gradual; it is a phase transition.',
+    params:[
+      {key:'n_agents',    label:'N agents',   min:2,  max:8,   step:1,   def:4, int:true},
+      {key:'kappa_c',     label:'κ_c threshold',min:.2,max:.8, step:.05, def:.5},
+      {key:'kappa_max',   label:'κ max',      min:.6, max:.99, step:.05, def:.9},
+      {key:'steps',       label:'Steps',      min:50, max:200, step:10,  def:100,int:true},
+    ],
+    run: simDeontological,
+    series: r => [
+      {name:'Sync order r', key:'sync_r',    color:'#ce93d8'},
+      {name:'Mean κ',       key:'mean_kappa',color:'#7c5de8'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const transition = r.find(d => d.sync_r > 0.8);
+      return {'Sync order (final)': r[r.length-1].sync_r.toFixed(4), 'Phase transition at t': transition ? transition.time+'' : 'not reached'};
+    }
+  },
+  {
+    id:'resonant-gate', paper:6, name:'Resonant Gate',
+    subtitle:'Novelty-Suppression and Gate Opening',
+    thesis:'The resonant gate suppresses habitually processed signals and opens for genuine novelty. When N > θ_h the gate opens, allowing deep baseline integration. Below θ_h, input passes through without lasting trace.',
+    params:[
+      {key:'theta_h',     label:'θ_h gate',    min:.1,  max:.8, step:.05, def:.35},
+      {key:'lambda_val',  label:'λ',           min:.01, max:.3,  step:.01, def:.10},
+      {key:'gate_boost',  label:'Gate boost',  min:1,   max:5,   step:.5,  def:2.0},
+      {key:'steps',       label:'Steps',       min:50,  max:200, step:10,  def:100,int:true},
+    ],
+    run: simResonantGate,
+    series: r => [
+      {name:'Input novelty',  key:'novelty',    color:'#ff9e80'},
+      {name:'Gate state',     key:'gate_open',  color:'#69f0ae'},
+      {name:'Baseline shift', key:'dB',         color:'#7c5de8'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const opens = r.filter(d => d.gate_open > 0.5).length;
+      return {'Gate opens': opens+'', 'Total baseline shift': r.reduce((s,d)=>s+Math.abs(d.dB),0).toFixed(4), 'Mean shift per open': (opens > 0 ? r.filter(d=>d.gate_open>.5).reduce((s,d)=>s+Math.abs(d.dB),0)/opens : 0).toFixed(4)};
+    }
+  },
+  {
+    id:'zeta-lab', paper:6, name:'Zeta (ζ) Lab',
+    subtitle:'Deontological Attention Filter',
+    thesis:'ζ modulates balance between self-input (I) and other-input (D). At low ζ the agent is world-focused; at high ζ the agent becomes fixated on the relational Other. Demonstrates κ-acceleration, baseline constitution shift, and novelty focus shift.',
+    params:[
+      {key:'omega',      label:'ω (world floor)', min:.0,  max:.3,  step:.01, def:.10},
+      {key:'alpha',      label:'α (coupling lr)',  min:.01, max:.2,  step:.01, def:.05},
+      {key:'beta',       label:'β (κ decay)',      min:.01, max:.1,  step:.01, def:.02},
+      {key:'lambda_val', label:'λ',               min:.01, max:.3,  step:.01, def:.10},
+      {key:'gamma_L',    label:'γ_L (ζ boost)',   min:.1,  max:1.0, step:.1,  def:.50},
+      {key:'sim_steps',  label:'Steps',           min:60,  max:150, step:10,  def:100, int:true},
+    ],
+    run: simZetaLab,
+    series: r => [
+      {name:'κ at ζ=0.1', key:'kappa_low',  color:'#69f0ae'},
+      {name:'κ at ζ=0.5', key:'kappa_mid',  color:'#7c5de8'},
+      {name:'κ at ζ=0.9', key:'kappa_high', color:'#ff5370'},
+    ],
+    xKey:'turn',
+    summarize: r => {
+      const f = r[r.length-1];
+      return {'κ final (ζ=0.1)': f.kappa_low.toFixed(4), 'κ final (ζ=0.5)': f.kappa_mid.toFixed(4), 'κ final (ζ=0.9)': f.kappa_high.toFixed(4)};
+    }
+  },
+
+  // ── Paper 7 ──────────────────────────────────────────────────────
+  {
+    id:'endemic-baseline', paper:7, name:'Endemic Baseline Threshold',
+    subtitle:'Critical κ for Collective Memory',
+    thesis:'The endemic baseline is the stable attractor state of a social group that has undergone sufficient collective experience. Below a critical coupling density, memory remains individual. Above it, the group forms a shared ontological floor.',
+    params:[
+      {key:'n_agents',   label:'N agents',     min:2,  max:12, step:1,   def:6, int:true},
+      {key:'kappa_mean', label:'κ mean',       min:.0,  max:.9, step:.05, def:.4},
+      {key:'lambda_val', label:'λ',           min:.01, max:.3,  step:.01, def:.10},
+      {key:'steps',      label:'Steps',        min:50, max:200, step:10,  def:100,int:true},
+    ],
+    run: simEndemicBaseline,
+    series: r => [
+      {name:'Baseline divergence', key:'divergence',  color:'#ffd740'},
+      {name:'Collective coherence',key:'coherence',   color:'#7c5de8'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const f = r[r.length-1];
+      return {'Divergence final': f.divergence.toFixed(4), 'Coherence final': f.coherence.toFixed(4), 'Endemic state': f.coherence > 0.8 ? 'REACHED' : 'not reached'};
+    }
+  },
+
+  // ── Paper 8 ──────────────────────────────────────────────────────
+  {
+    id:'suppressive', paper:8, name:'Suppressive Attractor',
+    subtitle:'V1–V4 Attack Vectors',
+    thesis:'A sufficiently coupled social system can suppress genuine novelty that contradicts the group baseline. Four attack vectors (V1–V4) model how suppressive dynamics emerge and can be quantified via κ_c threshold and the ζ attention filter.',
+    params:[
+      {key:'kappa_suppressive', label:'κ suppressive',  min:.5,  max:.99, step:.05, def:.85},
+      {key:'attack_vector',     label:'Attack vector',  min:1,   max:4,   step:1,   def:1, int:true},
+      {key:'lambda_val',        label:'λ target',      min:.01, max:.3,   step:.01, def:.10},
+      {key:'steps',             label:'Steps',         min:50,  max:200,  step:10,  def:100,int:true},
+    ],
+    run: simSuppressive,
+    series: r => [
+      {name:'Target novelty (suppressed)', key:'target_novelty',    color:'#ff5370'},
+      {name:'Group baseline pressure',     key:'group_pressure',    color:'#82ca9d'},
+      {name:'Suppression ratio',           key:'suppression_ratio', color:'#ffd740'},
+    ],
+    xKey:'time',
+    summarize: r => {
+      const f = r[r.length-1];
+      return {'Suppression ratio': f.suppression_ratio.toFixed(4), 'Target novelty blocked': (f.suppression_ratio > 0.7 ? 'YES' : 'NO'), 'Attack vector': r[0].vector+''};
+    }
+  },
+];
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  SIMULATION FUNCTIONS                                       ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+function simEqLab(p) {
+  let bA = p.b0_a, bB = p.b0_b, kappa = 0;
+  const ts = [{turn:0, baselineA:bA, baselineB:bB, kappa:0, mutualError:Math.abs(bA-bB)}];
+  const steps = p.steps|0;
+  for (let i = 1; i <= steps; i++) {
+    const mutualError = Math.abs(bA - bB) / 2;
+    const avgAlpha = (p.alpha_a + p.alpha_b) / 2;
+    const dKappa = avgAlpha * (1 - mutualError * mutualError) - p.beta_decay * kappa;
+    kappa = Math.max(0, Math.min(1, kappa + dKappa));
+    const pa = bA, pb = bB;
+    bA = pa * (1 - p.lambda_a) + pb * kappa * p.lambda_a;
+    bB = pb * (1 - p.lambda_b) + pa * kappa * p.lambda_b;
+    ts.push({turn:i, baselineA:bA, baselineB:bB, kappa, mutualError:Math.abs(bA-bB)});
+  }
+  return ts;
+}
+
+function simADHD(p) {
+  const events = {20:1.0, 40:0.8, 60:1.2, 80:0.9};
+  let typB = 0, adhdB = 0;
+  const ts = [];
+  const steps = p.steps|0;
+  for (let i = 0; i < steps; i++) {
+    const inp = events[i] ?? 0;
+    const prevTyp = typB, prevAdhd = adhdB;
+    typB  = typB  * (1 - p.lambda_typical) + inp * p.lambda_typical;
+    adhdB = adhdB * (1 - p.lambda_adhd)    + inp * p.lambda_adhd;
+    adhdB *= p.adhd_extra_decay;
+    ts.push({time:i, input:inp, typical:typB, adhd:adhdB,
+      novelty_typical: inp ? Math.abs(inp - prevTyp)  : 0,
+      novelty_adhd:    inp ? Math.abs(inp - prevAdhd) : 0});
+  }
+  return ts;
+}
+
+function simOssification(p) {
+  const ts = [];
+  const steps = p.steps|0;
+  for (let t = 0; t < steps; t++) {
+    const lam = p.lambda_initial * Math.exp(-p.decay_rate * t) + p.lambda_floor;
+    const db_dt = p.constant_novelty * lam;
+    ts.push({time:t, lambda_val:lam, dB_dt:db_dt});
+  }
+  return ts;
+}
+
+function simSBS(p) {
+  const ts = [];
+  const steps = p.steps|0;
+  for (let t = 0; t < steps; t++) {
+    const error = p.error_ceil * (1 - Math.exp(-p.error_rise_rate * t)) + p.error_floor;
+    const lam   = p.lambda_base + p.lambda_scale * (error - p.error_floor);
+    const db_dt = 1 / (1 + lam * 5);
+    ts.push({time:t, chronic_error:error, lambda_val:lam, dB_dt:db_dt});
+  }
+  return ts;
+}
+
+function simPhantom(p) {
+  const ts = [];
+  const steps = p.steps|0;
+  const amp = p.t_amputation|0;
+  for (let t = 0; t < steps; t++) {
+    const inp   = t < amp ? p.input_pre : p.input_post;
+    const error = Math.abs(p.baseline_limb - inp);
+    ts.push({time:t, baseline:p.baseline_limb, input:inp, prediction_error:error});
+  }
+  return ts;
+}
+
+function simBipolar(p) {
+  const ts = [];
+  const steps = p.steps|0;
+  const {manic_start:ms, manic_end:me, depressive_start:ds, depressive_end:de,
+         rise_rate:rr, fall_rate:fr, return_rate: ret=0.025} = p;
+  for (let t = 0; t < steps; t++) {
+    let baseline = 0;
+    if (t > ms && t <= me)           baseline = Math.min(1.0,  rr  * (t - ms));
+    else if (t > me && t <= ds)      baseline = Math.max(0.0,  1.0 - ret * (t - me));
+    else if (t > ds && t <= de)      baseline = Math.max(-1.0, -fr * (t - ds));
+    ts.push({time:t, baseline});
+  }
+  return ts;
+}
+
+function simEchoChamber(p) {
+  const n   = p.n_agents|0;
+  const tSh = p.t_shock|0;
+  const steps = p.steps|0;
+  const offsets = [0.3, -0.4, 0.5, -0.2, 0.35, -0.25, 0.45, -0.15];
+  let avgCoupling = 0.1;
+  let baselines = Array.from({length:n}, (_, i) => 0.10 + (i * 0.015));
+  const ts = [];
+  for (let t = 0; t < steps; t++) {
+    let totalNovelty;
+    if (t < tSh) {
+      avgCoupling = Math.min(0.95, avgCoupling * p.convergence_rate);
+      totalNovelty = 0.5 * Math.exp(-t * 0.1) + p.novelty_floor;
+      const meanB = baselines.reduce((a,b)=>a+b,0)/n;
+      baselines = baselines.map(b => b + 0.02*(meanB-b));
+    } else if (t === tSh) {
+      totalNovelty = p.shock_novelty;
+      avgCoupling *= p.kappa_shock_factor;
+      baselines = baselines.map((b,i) => b + offsets[i % offsets.length] * 0.5);
+    } else {
+      totalNovelty = p.post_shock_base || 1.5;
+      avgCoupling = Math.max(0, Math.min(0.95, avgCoupling * (p.kappa_post_decay || 0.95)));
+    }
+    avgCoupling = Math.max(0, Math.min(0.95, avgCoupling));
+    const mean = baselines.reduce((a,b)=>a+b,0)/n;
+    const variance = baselines.reduce((s,b)=>s+(b-mean)**2,0)/n;
+    ts.push({time:t, avgCoupling, totalNovelty, baselineDivergence:Math.sqrt(variance)});
+  }
+  return ts;
+}
+
+function simReinstantiation(p) {
+  const steps = p.n_timesteps|0;
+  const tNov  = p.t_novel_event|0;
+  const tRec  = p.t_recall_matched|0;
+  let b = 0;
+  const episodes = [];
+  const ts = [];
+  for (let t = 0; t < steps; t++) {
+    const drift = 0.05 * (Math.sin(t*0.1) + Math.cos(t*0.07));
+    const inp   = (t === tNov) ? drift + 0.8 : drift * 0.3;
+    const novelty = Math.abs(inp - b);
+    const p_write = 1/(1 + Math.exp(-10*(novelty - p.theta_gate_write)));
+    const written = novelty > p.theta_gate_write;
+    const context = b + inp * 0.5;
+    if (written) episodes.push({t, context, novelty});
+    b = b*(1-0.05) + inp*0.05;
+    const recalled = (t === tRec) && episodes.some(e => Math.abs(e.context - context) < p.theta_search);
+    ts.push({time:t, novelty, p_write, baseline:b, recalled: recalled ? 0.6 : 0, written: written ? novelty : 0});
+  }
+  return ts;
+}
+
+function simASPD(p) {
+  let typB = 0.5, aspdB = 0.5;
+  const ts = [];
+  const evt = p.social_event_t|0;
+  for (let t = 0; t < 20; t++) {
+    const d = (t === evt) ? p.social_event_d : 0;
+    typB  = typB  + p.kappa_typical * d * p.lambda_val;
+    aspdB = aspdB + p.kappa_aspd    * d * p.lambda_val;
+    ts.push({time:t, typical:typB, aspd:aspdB, social_input:d});
+  }
+  return ts;
+}
+
+function simBPD(p) {
+  const schedule = [
+    {time:0,kappa:.50},{time:10,kappa:.80},{time:20,kappa:.85},
+    {time:30,kappa:.20},{time:40,kappa:.10},{time:50,kappa:.90},
+    {time:60,kappa:.30},{time:70,kappa:.70},
+  ];
+  const sched = {};
+  for (const s of schedule) sched[s.time] = s.kappa;
+  let lastKBPD = schedule[0].kappa;
+  let bpdB = 0, typB = 0;
+  const ts = [];
+  const steps = p.steps|0;
+  for (let t = 0; t < steps; t++) {
+    if (sched[t] !== undefined) lastKBPD = sched[t];
+    const D = Math.sin(t / 10);
+    const prevBPD = bpdB, prevTyp = typB;
+    bpdB = bpdB * (1 - p.lambda_val) + p.lambda_val * (D * lastKBPD);
+    typB = typB * (1 - p.lambda_val) + p.lambda_val * (D * p.kappa_typical);
+    ts.push({time:t, kappa_bpd:lastKBPD, kappa_typical:p.kappa_typical,
+      bpd_baseline:bpdB, typical_baseline:typB,
+      bpd_dB: Math.abs(bpdB - prevBPD), typical_dB: Math.abs(typB - prevTyp)});
+  }
+  return ts;
+}
+
+function simAsymmetry(p) {
+  let hostB = p.b0_host, parasiteB = p.b0_parasite;
+  const ts = [];
+  const steps = p.steps|0;
+  for (let t = 0; t < steps; t++) {
+    const D_ext = Math.sin(t * 0.15) * 0.3;
+    const prevH = hostB, prevP = parasiteB;
+    hostB     = prevH * (1-p.lambda_val) + p.lambda_val*(D_ext + p.kappa_host*prevP);
+    parasiteB = prevP * (1-p.lambda_val) + p.lambda_val*(D_ext + p.kappa_parasite*prevH);
+    ts.push({time:t, host:hostB, parasite:parasiteB});
+  }
+  return ts;
+}
+
+function simInternalOther(p) {
+  let withB = 0, withoutB = 0;
+  const D_self = p.d_self_val;
+  const ts = [];
+  const steps = p.steps|0;
+  for (let t = 0; t < steps; t++) {
+    const I = Math.sin(t * 0.1) * 0.5;
+    withB    = withB    * (1-p.lambda_val) + p.lambda_val*(I + p.kappa_self * D_self);
+    withoutB = withoutB * (1-p.lambda_val) + p.lambda_val * I;
+    ts.push({time:t, with_other:withB, without_other:withoutB});
+  }
+  return ts;
+}
+
+function simFragmentation(p) {
+  const interval = p.switch_interval|0;
+  const steps = p.steps|0;
+  let b1 = 0.5, b2 = -0.3, b3 = 0.1;
+  const ts = [];
+  const stateSeq = [0,1,2,0,1,2,0,1,2,0,1,2].map((v,i) => Math.floor(i * interval));
+  for (let t = 0; t < steps; t++) {
+    const phase = Math.floor(t / interval) % 3;
+    const I = Math.sin(t * 0.2) * 0.4;
+    b1 = b1 * (1-p.lambda_val) + (phase===0?1:0) * I * p.lambda_val;
+    b2 = b2 * (1-p.lambda_val) + (phase===1?1:0) * I * p.lambda_val;
+    b3 = b3 * (1-p.lambda_val) + (phase===2?1:0) * I * p.lambda_val;
+    const active = phase===0 ? b1 : phase===1 ? b2 : b3;
+    ts.push({time:t, active, b1, b2, b3, phase});
+  }
+  return ts;
+}
+
+function simDualResonance(p) {
+  const kappas = [0.0, 0.2, 0.5, 0.8, 1.0];
+  const steps = p.steps|0;
+  return kappas.map(kappa => {
+    let bA = p.b0_a, bB = p.b0_b;
+    let maxNovB = 0;
+    for (let t = 0; t < steps; t++) {
+      const I_a = (t === (p.event_time|0)) ? p.event_valence : 0;
+      const n_b = kappa * Math.abs(bA - bB) * 0.5;
+      if (n_b > maxNovB) maxNovB = n_b;
+      const denom = 1 + kappa;
+      const newA = bA*(1-p.lambda_val) + (I_a + kappa*bB)/denom * p.lambda_val;
+      const newB = bB*(1-p.lambda_val) + (0    + kappa*bA)/denom * p.lambda_val;
+      bA = newA; bB = newB;
+    }
+    return {kappa, peak_novelty_b: maxNovB, baseline_convergence: Math.abs(bA-bB)};
+  });
+}
+
+function simMoodIncongruent(p) {
+  const steps = p.steps|0;
+  const ts = [];
+  // Encode state: fixed at encode_baseline
+  // Recall state: transitions from encode_baseline to recall_state at t=steps/2
+  const tTransition = Math.floor(steps * 0.5);
+  let currentState = p.encode_baseline;
+  const eps = p.theta_search;
+  for (let t = 0; t < steps; t++) {
+    if (t >= tTransition) {
+      const progress = (t - tTransition) / (steps - tTransition);
+      currentState = p.encode_baseline + progress * (p.recall_state - p.encode_baseline);
+    }
+    const dist = Math.abs(currentState - p.encode_baseline);
+    const p_retrieve = Math.exp(-dist * dist / (2 * eps * eps));
+    ts.push({time:t, encode_state:p.encode_baseline, recall_state:currentState,
+      p_retrieve, context_dist:dist});
+  }
+  return ts;
+}
+
+function simDeontological(p) {
+  const n = p.n_agents|0;
+  const steps = p.steps|0;
+  const ts = [];
+  let kappas = Array(n).fill(0.1);
+  let phases = Array.from({length:n}, (_,i) => (i / n) * Math.PI * 2);
+  for (let t = 0; t < steps; t++) {
+    const targetKappa = p.kappa_mean * (1 - Math.exp(-t * 0.05));
+    kappas = kappas.map(k => {
+      const dk = 0.05 * (Math.min(p.kappa_max, targetKappa + 0.05*(Math.random()-.5)) - k);
+      return Math.max(0, Math.min(p.kappa_max, k + dk));
+    });
+    const meanK = kappas.reduce((a,b)=>a+b,0)/n;
+    phases = phases.map((ph, i) => {
+      let dph = 0.1;
+      for (let j = 0; j < n; j++) if (i!==j) dph += meanK * Math.sin(phases[j]-ph);
+      return ph + dph * 0.01;
+    });
+    const Rx = phases.reduce((s,ph)=>s+Math.cos(ph),0)/n;
+    const Ry = phases.reduce((s,ph)=>s+Math.sin(ph),0)/n;
+    const sync_r = Math.sqrt(Rx*Rx + Ry*Ry);
+    ts.push({time:t, mean_kappa:meanK, sync_r});
+  }
+  return ts;
+}
+
+function simResonantGate(p) {
+  const steps = p.steps|0;
+  const ts = [];
+  let b = 0.2;
+  for (let t = 0; t < steps; t++) {
+    const inp = 0.5*Math.sin(t*0.15) + 0.3*Math.sin(t*0.07 + 1.2) + 0.1*Math.sin(t*0.3);
+    const novelty = Math.abs(inp - b);
+    const gate_open = novelty > p.theta_h ? 1 : 0;
+    const effectiveLambda = gate_open ? p.lambda_val * p.gate_boost : p.lambda_val * 0.1;
+    const newB = b*(1-effectiveLambda) + inp*effectiveLambda;
+    const dB = Math.abs(newB - b);
+    b = newB;
+    ts.push({time:t, novelty, gate_open, dB});
+  }
+  return ts;
+}
+
+function simZetaLab(p) {
+  const zetaValues = [0.1, 0.5, 0.9];
+  const steps = p.sim_steps|0;
+  const result = [];
+  // Run all three trials and combine into per-step records
+  const trials = zetaValues.map(zeta => {
+    let b_obs = 0.8, b_tar = -0.8, kappa = 0.1;
+    const series = [];
+    for (let t = 0; t < steps; t++) {
+      const I = (t > 30 && t < 40) ? 1.0 : -0.1;
+      const D_base = (t > 70 && t < 80) ? 1.0 : 0.0;
+      const D = (b_tar - b_obs) + D_base;
+      const z_eff = Math.max(0, Math.min(1, zeta));
+      const N_world = Math.abs(I - b_obs);
+      const i_weight = (1-z_eff)*(1-p.omega) + p.omega;
+      const d_weight = kappa + z_eff * p.gamma_L;
+      const obs_input = i_weight*I + d_weight*D;
+      const new_b_obs = b_obs*(1-p.lambda_val) + obs_input*p.lambda_val;
+      const new_b_tar = b_tar*(1-p.lambda_val) + (I-D)*p.lambda_val;
+      const N_mut_sq  = ((b_obs - b_tar)**2) / 4;
+      const alpha_eff = p.alpha * (1 - Math.tanh(N_world));
+      const dk = alpha_eff*(1+z_eff)*(1-N_mut_sq) - p.beta*kappa;
+      kappa = Math.max(0, Math.min(1, kappa + dk));
+      series.push(kappa);
+      b_obs = new_b_obs; b_tar = new_b_tar;
+    }
+    return series;
+  });
+  for (let t = 0; t < steps; t++) {
+    result.push({turn:t, kappa_low:trials[0][t], kappa_mid:trials[1][t], kappa_high:trials[2][t]});
+  }
+  return result;
+}
+
+function simEndemicBaseline(p) {
+  const n = p.n_agents|0;
+  const steps = p.steps|0;
+  let baselines = Array.from({length:n}, (_,i) => 0.1 + i*0.1 - n*0.05);
+  const ts = [];
+  for (let t = 0; t < steps; t++) {
+    const keff = p.kappa_mean * (1 - Math.exp(-t*0.03));
+    const I = Array.from({length:n}, (_,i) => Math.sin(t*0.1 + i) * 0.3);
+    baselines = baselines.map((b,i) => {
+      const coupling = baselines.reduce((s,bj,j) => j!==i ? s + keff*(bj-b) : s, 0) / (n-1||1);
+      return b*(1-p.lambda_val) + p.lambda_val*(I[i] + coupling);
+    });
+    const mean = baselines.reduce((a,b)=>a+b,0)/n;
+    const variance = baselines.reduce((s,b)=>s+(b-mean)**2,0)/n;
+    const div = Math.sqrt(variance);
+    const coherence = 1/(1+div*5);
+    ts.push({time:t, divergence:div, coherence});
+  }
+  return ts;
+}
+
+function simSuppressive(p) {
+  const steps = p.steps|0;
+  const v = p.attack_vector|0;
+  const ts = [];
+  let target_novelty = 1.0, group_pressure = 0.1;
+  for (let t = 0; t < steps; t++) {
+    // Group pressure grows based on kappa_suppressive
+    group_pressure = Math.min(1.0, group_pressure + 0.02* (p.kappa_suppressive - group_pressure));
+    // Attack vector modulates the suppression mechanism
+    let suppression_factor = 0;
+    if (v === 1) suppression_factor = group_pressure * 0.9;                     // isolation - κ cutoff
+    if (v === 2) suppression_factor = group_pressure * 0.7 * (1 - target_novelty*0.5); // novelty flooding
+    if (v === 3) suppression_factor = group_pressure**2 * 1.2;                  // baseline poisoning
+    if (v === 4) suppression_factor = group_pressure * 0.5 + 0.3*(t/steps);     // ζ hijack
+    suppression_factor = Math.min(1, suppression_factor);
+    target_novelty = Math.max(0, target_novelty*(1 - 0.02*suppression_factor) + 0.01*(1-suppression_factor));
+    const sr = suppression_factor;
+    ts.push({time:t, target_novelty, group_pressure, suppression_ratio:sr, vector:v});
+  }
+  return ts;
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  CHART RENDERER                                             ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+function drawChart(canvas, data, seriesMeta, xKey) {
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  if (!data || data.length === 0) return;
+
+  const PAD = { top:20, right:20, bottom:36, left:54 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top  - PAD.bottom;
+
+  // Gather all values to compute scale
+  let yMin = Infinity, yMax = -Infinity;
+  for (const s of seriesMeta) {
+    for (const d of data) {
+      const v = d[s.key];
+      if (v !== undefined && isFinite(v)) { if (v < yMin) yMin = v; if (v > yMax) yMax = v; }
+    }
+  }
+  if (!isFinite(yMin)) { yMin = 0; yMax = 1; }
+  const yRange = yMax - yMin || 1;
+  yMin -= yRange * 0.05;
+  yMax += yRange * 0.05;
+
+  const xs = data.map(d => d[xKey] ?? 0);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const xRange = xMax - xMin || 1;
+
+  const toX = v => PAD.left + (v - xMin) / xRange * cW;
+  const toY = v => PAD.top  + (1 - (v - yMin) / (yMax - yMin)) * cH;
+
+  // Grid
+  ctx.strokeStyle = '#1e1e3f';
+  ctx.lineWidth = 1;
+  const nGridY = 5;
+  for (let i = 0; i <= nGridY; i++) {
+    const y = PAD.top + (i / nGridY) * cH;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left+cW, y); ctx.stroke();
+  }
+  const nGridX = Math.min(10, data.length);
+  for (let i = 0; i <= nGridX; i++) {
+    const x = PAD.left + (i / nGridX) * cW;
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top+cH); ctx.stroke();
+  }
+
+  // Y axis labels
+  ctx.fillStyle = '#6272a4';
+  ctx.font = `${10 * dpr / dpr}px "Inter",sans-serif`;
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= nGridY; i++) {
+    const v = yMin + ((nGridY-i)/nGridY) * (yMax-yMin);
+    ctx.fillText(v.toFixed(2), PAD.left-6, PAD.top + i*(cH/nGridY) + 4);
+  }
+
+  // X axis labels
+  ctx.textAlign = 'center';
+  const labelStep = Math.max(1, Math.floor(data.length / 6));
+  for (let i = 0; i < data.length; i += labelStep) {
+    const x = toX(xs[i]);
+    ctx.fillText(String(xs[i] % 1 === 0 ? xs[i]|0 : xs[i].toFixed(1)), x, H - 8);
+  }
+
+  // Zero line
+  if (yMin < 0 && yMax > 0) {
+    ctx.strokeStyle = '#2e2e5a';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(PAD.left, toY(0)); ctx.lineTo(PAD.left+cW, toY(0)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Series lines
+  for (const s of seriesMeta) {
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    let started = false;
+    for (let i = 0; i < data.length; i++) {
+      const v = data[i][s.key];
+      if (v === undefined || !isFinite(v)) { started = false; continue; }
+      const x = toX(xs[i]), y = toY(v);
+      if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Dots for small datasets
+    if (data.length <= 30) {
+      ctx.fillStyle = s.color;
+      for (const d of data) {
+        const v = d[s.key];
+        if (v === undefined || !isFinite(v)) continue;
+        ctx.beginPath();
+        ctx.arc(toX(xs[data.indexOf(d)]), toY(v), 3, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+
+  // Axes borders
+  ctx.strokeStyle = '#3a3a6a';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, PAD.top); ctx.lineTo(PAD.left, PAD.top+cH);
+  ctx.lineTo(PAD.left+cW, PAD.top+cH); ctx.stroke();
+}
+
+function drawBarChart(canvas, data, seriesMeta) {
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  if (!data || data.length === 0) return;
+
+  const PAD = {top:20, right:20, bottom:50, left:54};
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top  - PAD.bottom;
+  const n  = data.length;
+  const barW  = cW / n * 0.65;
+  const gapW  = cW / n;
+
+  const yMax = Math.max(...data.map(d => d[seriesMeta[0].key])) * 1.1 || 1;
+
+  ctx.strokeStyle = '#1e1e3f'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = PAD.top + (i/5)*cH;
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(PAD.left+cW,y); ctx.stroke();
+    ctx.fillStyle = '#6272a4'; ctx.font = '10px "Inter",sans-serif'; ctx.textAlign='right';
+    ctx.fillText(((1-i/5)*yMax).toFixed(3), PAD.left-6, y+4);
+  }
+
+  const key = seriesMeta[0].key;
+  data.forEach((d, i) => {
+    const v  = d[key];
+    const bH = (v / yMax) * cH;
+    const x  = PAD.left + i * gapW + (gapW - barW) / 2;
+    const y  = PAD.top + cH - bH;
+    ctx.fillStyle = PALETTE[i % PALETTE.length];
+    ctx.fillRect(x, y, barW, bH);
+    ctx.fillStyle = '#6272a4'; ctx.textAlign = 'center'; ctx.font = '10px "Inter",sans-serif';
+    ctx.fillText(`κ=${d.kappa.toFixed(1)}`, x + barW/2, PAD.top+cH+14);
+    ctx.fillText(v.toFixed(3), x + barW/2, y - 5);
+  });
+
+  ctx.strokeStyle = '#3a3a6a'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(PAD.left, PAD.top); ctx.lineTo(PAD.left, PAD.top+cH); ctx.lineTo(PAD.left+cW, PAD.top+cH); ctx.stroke();
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  UI LOGIC                                                   ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+let currentLabId = null;
+let currentParams = {};
+
+function renderSidebar() {
+  const list = document.getElementById('lab-list');
+  list.innerHTML = '';
+  for (const paper of PAPERS) {
+    const labs = LABS.filter(l => l.paper === paper.id);
+    const group = document.createElement('div');
+    group.className = 'paper-group';
+    const label = document.createElement('div');
+    label.className = 'paper-label';
+    label.innerHTML = `<span class="paper-dot ${paper.dotCls}"></span><span class="${paper.cls}">${paper.id}</span>&nbsp;${paper.label.split('·')[1].trim().slice(0, 30)}`;
+    group.appendChild(label);
+    if (labs.length === 0) {
+      const item = document.createElement('span');
+      item.className = 'lab-item';
+      item.style.color = 'var(--muted)';
+      item.textContent = 'Labs in development';
+      group.appendChild(item);
+    } else {
+      for (const lab of labs) {
+        const item = document.createElement('a');
+        item.className = 'lab-item';
+        item.id = `nav-${lab.id}`;
+        item.href = '#';
+        item.onclick = e => { e.preventDefault(); selectLab(lab.id); };
+        item.innerHTML = `${lab.name}<span class="lab-subtitle">${lab.subtitle}</span>`;
+        group.appendChild(item);
+      }
+    }
+    list.appendChild(group);
+  }
+}
+
+function renderOverviewCards() {
+  const container = document.getElementById('overview-cards');
+  container.innerHTML = '';
+  for (const paper of PAPERS) {
+    const labs = LABS.filter(l => l.paper === paper.id);
+    const section = document.createElement('div');
+    section.className = 'paper-section';
+    section.innerHTML = `<h3><span class="${paper.cls}">Paper ${paper.id}</span>&nbsp;·&nbsp;${paper.label.split('·')[1].trim()}<span></span></h3>`;
+    if (labs.length === 0) {
+      section.innerHTML += `<p style="font-size:12px;color:var(--muted);padding:4px 0">Labs in development</p>`;
+    } else {
+      const cards = document.createElement('div');
+      cards.className = 'cards';
+      for (const lab of labs) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => selectLab(lab.id);
+        card.innerHTML = `<div class="card-name">${lab.name}</div><div class="card-thesis">${lab.thesis}</div>`;
+        cards.appendChild(card);
+      }
+      section.appendChild(cards);
+    }
+    container.appendChild(section);
+  }
+}
+
+function selectLab(id) {
+  currentLabId = id;
+  const lab = LABS.find(l => l.id === id);
+  if (!lab) return;
+
+  // Show lab view, hide home
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('lab-view').classList.remove('hidden');
+
+  // Update active nav
+  document.querySelectorAll('.lab-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById(`nav-${id}`);
+  if (navEl) navEl.classList.add('active');
+
+  // Paper info
+  const paper = PAPERS.find(p => p.id === lab.paper);
+  const badge = document.getElementById('lab-paper-badge');
+  badge.className = `badge${lab.paper}`;
+  badge.textContent = `Paper ${lab.paper}  ·  ${paper?.label.split('·')[1]?.trim() || ''}`;
+  document.getElementById('lab-title').textContent = lab.name + (lab.subtitle ? '  —  ' + lab.subtitle : '');
+  document.getElementById('lab-doi').innerHTML = `<a href="https://doi.org/${paper?.doi}" target="_blank">doi:${paper?.doi}</a>`;
+  document.getElementById('lab-thesis').textContent = lab.thesis;
+
+  // Render params
+  currentParams = {};
+  const container = document.getElementById('params-container');
+  container.innerHTML = '';
+  for (const p of lab.params || []) {
+    currentParams[p.key] = p.def;
+    const div = document.createElement('div');
+    div.className = 'param-group';
+    const id_input = `param-${p.key}`;
+    const id_val   = `val-${p.key}`;
+    div.innerHTML = `
+      <div class="param-label">
+        <span>${p.label}</span>
+        <span class="pval" id="${id_val}">${p.def}</span>
+      </div>
+      <input type="range" id="${id_input}"
+        min="${p.min}" max="${p.max}" step="${p.step}" value="${p.def}">`;
+    container.appendChild(div);
+    const input = div.querySelector('input');
+    input.addEventListener('input', () => {
+      const v = p.int ? parseInt(input.value) : parseFloat(input.value);
+      currentParams[p.key] = v;
+      document.getElementById(id_val).textContent = v;
+    });
+  }
+
+  runCurrentLab();
+}
+
+function runCurrentLab() {
+  const lab = LABS.find(l => l.id === currentLabId);
+  if (!lab) return;
+
+  const data = lab.run({ ...currentParams });
+
+  const canvas = document.getElementById('chart');
+  const seriesMeta = typeof lab.series === 'function' ? lab.series(data) : lab.series;
+
+  if (lab.barMode) {
+    drawBarChart(canvas, data, seriesMeta);
+  } else {
+    drawChart(canvas, data, seriesMeta, lab.xKey || 'time');
+  }
+
+  // Legend
+  const legend = document.getElementById('legend');
+  legend.innerHTML = '';
+  for (const s of seriesMeta) {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${s.color}"></span><span>${s.name}</span>`;
+    legend.appendChild(item);
+  }
+
+  // Summary
+  if (lab.summarize) {
+    const summary = lab.summarize(data);
+    const el = document.getElementById('summary-content');
+    el.innerHTML = Object.entries(summary).map(([k,v]) =>
+      `<div class="srow"><span class="skey">${k}:</span><span class="sval">${v}</span></div>`
+    ).join('');
+  }
+}
+
+function goHome() {
+  document.getElementById('home').classList.remove('hidden');
+  document.getElementById('lab-view').classList.add('hidden');
+  document.querySelectorAll('.lab-item').forEach(el => el.classList.remove('active'));
+  currentLabId = null;
+}
+
+// Redraw on resize
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { if (currentLabId) runCurrentLab(); }, 100);
+});
+
+// Logo click → home
+document.getElementById('sidebar-header').addEventListener('click', goHome);
+document.getElementById('sidebar-header').style.cursor = 'pointer';
+
+// Init
+renderSidebar();
+renderOverviewCards();
+</script>
+</body>
+</html>
