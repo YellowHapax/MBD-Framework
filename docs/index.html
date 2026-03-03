@@ -245,6 +245,92 @@ input[type=checkbox] { accent-color:var(--accent); }
 .badge6 { background:#ce93d8; color:#000; }
 .badge7 { background:#ffd740; color:#000; }
 .badge8 { background:#82ca9d; color:#000; }
+
+/* ─── Foundations sidebar ─────────────────────────── */
+.sidebar-section-hdr {
+  padding:10px 14px 4px;
+  font-size:9.5px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.10em; color:var(--muted);
+  border-top:1px solid var(--border); margin-top:6px;
+}
+.sidebar-section-hdr:first-child { border-top:none; margin-top:0; }
+.found-item {
+  display:block; padding:6px 14px;
+  font-size:11.5px; color:var(--muted); cursor:pointer;
+  border-left:2px solid transparent; transition:all .15s; line-height:1.35;
+}
+.found-item:hover { background:var(--surface2); color:var(--text); }
+.found-item.active { background:var(--surface2); border-left-color:var(--gold); color:var(--gold); }
+.found-item-p { font-size:9px; font-weight:700; margin-right:5px; opacity:.75; }
+
+/* ─── Foundation view ──────────────────────────────── */
+#foundation-view { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+#foundation-view.hidden { display:none; }
+#found-header { padding:20px 24px 14px; border-bottom:1px solid var(--border); flex-shrink:0; }
+#found-badge {
+  display:inline-block; font-size:10px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.06em;
+  color:#fff; padding:2px 8px; border-radius:12px; margin-bottom:8px;
+}
+#found-title { font-size:18px; font-weight:700; margin-bottom:6px; }
+#found-doi { font-size:11px; color:var(--muted); }
+#found-body {
+  flex:1; overflow-y:auto; padding:20px 24px;
+  display:grid; grid-template-columns:1fr 1fr; gap:16px; align-content:start;
+}
+.found-block {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:16px 18px;
+}
+.found-block.full-width { grid-column:1 / -1; }
+.found-section-label {
+  font-size:9.5px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.09em; color:var(--muted); margin-bottom:10px;
+}
+#found-claim { font-size:14px; font-weight:600; line-height:1.65; color:var(--text); }
+#found-move { font-size:12.5px; color:#a0aec0; line-height:1.7; }
+.concept-card { margin-bottom:12px; border-left:2px solid var(--accent); padding-left:10px; }
+.concept-card:last-child { margin-bottom:0; }
+.concept-term { font-size:12px; font-weight:600; color:var(--accent2); margin-bottom:3px; }
+.concept-def { font-size:11.5px; color:var(--muted); line-height:1.55; }
+.found-link-chip {
+  display:inline-block; margin:3px 4px 3px 0;
+  padding:4px 10px; border-radius:14px;
+  font-size:11.5px; font-weight:500; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface2);
+  color:var(--text); transition:all .15s;
+}
+.found-link-chip:hover { border-color:var(--accent2); color:var(--accent2); }
+.found-adj-chip {
+  display:inline-block; margin:3px 4px 3px 0;
+  padding:4px 10px; border-radius:14px;
+  font-size:11.5px; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface2);
+  transition:all .15s; color:var(--gold);
+}
+.found-adj-chip:hover { border-color:var(--gold); background:var(--surface); }
+
+/* ─── Per-lab philosophy drawer ─────────────────────── */
+#phil-drawer {
+  flex-shrink:0; background:var(--surface); border:1px solid var(--border);
+  border-radius:8px;
+}
+#phil-drawer summary {
+  padding:9px 14px; font-size:10.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.08em;
+  color:var(--muted); cursor:pointer; list-style:none;
+  display:flex; align-items:center; gap:6px; transition:color .15s;
+}
+#phil-drawer summary::-webkit-details-marker { display:none; }
+#phil-drawer summary::before { content:'▶'; font-size:8px; transition:transform .15s; display:inline-block; }
+#phil-drawer[open] summary::before { transform:rotate(90deg); }
+#phil-drawer summary:hover { color:var(--gold); }
+#phil-drawer[open] summary { color:var(--gold); border-bottom:1px solid var(--border); }
+#phil-content { padding:14px 16px; max-height:160px; overflow-y:auto; }
+.phil-claim { font-size:12.5px; line-height:1.6; color:var(--text); margin-bottom:10px; }
+.phil-foot { font-size:11px; color:var(--muted); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.phil-foot a { color:var(--gold); font-size:11px; }
+.phil-foot a:hover { color:var(--accent2); text-decoration:underline; }
 </style>
 </head>
 <body>
@@ -299,6 +385,38 @@ input[type=checkbox] { accent-color:var(--accent); }
             <h5>Summary</h5>
             <div id="summary-content" class="summary-grid"></div>
           </div>
+          <details id="phil-drawer">
+            <summary>◆ Foundations</summary>
+            <div id="phil-content"></div>
+          </details>
+        </div>
+      </div>
+    </div>
+    <!-- Foundation view -->
+    <div id="foundation-view" class="hidden">
+      <div id="found-header">
+        <div id="found-badge"></div>
+        <div id="found-title"></div>
+        <div id="found-doi"></div>
+      </div>
+      <div id="found-body">
+        <div class="found-block full-width">
+          <div class="found-section-label">The Claim</div>
+          <div id="found-claim"></div>
+        </div>
+        <div class="found-block">
+          <div class="found-section-label">The Move</div>
+          <div id="found-move"></div>
+        </div>
+        <div class="found-block">
+          <div class="found-section-label">Key Concepts</div>
+          <div id="found-concepts"></div>
+        </div>
+        <div class="found-block full-width">
+          <div class="found-section-label">See It In Simulation</div>
+          <div id="found-labs"></div>
+          <div class="found-section-label" style="margin-top:14px">Adjacent Foundations</div>
+          <div id="found-adjacent"></div>
         </div>
       </div>
     </div>
@@ -321,6 +439,105 @@ const PAPERS = [
   { id:6, label:'Paper 6  ·  The Resonant Gate',                    doi:'10.5281/zenodo.17352481', cls:'p6', dotCls:'dot6', badgeCls:'badge6' },
   { id:7, label:'Paper 7  ·  The Endemic Baseline',                 doi:'10.5281/zenodo.18825795', cls:'p7', dotCls:'dot7', badgeCls:'badge7' },
   { id:8, label:'Paper 8  ·  The Suppressive and Emergent Phenomenon', doi:'10.5281/zenodo.18825797', cls:'p8', dotCls:'dot8', badgeCls:'badge8' },
+];
+
+const FOUNDATIONS = [
+  {
+    id:'f1', paper:1,
+    title:'Memory as Baseline Deviation',
+    doi:'10.5281/zenodo.17381536',
+    claim:'Mental state is not content but the geometry of departure from an attractor. What persists is not what was experienced, but the shape of how experience moved the baseline.',
+    move:'Conventional memory science treats the brain as an archive — information goes in, information comes out. MBD inverts this: there is no archive. There is only the present state of a dynamical system, and \u201cmemory\u201d is the curvature that past inputs left in its trajectory. The equation B(t+1)\u202f=\u202fB(t)\u00b7(1\u2212\u03bb) + I(t)\u00b7\u03bb is not a learning rule \u2014 it is an ontological claim. The organism is not a ledger; it is a field.',
+    concepts:[
+      {term:'Baseline B(t)', def:'The agent\'s current attractor state. Not a setpoint but the manifold toward which behavior is drawn in the absence of novel input.'},
+      {term:'Deviation', def:'The signed distance between present experience I(t) and baseline B(t). The primitive datum of the framework \u2014 what the nervous system actually computes.'},
+      {term:'Plasticity \u03bb', def:'The rate at which deviation reshapes the baseline itself. High-\u03bb agents are quickly remade by experience; low-\u03bb agents are nearly immovable.'},
+    ],
+  },
+  {
+    id:'f2', paper:2,
+    title:'The Markov Tensor',
+    doi:'10.5281/zenodo.17537185',
+    claim:'Inter-agent relationships are not edges in a graph but tensors in a probabilistic manifold. The \u201cdistance\u201d between two agents is a function of their shared deviation history, not their spatial or temporal proximity.',
+    move:'Network science models relationships as binary or weighted edges. The Markov Tensor framework replaces this with a probability distribution over interaction outcomes \u2014 a richer structure that captures how relational weight is distributed across possible futures, not summarized in a single scalar. The manifold is always high-dimensional. The scalar coupling coefficient \u03ba is always a projection. Information is always lost in that projection, and the lossiness is not a measurement error \u2014 it is the structure of relation.',
+    concepts:[
+      {term:'Markov Tensor', def:'A multi-dimensional array encoding the probability of each possible relational transition between two agents, conditioned on their current baselines.'},
+      {term:'Manifold distance', def:'Closeness in the relational manifold \u2014 determined by shared deviation history, coupling symmetry, and mutual prediction accuracy, not by clock time or physical co-presence.'},
+      {term:'Tensor contraction', def:'The operation that reduces the full relational manifold to a scalar coupling coefficient \u03ba for simulation. Information is always lost here \u2014 and that loss is the measure of relational complexity.'},
+    ],
+  },
+  {
+    id:'f3', paper:3,
+    title:'Episodic Recall as Resonant Re-instantiation',
+    doi:'10.5281/zenodo.17374270',
+    claim:'Memory retrieval is not playback. It is the re-entry of the agent\'s dynamical system into a prior attractor basin. What is \u201cremembered\u201d is the re-ignition of a deviation pattern \u2014 reconstruction, not replay.',
+    move:'The storage-retrieval metaphor implies a stable, passive archive. Re-instantiation theory implies that every act of memory is a creative act: the present baseline shapes which attractor basin becomes accessible, and what is \u201crecalled\u201d is always a present-state reconstruction wearing the clothing of the past. This is not a cognitive limitation \u2014 it is the necessary structure of a deviation-based system. There is no view from nowhere. Memory is always seen from now.',
+    concepts:[
+      {term:'Attractor basin', def:'A region of state space from which the agent\'s dynamics are drawn toward a particular baseline. Episodic \u201cmemories\u201d are prior attractor basins that can be re-entered.'},
+      {term:'Resonant re-instantiation', def:'The process by which a cue \u2014 internal or external deviation \u2014 re-activates a prior attractor pattern, producing the phenomenological experience of remembering.'},
+      {term:'Reconstruction bias', def:'The present baseline\'s influence on which features of the re-instantiated pattern are foregrounded. Memory is always seen from now.'},
+    ],
+  },
+  {
+    id:'f4', paper:4,
+    title:'The Coupling Asymmetry',
+    doi:'10.5281/zenodo.18519187',
+    claim:'The coupling coefficients \u03ba_AB and \u03ba_BA are structurally unequal. Power is not a behavior but a topology \u2014 the direction of asymmetry determines who adapts to whom, and this is written into the shape of the relationship, not its content.',
+    move:'Theories of power typically locate it in resources, roles, or rhetorical force. The Coupling Asymmetry locates it in the differential plasticity of mutual adaptation. The more-adapted agent is not weaker: they are performing the work of relational maintenance. But their baseline is more exposed to drift \u2014 and in adversarial contexts, more exposed to collapse. Power is not exercised; it is the condition of exercise.',
+    concepts:[
+      {term:'Coupling asymmetry', def:'The condition \u03ba_AB \u2260 \u03ba_BA. One agent\'s baseline is more strongly pulled toward the other\'s signal than vice versa \u2014 independent of intent or stated values.'},
+      {term:'Adaptation burden', def:'The cost paid by the more-coupled agent in baseline drift and identity erosion, especially when the relationship is adversarial or high-variance.'},
+      {term:'Structural power', def:'Power as a topological property of the coupling matrix. It exists before anyone does anything. It is not exercised \u2014 it is the condition of exercise.'},
+    ],
+  },
+  {
+    id:'f5', paper:5,
+    title:'The Emergent Gate',
+    doi:'10.5281/zenodo.17344091',
+    claim:'Collective behavioral phase transitions are threshold events, not gradual accumulations. When mean coupling \u03ba crosses the critical value \u03ba_c, qualitatively new collective behavior emerges discontinuously \u2014 the gate either opens or it does not.',
+    move:'Both folk wisdom and many scientific models treat social change as incremental. The Emergent Gate is a formal claim that this is wrong: below \u03ba_c, you accumulate pressure with no surface effect; above it, the system reorganizes. The policy implication is large: marginal interventions below threshold are invisible. Structural change requires crossing the gate, not approaching it. You cannot solve a threshold problem with a gradient solution.',
+    concepts:[
+      {term:'Critical coupling \u03ba_c', def:'The threshold value of mean coupling at which the collective undergoes a phase transition from incoherent to coordinated behavior.'},
+      {term:'Order parameter', def:'The macroscopic quantity that jumps discontinuously at \u03ba_c, marking the phase transition. Zero below threshold, nonzero above.'},
+      {term:'Sub-threshold invisibility', def:'The regime below \u03ba_c where individual changes are real but collective effects are absent. Most well-intentioned interventions live here.'},
+    ],
+  },
+  {
+    id:'f6', paper:6,
+    title:'The Resonant Gate',
+    doi:'10.5281/zenodo.17352481',
+    claim:'Synchronization is not agreement. Two agents can achieve resonance \u2014 a stable phase relationship in their deviation dynamics \u2014 without sharing content, values, or conscious intent. Resonance is structural, not semantic.',
+    move:'Alignment and agreement are semantic concepts: they require that agents share meaning. Resonance is purely dynamical: it requires only that deviation patterns achieve a stable phase lock. A community can be structurally synchronized toward a pathological attractor without any agent having chosen it. This is not a failure of communication \u2014 it is a success of coupling. Synchrony is not solidarity. You can march in lockstep toward a cliff.',
+    concepts:[
+      {term:'Resonance', def:'A stable phase relationship between two agents\' deviation dynamics, maintained without explicit coordination or shared content.'},
+      {term:'Phase lock', def:'The condition in which the phase difference between two oscillating baseline processes is nearly constant over time \u2014 the dynamical signature of resonant coupling.'},
+      {term:'Semantic independence', def:'Resonance requires no shared content. Two agents with opposed values can be in structural resonance if their deviation rhythms are matched. Synchrony is not solidarity.'},
+    ],
+  },
+  {
+    id:'f7', paper:7,
+    title:'The Endemic Baseline',
+    doi:'10.5281/zenodo.18825795',
+    claim:'Chronic environmental coupling shifts the baseline attractor itself, not merely the deviation around it. When deviation becomes the ambient condition, the baseline drifts to meet it \u2014 and the original reference state may become permanently inaccessible.',
+    move:'Clinical frameworks typically model chronic stress as a load on a fixed system. The Endemic Baseline framework shows the system itself changes: prolonged deviation shifts the attractor, creating a new \u201cnormal\u201d that forecloses return paths. This reframes recovery not as restoration but as the construction of a new attractor \u2014 a fundamentally different engineering problem with different ethics. You cannot tell someone to \u201cgo back\u201d to a baseline that no longer exists.',
+    concepts:[
+      {term:'Endemic baseline', def:'A new attractor state formed when chronic coupling pressure shifts B(t) fast enough that it cannot return to its prior reference trajectory.'},
+      {term:'Attractor drift', def:'The slow movement of the baseline manifold under sustained environmental input \u2014 distinct from acute deviation, which oscillates around a fixed attractor.'},
+      {term:'Return inaccessibility', def:'The condition in which prior attractor basins become dynamically unreachable from the new endemic baseline. Irreversibility with ethical consequences for \u201crecovery\u201d frameworks.'},
+    ],
+  },
+  {
+    id:'f8', paper:8,
+    title:'The Adversarial Horizon',
+    doi:'10.5281/zenodo.18825797',
+    claim:'Suppressive social dynamics are not merely absent support \u2014 they are active adversarial coupling that pushes agent baselines toward incoherence. Below the adversarial horizon, individual agency remains possible; above it, baseline collapse becomes the attractor.',
+    move:'Harm reduction frameworks focus on removing negative inputs. The Adversarial Horizon formalizes a stronger claim: certain coupling configurations are not neutral-minus but actively generative of collapse. This reframes suppression from a lack of good to a presence of directed force \u2014 with different intervention geometry as a consequence. You cannot reduce adversarial dynamics by adding support. The adversarial coupling has to be severed. Support injected into an adversarial field is consumed by the field.',
+    concepts:[
+      {term:'Adversarial coupling', def:'A coupling configuration in which the signal transmitted between agents is systematically oriented to increase the receiver\'s deviation from any viable baseline attractor.'},
+      {term:'Adversarial horizon \u03ba_adv', def:'The threshold above which adversarial coupling overcomes an agent\'s plasticity ceiling, making baseline stabilization impossible without external intervention.'},
+      {term:'Baseline collapse', def:'The terminal condition in which B(t) loses coherence \u2014 its attractor basin fragments or disappears \u2014 and goal-directed behavior becomes impossible.'},
+    ],
+  },
 ];
 
 const LABS = [
@@ -1353,6 +1570,28 @@ let lastChartState = null;
 function renderSidebar() {
   const list = document.getElementById('lab-list');
   list.innerHTML = '';
+
+  // ── Philosophy section ──
+  const foundHdr = document.createElement('div');
+  foundHdr.className = 'sidebar-section-hdr';
+  foundHdr.textContent = '◆ Philosophy';
+  list.appendChild(foundHdr);
+  for (const f of FOUNDATIONS) {
+    const paper = PAPERS.find(p => p.id === f.paper);
+    const item = document.createElement('a');
+    item.className = 'found-item';
+    item.id = `nav-${f.id}`;
+    item.href = '#';
+    item.onclick = e => { e.preventDefault(); selectFoundation(f.id); };
+    item.innerHTML = `<span class="found-item-p ${paper.cls}">P${f.paper}</span>${f.title}`;
+    list.appendChild(item);
+  }
+
+  // ── Simulations section ──
+  const simHdr = document.createElement('div');
+  simHdr.className = 'sidebar-section-hdr';
+  simHdr.textContent = '⚗ Simulations';
+  list.appendChild(simHdr);
   for (const paper of PAPERS) {
     const labs = LABS.filter(l => l.paper === paper.id);
     const group = document.createElement('div');
@@ -1408,6 +1647,46 @@ function renderOverviewCards() {
   }
 }
 
+function selectFoundation(id) {
+  currentLabId = null;
+  const f = FOUNDATIONS.find(x => x.id === id);
+  if (!f) return;
+
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('lab-view').classList.add('hidden');
+  document.getElementById('foundation-view').classList.remove('hidden');
+
+  document.querySelectorAll('.lab-item,.found-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById(`nav-${id}`);
+  if (navEl) navEl.classList.add('active');
+
+  const paper = PAPERS.find(p => p.id === f.paper);
+  const badge = document.getElementById('found-badge');
+  badge.className = `badge${f.paper}`;
+  badge.textContent = `Paper ${f.paper}  ·  ${paper?.label.split('·')[1]?.trim() || ''}`;
+  document.getElementById('found-title').textContent = f.title;
+  document.getElementById('found-doi').innerHTML = `<a href="https://doi.org/${f.doi}" target="_blank">doi:${f.doi}</a>`;
+  document.getElementById('found-claim').textContent = f.claim;
+  document.getElementById('found-move').textContent = f.move;
+
+  document.getElementById('found-concepts').innerHTML = f.concepts.map(c =>
+    `<div class="concept-card"><div class="concept-term">${c.term}</div><div class="concept-def">${c.def}</div></div>`
+  ).join('');
+
+  const relLabs = LABS.filter(l => l.paper === f.paper);
+  document.getElementById('found-labs').innerHTML = relLabs.length
+    ? relLabs.map(l => `<span class="found-link-chip" onclick="selectLab('${l.id}')">${l.name}</span>`).join('')
+    : `<span style="font-size:12px;color:var(--muted)">Labs in development for this foundation.</span>`;
+
+  const adj = FOUNDATIONS.filter(x => Math.abs(x.paper - f.paper) === 1);
+  document.getElementById('found-adjacent').innerHTML = adj.map(af => {
+    const ap = PAPERS.find(p => p.id === af.paper);
+    return `<span class="found-adj-chip" onclick="selectFoundation('${af.id}')"><span class="${ap.cls}">P${af.paper}</span> · ${af.title}</span>`;
+  }).join('');
+
+  history.replaceState(null, '', `#${id}`);
+}
+
 function selectLab(id) {
   currentLabId = id;
   const lab = LABS.find(l => l.id === id);
@@ -1416,9 +1695,10 @@ function selectLab(id) {
   // Show lab view, hide home
   document.getElementById('home').classList.add('hidden');
   document.getElementById('lab-view').classList.remove('hidden');
+  document.getElementById('foundation-view').classList.add('hidden');
 
   // Update active nav
-  document.querySelectorAll('.lab-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lab-item,.found-item').forEach(el => el.classList.remove('active'));
   const navEl = document.getElementById(`nav-${id}`);
   if (navEl) navEl.classList.add('active');
 
@@ -1455,6 +1735,24 @@ function selectLab(id) {
       currentParams[p.key] = v;
       document.getElementById(id_val).textContent = v;
     });
+  }
+
+  // Populate philosophy drawer
+  const foundation = FOUNDATIONS.find(fnd => fnd.paper === lab.paper);
+  if (foundation) {
+    document.getElementById('phil-drawer').style.display = '';
+    const adjFound = FOUNDATIONS.filter(fnd => Math.abs(fnd.paper - foundation.paper) === 1);
+    document.getElementById('phil-content').innerHTML =
+      `<p class="phil-claim">${foundation.claim}</p>` +
+      `<div class="phil-foot">` +
+      `<a href="#" onclick="event.preventDefault();selectFoundation('${foundation.id}')">&#9670; Full Foundation: ${foundation.title}</a>` +
+      adjFound.map(af => {
+        const ap = PAPERS.find(p => p.id === af.paper);
+        return `<a href="#" onclick="event.preventDefault();selectFoundation('${af.id}')" class="${ap.cls}">→ P${af.paper}</a>`;
+      }).join('') +
+      `</div>`;
+  } else {
+    document.getElementById('phil-drawer').style.display = 'none';
   }
 
   // Apply URL hash params if lab matches
@@ -1685,8 +1983,10 @@ function drawChartOverlay(mx, my) {
 function goHome() {
   document.getElementById('home').classList.remove('hidden');
   document.getElementById('lab-view').classList.add('hidden');
-  document.querySelectorAll('.lab-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('foundation-view').classList.add('hidden');
+  document.querySelectorAll('.lab-item,.found-item').forEach(el => el.classList.remove('active'));
   currentLabId = null;
+  history.replaceState(null, '', window.location.pathname + window.location.search);
 }
 
 // Redraw on resize
@@ -1708,8 +2008,9 @@ setupChartOverlay();
 (function() {
   const hash = window.location.hash.slice(1);
   const qIdx = hash.indexOf('?');
-  const labId = qIdx !== -1 ? hash.slice(0, qIdx) : hash;
-  if (labId && LABS.find(l => l.id === labId)) selectLab(labId);
+  const id = qIdx !== -1 ? hash.slice(0, qIdx) : hash;
+  if (id && LABS.find(l => l.id === id)) selectLab(id);
+  else if (id && FOUNDATIONS.find(f => f.id === id)) selectFoundation(id);
 })();
 </script>
 </body>
