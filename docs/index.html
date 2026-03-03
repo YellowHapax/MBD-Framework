@@ -1457,6 +1457,25 @@ function selectLab(id) {
     });
   }
 
+  // Apply URL hash params if lab matches
+  const hash = window.location.hash.slice(1);
+  const qIdx = hash.indexOf('?');
+  if (qIdx !== -1 && hash.slice(0, qIdx) === id) {
+    const hp = new URLSearchParams(hash.slice(qIdx + 1));
+    for (const p of lab.params || []) {
+      if (hp.has(p.key)) {
+        const v = p.int ? parseInt(hp.get(p.key)) : parseFloat(hp.get(p.key));
+        if (isFinite(v)) {
+          currentParams[p.key] = v;
+          const inp = document.getElementById(`param-${p.key}`);
+          const val = document.getElementById(`val-${p.key}`);
+          if (inp) inp.value = v;
+          if (val) val.textContent = v;
+        }
+      }
+    }
+  }
+
   runCurrentLab();
 }
 
@@ -1495,6 +1514,12 @@ function runCurrentLab() {
       `<div class="srow"><span class="skey">${k}:</span><span class="sval">${v}</span></div>`
     ).join('');
   }
+
+  // Encode state into URL hash for shareability
+  const hashParams = new URLSearchParams(
+    Object.entries(currentParams).map(([k,v]) => [k, String(v)])
+  ).toString();
+  history.replaceState(null, '', `#${currentLabId}?${hashParams}`);
 }
 
 function exportCSV() {
@@ -1679,6 +1704,13 @@ document.getElementById('sidebar-header').style.cursor = 'pointer';
 renderSidebar();
 renderOverviewCards();
 setupChartOverlay();
+// Deep-link: parse #labid?params on page load
+(function() {
+  const hash = window.location.hash.slice(1);
+  const qIdx = hash.indexOf('?');
+  const labId = qIdx !== -1 ? hash.slice(0, qIdx) : hash;
+  if (labId && LABS.find(l => l.id === labId)) selectLab(labId);
+})();
 </script>
 </body>
 </html>
