@@ -23,7 +23,7 @@ This is a Persian (Farsi) translation of **"Memory as Baseline Deviation: A Form
 
 The original paper is a 105-page formal thesis presenting the ∇(⊕) framework — a unified mathematical architecture for relational cognition built on coupled stochastic dynamics. It spans memory, social cognition, philosophy of mind, and empirical neuroscience.
 
-This translation was prepared for **Mr. Farhad** and Persian-speaking researchers interested in the MBD framework.
+This translation was prepared for Persian-speaking researchers interested in the MBD framework.
 
 ---
 
