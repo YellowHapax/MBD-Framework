@@ -1,0 +1,142 @@
+# MBD-Framework — YellowHapax
+
+> 18 standalone simulation labs implementing the Memory as Baseline Deviation (MBD) framework across six published papers. Every lab is a runnable Python module. No frontend required. The full loop: read theory at the Noetic Lab → run labs here → the Fermi Solution (Paper 9) closes the arc.
+
+## Core Equation
+
+B(t+1) = B(t)·(1−λ) + I(t)·λ
+
+An agent's personality is not a label — it is a vector in state space. Every significant experience shifts that vector. λ is how deeply the event rewrites who you are. Every lab in this repository explores a consequence of this single equation.
+
+## Repository
+
+- Source: https://github.com/YellowHapax/MBD-Framework
+- DOI: 10.5281/zenodo.18652919
+- License: Apache 2.0
+- Author ORCID: 0009-0007-6676-4897
+
+## Quick Start
+
+```bash
+pip install -r requirements.txt
+python -m labs.paper1_baseline.eq_lab
+python -m labs.paper4_coupling.phenomena_bpd
+python -m labs.paper6_resonant_gate.zeta_lab
+```
+
+Each lab module exposes three functions: `describe()` → metadata dict, `run(**kwargs)` → simulation results dict, `plot(results)` → Matplotlib figure.
+
+## Paper 1: Memory as Baseline Deviation
+
+DOI: 10.5281/zenodo.17381536 — 6 labs
+
+- `labs/paper1_baseline/eq_lab`: Two-agent convergence under the core B(t+1) equation. Baseline starting points, λ values, and how quickly two agents converge or diverge.
+
+- `labs/paper1_baseline/phenomena_adhd`: Typical vs ADHD plasticity — λ = 0.1 (stable, slow-updating) vs λ = 0.8 with ×0.85 decay coefficient. The attentional cost of high plasticity.
+
+- `labs/paper1_baseline/phenomena_ossification`: Plasticity λ(t) decaying exponentially over time. Why change gets harder as a mathematical prediction, not a moral judgment.
+
+- `labs/paper1_baseline/phenomena_sbs`: Chronic error driving λ increase → eventual plasticity collapse. The Shaken Baby Syndrome model — trauma as runaway λ.
+
+- `labs/paper1_baseline/phenomena_phantom`: Constant baseline vs null input — phantom limb as MBD prediction. What happens to the state vector when sensory input is severed.
+
+- `labs/paper1_baseline/phenomena_bipolar`: Piecewise manic-euthymic-depressive baseline with asymmetric λ. Mood state as attractor basin; state-switching as λ-governed phase transition.
+
+## Paper 2: In Pursuit of the Markov Tensor
+
+DOI: 10.5281/zenodo.17537185 — 1 lab
+
+- `labs/paper2_markov/echo_chamber`: Group κ convergence followed by external shock → catastrophic fragmentation. How coupling creates vulnerability: high κ makes agreement fast and fragmentation total.
+
+## Paper 3: Episodic Recall as Resonant Re-instantiation
+
+DOI: 10.5281/zenodo.17374270 — 1 lab
+
+- `labs/paper3_episodic/reinstantiation`: Novelty-gated episodic encoding (sigmoid gate at novelty threshold θ_h = 0.35), context-scaffolded recall. Memory as re-instantiation, not retrieval.
+
+## Paper 4: The Coupling Asymmetry
+
+DOI: 10.5281/zenodo.18519187 — 5 labs
+
+- `labs/paper4_coupling/phenomena_aspd`: κ locked near 0 — immune to relational constitution. ASPD model: what it looks like mathematically when an agent cannot be changed by others.
+
+- `labs/paper4_coupling/phenomena_bpd`: κ oscillating wildly between idealisation and devaluation. BPD model: the attractor basin is unstable; small perturbations flip coupling sign.
+
+- `labs/paper4_coupling/phenomena_asymmetry`: One-way coupling. Host κ = 0.9 (highly open), Parasite κ = 0.1 (effectively closed). The Host changes; the Parasite does not. Asymmetry is the mechanism of exploitation.
+
+- `labs/paper4_coupling/phenomena_echo`: Internalised past Other — D_self = 0.8, κ_self = 0.7. The introjected voice as a coupling term that persists after the external agent is gone.
+
+- `labs/paper4_coupling/phenomena_fragmentation`: Multiple baselines active, state-dependent encoding and recall. DID model: fragmentation as an adaptive response to irreconcilable baseline demands.
+
+## Paper 5: The Emergent Gate
+
+DOI: 10.5281/zenodo.17344091 — 2 labs
+
+- `labs/paper5_emergent_gate/mood_incongruent`: Sad baseline plus a happy event produces enormous novelty signal (high B(t) − I(t) gap). P6 prediction: mood-incongruent encoding is louder, not quieter.
+
+- `labs/paper5_emergent_gate/dual_resonance`: Resonance amplification vs overshadowing at multiple κ values. How coupling strength determines whether two signals reinforce or cancel.
+
+## Paper 6: The Resonant Gate
+
+DOI: 10.5281/zenodo.17352481 — 3 labs
+
+- `labs/paper6_resonant_gate/resonant_gate`: Two agents. κ grows over time. Identical external insight arrives at low-κ vs high-κ moments. With low κ the insight bounces off; with high κ it propagates and rewrites both baselines. The Gate is not the insight — it is the coupling.
+
+- `labs/paper6_resonant_gate/zeta_lab`: Comparative trials at ζ = 0.1, 0.5, 0.9. ζ is the self-preservation floor — the minimum fraction of the current baseline retained regardless of λ. Tests the tradeoff between openness and identity continuity.
+
+- `labs/paper6_resonant_gate/deontological_tests`: P8 (moral blindness at κ = 0), P9 (error dissociation — acting on a cached baseline that no longer matches state), P10 (moral immunity — baseline ossified against update by ethical input). Three failure modes of the Resonant Gate.
+
+## Analysis Modules
+
+- `analysis/trauma_model.py`: Core MBD equations — B(t+1) = B(t)(1−λ) + I(t)λ and κ dynamics. Canonical implementation.
+
+## Dynamics Engine
+
+- `dynamics/influence_cube.py`: Stella octangula vertex geometry — InfluenceState and CubeLambdas. The 3D social influence space with Haven and Sink tetrahedra interpenetrating. Axes: Locus (Internal→External), Coupling (Low→High), Temporality (Static→Dynamic).
+
+- `dynamics/field_agent.py`: FieldAgent with attractor basins, behavioral exemplars, and a novelty field. The dynamics-layer agent model — not a simple scalar but a full attractor-basin creature.
+
+- `dynamics/social_fabric.py`: Group interaction probability under κ-coupling pressure. The population-level consequence of individual coupling dynamics.
+
+## Notebooks
+
+- `notebooks/01_baseline_deviation.ipynb`: Paper 1 walkthrough — interactive derivation of the core equation and all six baseline phenomena.
+
+- `notebooks/04_executive_load.ipynb`: Paper 4 walkthrough — coupling asymmetry with interactive κ sliders.
+
+## Web UI (Optional)
+
+```bash
+cd lab && npm install && npm run build && cd ..
+python lab/server.py   # → http://localhost:8050
+```
+
+FastAPI backend + React/Recharts frontend. Pre-built `lab/dist/` is included in the repo — the `npm` steps may be skippable.
+
+## Citation
+
+If you use this work, please cite the relevant paper. Machine-readable metadata: `CITATION.cff`.
+
+Primary citation:
+> Everett, B. (2025). Memory as Baseline Deviation: A Formal Framework for Personality as State-Space Dynamics. Zenodo. https://doi.org/10.5281/zenodo.17381536
+
+Full paper DOI table:
+
+| # | Title | DOI |
+|---|-------|-----|
+| 1 | Memory as Baseline Deviation | 10.5281/zenodo.17381536 |
+| 2 | In Pursuit of the Markov Tensor | 10.5281/zenodo.17537185 |
+| 3 | Episodic Recall as Resonant Re-instantiation | 10.5281/zenodo.17374270 |
+| 4 | The Coupling Asymmetry | 10.5281/zenodo.18519187 |
+| 5 | The Emergent Gate | 10.5281/zenodo.17344091 |
+| 6 | The Resonant Gate | 10.5281/zenodo.17352481 |
+
+## Theory Library
+
+The theoretical papers that this code implements live at the Noetic Lab:
+
+- Site: https://yellowhapax.github.io/Noetic-Lab/
+- Machine-readable index: https://yellowhapax.github.io/Noetic-Lab/llms.txt
+- Structured manifest: https://yellowhapax.github.io/Noetic-Lab/content.json
+
+The traversal order: read the theory papers at the Noetic Lab → run the labs here → the Fermi Solution (Paper 9, DOI 10.5281/zenodo.18879430) closes the arc from individual cognition to civilizational filter.
