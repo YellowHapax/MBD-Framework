@@ -7,6 +7,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-10-02
+
+### Added
+- `proofs/BaselineTracking.lean`: convolution form of the baseline, partition of unity of its weights (non-negative exactly when 0 ≤ λ ≤ 1), tracking bound for inputs within ε of a level, and mean lag (1 − λ)/λ
+- `proofs/README.md`: plain-English section for the tracking results
+
 ## [0.2.0] — 2026-10-02
 
 ### Added
@@ -39,6 +45,7 @@ First public release — paper-focused simulation labs.
 - `CITATION.cff` with all six paper DOIs
 - Apache-2.0 license
 
-[Unreleased]: https://github.com/YellowHapax/MBD-Framework/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/YellowHapax/MBD-Framework/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/YellowHapax/MBD-Framework/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/YellowHapax/MBD-Framework/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/YellowHapax/MBD-Framework/releases/tag/v0.1.0

@@ -19,9 +19,12 @@ The core equation's behaviour is proven in [Lean 4](https://lean-lang.org/) with
 - the gap between baseline and input shrinks by exactly (1 − λ) each step;
 - after *n* steps the gap is (1 − λ)ⁿ times the starting gap;
 - under a steady input the baseline converges from any starting point, for 0 < λ < 2;
-- with 0 ≤ λ ≤ 1, a baseline that starts inside the input's range never leaves it.
+- with 0 ≤ λ ≤ 1, a baseline that starts inside the input's range never leaves it;
+- the baseline is a weighted sum of every past input, with weights that always add up to 1 and are all non-negative exactly when 0 ≤ λ ≤ 1 (averaging versus extrapolating);
+- if every input stays within ε of a level, the baseline's error is at most a fading start-up term plus ε;
+- the baseline's mean memory span is (1 − λ)/λ steps, so every deviation claim implicitly declares a timescale.
 
-No `sorry`; every theorem rests only on Lean's standard axioms. The plain-English report, [`proofs/README.md`](proofs/README.md), explains what this does and does not establish. Proofs first released in v0.2.0: [10.5281/zenodo.23114488](https://doi.org/10.5281/zenodo.23114488).
+No `sorry`; all 16 theorems rest only on Lean's standard axioms. The plain-English report, [`proofs/README.md`](proofs/README.md), explains what this does and does not establish. Proofs first released in v0.2.0: [10.5281/zenodo.23114488](https://doi.org/10.5281/zenodo.23114488).
 
 ## Papers
 
@@ -110,6 +113,7 @@ MBD-Framework/
 │
 ├── proofs/                  Lean 4 machine-checked proofs
 │   ├── BaselineConvergence.lean  Convergence + invariant-interval theorems
+│   ├── BaselineTracking.lean     Convolution form, weights, tracking bound, mean lag
 │   └── README.md            Plain-English report for non-mathematicians
 │
 ├── lab/                     Interactive web UI (optional)

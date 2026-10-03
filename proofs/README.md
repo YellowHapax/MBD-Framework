@@ -1,6 +1,6 @@
 # Machine-Checked Proofs: How a Baseline Settles
 
-**File:** [`BaselineConvergence.lean`](BaselineConvergence.lean)
+**Files:** [`BaselineConvergence.lean`](BaselineConvergence.lean) (Results 1–4), [`BaselineTracking.lean`](BaselineTracking.lean) (Results 5–8)
 **Checked by:** the Lean 4 proof assistant, using the Mathlib library (versions pinned in [`lean-toolchain`](lean-toolchain) and [`lakefile.toml`](lakefile.toml))
 **Status:** every theorem is fully proven. Nothing is assumed or left as "trust me."
 
@@ -94,6 +94,50 @@ A consistency check: the general, time-varying version of the rule gives exactly
 
 ---
 
+## 3b. What the baseline does inside the range
+
+Result 4 says the baseline can't escape. The second file says what it actually *is* while it's in there.
+
+### Result 5: the baseline is a weighted memory of everything that happened
+*(Lean name: `Bv_convolution`)*
+
+The step-by-step rule can be unrolled into one formula. The baseline after *n* steps is the starting value, weighted by (1 − λ)ⁿ, plus every past input, each weighted by λ(1 − λ) raised to its age:
+
+$$B(n) = (1-\lambda)^n\,B(0) + \lambda \sum_{k=0}^{n-1} (1-\lambda)^{\,n-1-k}\, I(k)$$
+
+**Plain reading:** with λ = 0.2, the most recent input counts for 0.2, the one before it 0.16, then 0.128, and so on, each older input counting 80% as much as the next newer one. This turns "baseline" from a running state into a *filter*: a precise recipe for how much each moment of the past contributes. Talk of lag, memory span or sensitivity to fast versus slow change is only well-defined because of this formula.
+
+### Result 6: those weights always add up to one, but are only all positive when 0 ≤ λ ≤ 1
+*(Lean names: `weights_sum_one`, `weights_nonneg`, `weights_nonneg_iff`, `weight_neg_of_one_lt`)*
+
+For **every** update rate, the weights in Result 5 add up to exactly 1. So the baseline is always a kind of average. But the weights are all non-negative if and only if λ is between 0 and 1. Above 1, the input from two steps back gets a *negative* weight. With λ = 1.5 the weights run 1.5, −0.75, 0.375, …: the system is pushed *away* from where it was two steps ago.
+
+**Plain reading:** this is the real reason behind Result 4. The limit "λ at most 1" isn't a safety margin. It's the line between **averaging** (blending past experiences, which can never leave their range) and **extrapolating** (projecting beyond them, which can). The step-by-step rule hides this completely; it only shows once the rule is unrolled. *(The "if and only if" is stated for n ≥ 2 steps.)*
+
+### Result 7: tracking a noisy world
+*(Lean names: `tracking_bound`, `eventually_tracking`)*
+
+Suppose every input stays within some distance ε of a level *c*, wobbling around, possibly even chosen by an adversary who knows the baseline. Then, for 0 ≤ λ ≤ 1, after *n* steps:
+
+$$|B(n) - c| \;\le\; (1-\lambda)^n\,|B(0) - c| \;+\; \bigl(1 - (1-\lambda)^n\bigr)\,\varepsilon$$
+
+**Plain reading:** the error has two parts. The starting error fades away geometrically, as in Result 2. The rest is never more than the world's own wobble ε. No sequence of inputs, however cleverly chosen, can push the baseline further from *c* than that. Example: λ = 0.2, starting 10 away from *c*, inputs within 1 of *c*. After 10 steps the baseline is guaranteed to be within about 1.97 of *c*. The formula tells you how many early steps to discard before a deviation score can be trusted. The second theorem states the long-run version: eventually the baseline is within ε plus any margin you like.
+
+### Result 8: the baseline's memory span
+*(Lean names: `lag_weights_hasSum_one`, `mean_lag`)*
+
+Look back from the present: the input from *k* steps ago has weight λ(1 − λ)ᵏ, and these weights add up to exactly 1. So they form a probability distribution over "how old is this information," and its average is
+
+$$\text{mean lag} = \frac{1-\lambda}{\lambda}\ \text{steps (counting the newest input as age 0).}$$
+
+λ = 0.5 remembers about 1 step back on average; λ = 0.1, about 9; λ = 0.01, about 99. λ = 1 remembers only the newest input.
+
+**Plain reading:** this may be the result MBD most needs stated out loud. "Deviation from baseline" is not a property of an event alone. It's a property of the event **and a timescale**, and λ is where the timescale is declared. The same event is a large deviation for a fast baseline and nearly invisible to a slow one. So an honest deviation claim should carry its λ the way a measurement carries its units.
+
+(At the extreme λ = 1, the baseline is just the previous input. Measured *before* each update, as MBD's novelty is, deviation then becomes pure change from one step to the next: a change detector with one step of memory.)
+
+---
+
 ## 4. What this does *not* prove
 
 Precision about the boundary matters as much as the result.
@@ -101,13 +145,14 @@ Precision about the boundary matters as much as the result.
 - **It does not prove that minds work this way.** It proves the *rule* behaves as MBD says it does. Whether real people follow the rule is an empirical question, tested by the predictions in the paper series.
 - **It covers one dimension.** The baseline here is a single number. MBD describes personality as a list of many numbers (a vector). When each dimension updates independently with the same λ, the results carry over dimension by dimension, but that extension is not yet in the file.
 - **λ is fixed.** Many MBD labs let the update rate change over time, for example ossification, where plasticity fades with age. This file does not cover that, and it matters: if λ fades fast enough, the starting point *keeps* a permanent share of influence. (Technically, the start fades away completely only if the update rates add up to infinity over time.)
-- **Coupling (κ) and the other MBD terms are not included.** This file is the foundation those terms build on, not the whole framework.
+- **The tracking bound assumes the inputs stay within ε from the very start.** "If the inputs eventually settle, the baseline eventually settles too" follows from it by restarting the clock when the inputs settle, but that step isn't yet its own theorem.
+- **Coupling (κ) and the other MBD terms are not included.** These files are the foundation those terms build on, not the whole framework.
 
 ---
 
 ## 5. What comes next
 
-The natural next theorem, suggested during independent review: **if the input settles down over time, the baseline settles to the same place**, even if the input wandered on the way. In plain words: if a life converges, the baseline eventually believes it. After that, the candidates are a changing update rate, multiple dimensions, and the coupling term κ, one file at a time.
+The natural next theorem, suggested during independent review: **if the input settles down over time, the baseline settles to the same place**, even if the input wandered on the way. In plain words: if a life converges, the baseline eventually believes it. Result 7 does most of the work; what remains is restarting the clock once the inputs settle. After that, the candidates are a changing update rate (which needs the rates to add up to infinity for the start to fade completely), multiple dimensions, and the coupling term κ, one file at a time.
 
 ---
 
@@ -127,6 +172,6 @@ If `lake build` finishes without errors, every theorem above is proven. The same
 ## Credits
 
 Author: Brandon Everett.
-Independent review before publication: Kimi-3, and Gimel (Claude).
+Independent review: Kimi-3 (who proposed the tracking sequel), and Gimel (Claude), who reviewed Part 1 and proposed the statements of Results 5–8.
 
 Part of the [MBD-Framework](../README.md). Cite via [`CITATION.cff`](../CITATION.cff).

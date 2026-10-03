@@ -24,6 +24,7 @@ jobs:
         run: |
           cat > /tmp/Axioms.lean <<'EOF'
           import BaselineConvergence
+          import BaselineTracking
           open BaselineConvergence
           #print axioms error_step
           #print axioms abs_error_step
@@ -32,6 +33,15 @@ jobs:
           #print axioms tendsto_const_input
           #print axioms Bv_const
           #print axioms stays_in_interval
+          #print axioms Bv_convolution
+          #print axioms weights_sum_one
+          #print axioms weights_nonneg
+          #print axioms weight_neg_of_one_lt
+          #print axioms weights_nonneg_iff
+          #print axioms tracking_bound
+          #print axioms eventually_tracking
+          #print axioms lag_weights_hasSum_one
+          #print axioms mean_lag
           EOF
           lake env lean /tmp/Axioms.lean | tee /tmp/axioms.txt
           if grep -q sorryAx /tmp/axioms.txt; then

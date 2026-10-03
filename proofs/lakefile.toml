@@ -1,5 +1,5 @@
 name = "MBDProofs"
-defaultTargets = ["BaselineConvergence"]
+defaultTargets = ["BaselineConvergence", "BaselineTracking"]
 
 [[require]]
 name = "mathlib"
@@ -8,3 +8,6 @@ rev = "v4.34.1"
 
 [[lean_lib]]
 name = "BaselineConvergence"
+
+[[lean_lib]]
+name = "BaselineTracking"
