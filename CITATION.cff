@@ -13,6 +13,13 @@ license: Apache-2.0
 version: 0.2.0
 date-released: "2026-10-02"
 doi: 10.5281/zenodo.18652919
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.18652919
+    description: Concept DOI (resolves to the latest version)
+  - type: doi
+    value: 10.5281/zenodo.23114488
+    description: Version 0.2.0 (machine-checked proofs)
 
 references:
   - type: article

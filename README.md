@@ -12,6 +12,17 @@ $$B(t+1) = B(t) \cdot (1 - \lambda) + I(t) \cdot \lambda$$
 
 An agent's personality is not a label — it is a **vector** in state space. Every significant experience shifts that vector. **λ** is how deeply the event rewrites who you are. Every lab below explores a consequence of this single equation.
 
+## Machine-Checked Proofs
+
+The core equation's behaviour is proven in [Lean 4](https://lean-lang.org/) with Mathlib, in [`proofs/`](proofs/), and re-checked by CI on every change:
+
+- the gap between baseline and input shrinks by exactly (1 − λ) each step;
+- after *n* steps the gap is (1 − λ)ⁿ times the starting gap;
+- under a steady input the baseline converges from any starting point, for 0 < λ < 2;
+- with 0 ≤ λ ≤ 1, a baseline that starts inside the input's range never leaves it.
+
+No `sorry`; every theorem rests only on Lean's standard axioms. The plain-English report, [`proofs/README.md`](proofs/README.md), explains what this does and does not establish. Proofs first released in v0.2.0: [10.5281/zenodo.23114488](https://doi.org/10.5281/zenodo.23114488).
+
 ## Papers
 
 | # | Paper | Labs | DOI |
@@ -96,6 +107,10 @@ MBD-Framework/
 ├── notebooks/               Jupyter walkthroughs
 │   ├── 01_baseline_deviation.ipynb  Paper 1 walkthrough
 │   └── 04_executive_load.ipynb      Paper 4 walkthrough
+│
+├── proofs/                  Lean 4 machine-checked proofs
+│   ├── BaselineConvergence.lean  Convergence + invariant-interval theorems
+│   └── README.md            Plain-English report for non-mathematicians
 │
 ├── lab/                     Interactive web UI (optional)
 │   ├── server.py            FastAPI backend (paper labs endpoints)
