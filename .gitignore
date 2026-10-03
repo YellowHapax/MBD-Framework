@@ -26,6 +26,9 @@ Thumbs.db
 reports/
 *.jsonl
 
+# Lean build output and fetched Mathlib (lake-manifest.json is committed)
+proofs/.lake/
+
 # Lab frontend build artifacts
 lab/node_modules/
 # lab/dist/ is intentionally committed so `python lab/server.py` works from a fresh clone

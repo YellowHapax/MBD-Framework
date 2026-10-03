@@ -1,0 +1,39 @@
+name: Lean proofs
+
+on:
+  push:
+    paths:
+      - "proofs/**"
+      - ".github/workflows/lean-proofs.yml"
+  pull_request:
+    paths:
+      - "proofs/**"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: proofs
+          use-mathlib-cache: true
+      - name: Print axioms (fails on sorryAx)
+        working-directory: proofs
+        run: |
+          cat > /tmp/Axioms.lean <<'EOF'
+          import BaselineConvergence
+          open BaselineConvergence
+          #print axioms error_step
+          #print axioms abs_error_step
+          #print axioms closed_form
+          #print axioms tendsto_of_abs_lt_one
+          #print axioms tendsto_const_input
+          #print axioms Bv_const
+          #print axioms stays_in_interval
+          EOF
+          lake env lean /tmp/Axioms.lean | tee /tmp/axioms.txt
+          if grep -q sorryAx /tmp/axioms.txt; then
+            echo "A theorem depends on sorry"; exit 1
+          fi

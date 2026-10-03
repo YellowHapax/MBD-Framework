@@ -7,6 +7,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-10-02
+
+### Added
+- `proofs/`: machine-checked Lean 4 proofs of the core baseline update (`BaselineConvergence.lean`): exact error contraction, closed form, convergence for 0 < λ < 2, and the invariant interval for 0 ≤ λ ≤ 1. Includes a plain-English report (`proofs/README.md`).
+- `.github/workflows/lean-proofs.yml`: builds the proofs against pinned Mathlib and fails if any theorem depends on `sorry`
+
 ### Fixed
 - `.gitignore`: exclude `runtime/`, personal API-council scripts, and `.openrouter.key` from all future commits
 - `launch_stella_field.bat`, `view_stella_octangula.bat`: replace hardcoded local venv path with `python` (PATH) default; local `venv/` takes precedence if present
@@ -33,5 +39,6 @@ First public release — paper-focused simulation labs.
 - `CITATION.cff` with all six paper DOIs
 - Apache-2.0 license
 
-[Unreleased]: https://github.com/YellowHapax/MBD-Framework/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/YellowHapax/MBD-Framework/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/YellowHapax/MBD-Framework/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/YellowHapax/MBD-Framework/releases/tag/v0.1.0
